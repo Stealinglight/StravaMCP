@@ -1,0 +1,79 @@
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+jobs:
+  claude-review:
+    runs-on: ubuntu-latest
+    name: AI Code Review
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Get PR diff
+        id: diff
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          DIFF=$(git diff origin/${{ github.base_ref }}...HEAD)
+          echo "diff<<EOF" >> $GITHUB_OUTPUT
+          echo "$DIFF" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Get changed files
+        id: files
+        run: |
+          FILES=$(git diff --name-only origin/${{ github.base_ref }}...HEAD | tr '\n' ',' | sed 's/,$//')
+          echo "changed_files=$FILES" >> $GITHUB_OUTPUT
+
+      - name: Review with Claude
+        id: review
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          # Create review request payload
+          cat > review_request.json <<'EOF'
+          {
+            "model": "claude-sonnet-4-5-20250929",
+            "max_tokens": 8000,
+            "messages": [{
+              "role": "user",
+              "content": "You are an expert code reviewer. Review the following git diff from a pull request and provide constructive feedback.\n\nFocus on:\n1. Code quality and best practices\n2. Potential bugs or security issues\n3. Performance considerations\n4. Code maintainability and readability\n5. Testing coverage\n\nProvide your review in markdown format with specific line references where applicable.\n\nChanged files: ${{ steps.files.outputs.changed_files }}\n\nDiff:\n```\n${{ steps.diff.outputs.diff }}\n```\n\nProvide a concise review with actionable feedback. Use this format:\n\n## Summary\n[Brief overview]\n\n## Issues Found\n[List any problems]\n\n## Suggestions\n[Improvements and recommendations]\n\n## Positive Notes\n[What was done well]"
+            }]
+          }
+          EOF
+
+          # Call Claude API
+          RESPONSE=$(curl -s https://api.anthropic.com/v1/messages \
+            -H "content-type: application/json" \
+            -H "x-api-key: $ANTHROPIC_API_KEY" \
+            -H "anthropic-version: 2023-06-01" \
+            -d @review_request.json)
+
+          # Extract review content
+          REVIEW=$(echo "$RESPONSE" | jq -r '.content[0].text')
+
+          # Save to file for next step
+          echo "$REVIEW" > review.md
+
+      - name: Post review comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const review = fs.readFileSync('review.md', 'utf8');
+
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `## 🤖 Claude Code Review\n\n${review}\n\n---\n*Automated review powered by Claude AI*`
+            });
