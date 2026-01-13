@@ -262,3 +262,15 @@ Built with:
 ---
 
 **Ready to transform your Strava workouts into meaningful training logs!** 🏃‍♂️🚴‍♀️💪
+
+## Development Notes
+
+### Logging Convention
+
+This MCP server uses `console.error()` for **all** logging output (including success messages). This is intentional and correct for MCP servers:
+
+- **stdout** (console.log) is reserved for MCP protocol communication
+- **stderr** (console.error) is used for all logging, diagnostics, and debug output
+
+Do not change `console.error()` to `console.log()` as this will break the MCP protocol communication.
+
