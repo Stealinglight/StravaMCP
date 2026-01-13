@@ -1,17 +1,33 @@
 {
   "name": "stravamcp",
   "version": "1.0.0",
-  "description": "MCP to connect Strava via remote mcp server",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+  "description": "Production-ready MCP Server for Strava API",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "bin": {
+    "strava-mcp": "dist/index.js"
   },
-  "keywords": [],
+  "scripts": {
+    "build": "tsc",
+    "dev": "tsx src/index.ts",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit"
+  },
+  "keywords": [
+    "mcp",
+    "strava",
+    "model-context-protocol",
+    "api",
+    "fitness"
+  ],
   "author": "",
   "license": "ISC",
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.25.2",
-    "axios": "^1.13.2"
+    "axios": "^1.13.2",
+    "dotenv": "^17.2.3",
+    "zod": "^4.3.5"
   },
   "devDependencies": {
     "@types/node": "^25.0.8",
