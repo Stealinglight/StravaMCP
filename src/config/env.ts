@@ -10,6 +10,7 @@ const envSchema = z.object({
   STRAVA_CLIENT_ID: z.string().min(1, 'STRAVA_CLIENT_ID is required'),
   STRAVA_CLIENT_SECRET: z.string().min(1, 'STRAVA_CLIENT_SECRET is required'),
   STRAVA_REFRESH_TOKEN: z.string().min(1, 'STRAVA_REFRESH_TOKEN is required'),
+  PORT: z.string().default('3000').transform(Number),
 });
 
 /**
@@ -21,6 +22,7 @@ export function getConfig() {
     STRAVA_CLIENT_ID: process.env.STRAVA_CLIENT_ID,
     STRAVA_CLIENT_SECRET: process.env.STRAVA_CLIENT_SECRET,
     STRAVA_REFRESH_TOKEN: process.env.STRAVA_REFRESH_TOKEN,
+    PORT: process.env.PORT,
   });
 
   if (!result.success) {
