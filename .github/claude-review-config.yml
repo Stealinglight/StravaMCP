@@ -1,0 +1,43 @@
+# Claude Code Review Configuration
+# This file controls the behavior of automated code reviews
+
+# Model to use for reviews
+model: claude-sonnet-4-5-20250929
+
+# Review focus areas (all enabled by default)
+focus_areas:
+  code_quality: true
+  security: true
+  performance: true
+  testing: true
+  documentation: true
+  best_practices: true
+
+# File patterns to exclude from review
+exclude_patterns:
+  - "*.min.js"
+  - "*.lock"
+  - "package-lock.json"
+  - "yarn.lock"
+  - "*.md"  # Markdown files (remove if you want docs reviewed)
+
+# File patterns to prioritize in review
+priority_patterns:
+  - "*.ts"
+  - "*.js"
+  - "*.py"
+  - "*.go"
+  - "*.rs"
+
+# Review strictness (1-5, where 5 is most strict)
+strictness: 3
+
+# Auto-approve small changes (lines changed threshold)
+auto_approve_threshold: 10
+auto_approve_enabled: false
+
+# Comment on specific issues
+inline_comments: true
+
+# Provide code suggestions
+suggest_improvements: true
