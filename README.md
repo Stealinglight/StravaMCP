@@ -80,6 +80,7 @@ See [agents.md](./agents.md) for comprehensive guidance on using this server as 
    STRAVA_CLIENT_ID=your_client_id
    STRAVA_CLIENT_SECRET=your_client_secret
    STRAVA_REFRESH_TOKEN=your_refresh_token
+   PORT=3000  # Optional, defaults to 3000
    ```
 
 6. **Build the Project**
@@ -91,6 +92,8 @@ See [agents.md](./agents.md) for comprehensive guidance on using this server as 
 
 ### Running the MCP Server
 
+This server runs as a **remote MCP server** using SSE (Server-Sent Events) transport, accessible over HTTP.
+
 #### Development Mode (with auto-reload)
 ```bash
 npm run dev
@@ -101,34 +104,59 @@ npm run dev
 npm start
 ```
 
+The server will start on `http://localhost:3000` (or the port specified in your `.env` file) with the following endpoints:
+- **SSE endpoint**: `http://localhost:3000/sse` - For establishing server-to-client event streams
+- **Message endpoint**: `http://localhost:3000/message` - For client-to-server messages
+- **Health check**: `http://localhost:3000/health` - Server status
+
 ### Integrating with Claude Desktop
 
-Add this to your Claude Desktop configuration file:
+First, start the server:
+```bash
+npm start
+```
 
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+Then add this to your Claude Desktop configuration file:
+
+**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
 **Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
 
 ```json
 {
   "mcpServers": {
     "strava": {
-      "command": "node",
-      "args": ["/absolute/path/to/StravaMCP/dist/index.js"],
-      "env": {
-        "STRAVA_CLIENT_ID": "your_client_id",
-        "STRAVA_CLIENT_SECRET": "your_client_secret",
-        "STRAVA_REFRESH_TOKEN": "your_refresh_token"
-      }
+      "url": "http://localhost:3000/sse"
     }
   }
 }
 ```
 
-Replace `/absolute/path/to/StravaMCP` with the actual path to this project.
+Restart Claude Desktop to load the new configuration.
 
 ### Using with Other MCP Clients
 
-The server uses stdio transport, making it compatible with any MCP client. Refer to your client's documentation for integration instructions.
+This server uses **SSE (Server-Sent Events) transport**, making it compatible with any MCP client that supports remote SSE connections.
+
+**Connection Details:**
+- **SSE URL**: `http://localhost:3000/sse`
+- **Message endpoint**: `http://localhost:3000/message`
+- **Transport type**: SSE
+
+Refer to your MCP client's documentation for specific remote server integration instructions.
+
+### Testing with MCP Inspector
+
+You can test the server using the official MCP Inspector:
+
+```bash
+# Start the server first
+npm start
+
+# In another terminal, run the inspector
+npx @modelcontextprotocol/inspector http://localhost:3000/sse
+```
+
+The inspector will open at `http://localhost:6274` with an interactive UI to test all available tools.
 
 ## Available Tools
 
@@ -171,15 +199,17 @@ The server uses stdio transport, making it compatible with any MCP client. Refer
 
 ### Key Design Decisions
 
-1. **Generic Request Method**: The `StravaClient` has a generic `request()` method that can call ANY Strava API endpoint, making the server future-proof as new endpoints are added.
+1. **Remote SSE Transport**: Uses Server-Sent Events (SSE) transport over HTTP, enabling the server to be accessed remotely by any MCP client. Supports multiple concurrent sessions with automatic cleanup on disconnect.
 
-2. **Automatic Token Refresh**: OAuth tokens are automatically refreshed before expiry (with a 5-minute buffer), ensuring uninterrupted access.
+2. **Generic Request Method**: The `StravaClient` has a generic `request()` method that can call ANY Strava API endpoint, making the server future-proof as new endpoints are added.
 
-3. **Modular Tool Structure**: Tools are organized by domain (activities, athlete, streams, etc.) for maintainability.
+3. **Automatic Token Refresh**: OAuth tokens are automatically refreshed before expiry (with a 5-minute buffer), ensuring uninterrupted access.
 
-4. **Rich Tool Descriptions**: Every tool has detailed descriptions to help AI assistants understand when and how to use them.
+4. **Modular Tool Structure**: Tools are organized by domain (activities, athlete, streams, etc.) for maintainability.
 
-5. **TypeScript with Zod**: Strong typing with runtime validation for reliability.
+5. **Rich Tool Descriptions**: Every tool has detailed descriptions to help AI assistants understand when and how to use them.
+
+6. **TypeScript with Zod**: Strong typing with runtime validation for reliability.
 
 ## Development
 
