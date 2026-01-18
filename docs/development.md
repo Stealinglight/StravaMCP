@@ -72,6 +72,9 @@ bun run dev
 
 ## Architecture
 
+{: .note }
+> **Mermaid Diagrams**: The architecture diagrams below use [Mermaid.js](https://mermaid.js.org/) for interactive visualization. They render automatically on GitHub Pages and can be edited directly in the markdown.
+
 ### System Overview
 
 ```mermaid

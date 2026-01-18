@@ -1,0 +1,52 @@
+<!-- Mermaid.js for diagram rendering -->
+<script type="module">
+  import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+  
+  // Initialize Mermaid with dark theme to match site's color scheme
+  mermaid.initialize({ 
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      darkMode: true,
+      background: '#1c1c1e',
+      primaryColor: '#4ECDC4',
+      primaryTextColor: '#e8e8e8',
+      primaryBorderColor: '#45B7D1',
+      lineColor: '#96CEB4',
+      secondaryColor: '#FF6B6B',
+      tertiaryColor: '#FFD93D'
+    },
+    flowchart: {
+      curve: 'basis',
+      useMaxWidth: true,
+      htmlLabels: true
+    }
+  });
+</script>
+
+<!-- Custom styling for Mermaid diagrams -->
+<style>
+  .mermaid {
+    text-align: center;
+    margin: 2em 0;
+  }
+  
+  .mermaid svg {
+    max-width: 100%;
+    height: auto;
+  }
+  
+  /* Ensure diagrams are readable in dark mode */
+  .mermaid .node rect,
+  .mermaid .node circle,
+  .mermaid .node ellipse,
+  .mermaid .node polygon {
+    stroke-width: 2px;
+  }
+  
+  .mermaid .edgeLabel {
+    background-color: #1c1c1e;
+    padding: 4px 8px;
+    border-radius: 4px;
+  }
+</style>
