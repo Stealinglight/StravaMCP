@@ -28,10 +28,44 @@ Perfect for portfolios - demonstrates cloud architecture, serverless deployment,
 
 ### Prerequisites
 
-- [Bun](https://bun.sh) installed
-- [AWS Account](https://aws.amazon.com/free) (free tier)
-- [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
-- [Strava API](https://www.strava.com/settings/api) credentials
+**Required Tools:**
+- [Bun](https://bun.sh) - Fast JavaScript runtime and package manager
+- [AWS Account](https://aws.amazon.com/free) - Sign up for free tier
+- [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) - Serverless deployment tool
+- [Strava API](https://www.strava.com/settings/api) credentials - Create an application
+
+**AWS Setup:**
+1. **Install AWS CLI** (if not already installed):
+   ```bash
+   # macOS
+   brew install awscli
+   
+   # Or download from https://aws.amazon.com/cli/
+   ```
+
+2. **Configure AWS Credentials**:
+   ```bash
+   aws configure
+   # Enter your AWS Access Key ID
+   # Enter your AWS Secret Access Key
+   # Default region: us-east-1
+   # Default output format: json
+   ```
+
+3. **Install AWS SAM CLI**:
+   ```bash
+   # macOS
+   brew install aws-sam-cli
+   
+   # Verify installation
+   sam --version
+   ```
+
+4. **Verify AWS Setup**:
+   ```bash
+   # Test credentials
+   aws sts get-caller-identity
+   ```
 
 ### 1. Clone & Install
 
@@ -50,12 +84,30 @@ node get-token.js YOUR_CLIENT_ID YOUR_CLIENT_SECRET
 
 ### 3. Deploy to AWS
 
+**First-Time Deployment** (with guided prompts):
 ```bash
-bun run build:lambda
 bun run deploy
 ```
 
-Follow the prompts to enter your Strava credentials. The deployment takes ~2 minutes.
+You'll be prompted for:
+- **Stack name**: `strava-mcp-stack` (or your preferred name)
+- **AWS Region**: `us-east-1` (or your preferred region)
+- **Strava Client ID**: From your Strava API application
+- **Strava Client Secret**: From your Strava API application
+- **Strava Refresh Token**: From `get-token.js` output
+- **Confirm changes**: `y` to proceed
+
+The deployment takes ~2 minutes and creates:
+- Lambda function with Function URL
+- IAM roles and policies
+- CloudWatch logs
+
+**Subsequent Deployments** (uses saved config):
+```bash
+bun run deploy:fast
+```
+
+This uses the saved `samconfig.toml` configuration for instant re-deployment.
 
 ### 4. Connect to Claude
 
@@ -202,19 +254,60 @@ Contributions welcome! Please feel free to submit a Pull Request.
 
 ## Troubleshooting
 
+### "sam: command not found"
+
+AWS SAM CLI is not installed.
+
+**Fix:**
+```bash
+# macOS
+brew install aws-sam-cli
+
+# Verify
+sam --version
+```
+
+### "Unable to locate credentials"
+
+AWS credentials not configured.
+
+**Fix:**
+```bash
+aws configure
+# Enter your AWS credentials
+```
+
 ### "Function URL returned 500"
 
-Check logs:
+Check Lambda logs:
 ```bash
 sam logs -n StravaMCPFunction --stack-name strava-mcp-stack --tail
 ```
 
 ### Refresh Token Expired
 
-Re-run token script:
+Re-run token script and update deployment:
 ```bash
 node get-token.js YOUR_CLIENT_ID YOUR_CLIENT_SECRET
 sam deploy --parameter-overrides StravaRefreshToken=NEW_TOKEN
+```
+
+### Build Errors
+
+If TypeScript compilation fails:
+```bash
+# Clean and rebuild
+rm -rf dist/
+bun run build
+```
+
+### SAM Build Errors
+
+If SAM can't find files:
+```bash
+# Ensure dist/ directory exists with all files
+bun run build:lambda
+ls -la dist/
 ```
 
 ### More Help
