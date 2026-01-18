@@ -97,24 +97,16 @@ parameter_overrides = [
 }
 
 function displayMCPConfig(functionUrl: string, authToken: string) {
-  const mcpUrl = functionUrl.endsWith('/') ? `${functionUrl}mcp` : `${functionUrl}/mcp`;
+  const sseUrl = functionUrl.endsWith('/') ? `${functionUrl}sse?token=${authToken}` : `${functionUrl}/sse?token=${authToken}`;
   
   log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);
   log('🎉 DEPLOYMENT SUCCESSFUL!', colors.green + colors.bright);
   log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n', colors.cyan);
   
   log('📋 Claude Connector Configuration', colors.bright);
-  log('Add this connector in Claude settings:\n', colors.yellow);
+  log('Copy and paste this URL into Claude Settings → Connectors:\n', colors.yellow);
   
-  const config = {
-    name: 'strava',
-    url: mcpUrl,
-    headers: {
-      Authorization: `Bearer ${authToken}`
-    }
-  };
-  
-  log(JSON.stringify(config, null, 2), colors.green);
+  log(sseUrl, colors.green + colors.bright);
   
   log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);
   log('\n🔐 Security Information\n', colors.bright);

@@ -76,25 +76,17 @@ function main() {
     process.exit(1);
   }
   
-  const mcpUrl = functionUrl.endsWith('/') ? `${functionUrl}mcp` : `${functionUrl}/mcp`;
+  const sseUrl = functionUrl.endsWith('/') ? `${functionUrl}sse?token=${authToken}` : `${functionUrl}/sse?token=${authToken}`;
   
   log('Claude Connector Configuration:', colors.bright);
-  log('Add this connector in Claude settings:\n', colors.yellow);
+  log('Copy and paste this URL into Claude Settings → Connectors:\n', colors.yellow);
   
-  const config = {
-    name: 'strava',
-    url: mcpUrl,
-    headers: {
-      Authorization: `Bearer ${authToken}`
-    }
-  };
-  
-  log(JSON.stringify(config, null, 2), colors.green);
+  log(sseUrl, colors.green + colors.bright);
   
   log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);
   log('\nConnection Details:', colors.bright);
-  log(`  URL: ${mcpUrl}`, colors.blue);
-  log(`  Header: Authorization: Bearer ${authToken}`, colors.blue);
+  log(`  SSE URL: ${sseUrl}`, colors.blue);
+  log(`  Token embedded in URL for Claude compatibility`, colors.blue);
   
   log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);
   log('\nTest:', colors.bright);

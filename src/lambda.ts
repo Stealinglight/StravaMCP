@@ -7,10 +7,12 @@ import type {
 } from 'aws-lambda';
 import express, { Request, Response } from 'express';
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
+import { randomUUID } from 'node:crypto';
 
 import { getConfig } from './config/env.js';
 import { StravaClient } from './lib/strava-client.js';
@@ -75,35 +77,45 @@ function initializeServer(): express.Application {
   const app = express();
   app.use(express.json());
 
+  // Store transports by session ID
+  const transports: Record<string, SSEServerTransport> = {};
+
   // Authentication middleware - verify Bearer token
   // Skip auth for health check endpoint
+  // Supports both Authorization header and query parameter for Claude connector compatibility
   app.use((req: Request, res: Response, next) => {
     if (req.path === '/health') {
       return next();
     }
 
-    const authHeader = req.headers['authorization'];
-    
-    if (!authHeader || !authHeader.startsWith('Bearer ')) {
-      console.error('[StravaLambda] Missing or invalid authorization header');
-      return res.status(401).json({ 
-        error: 'Unauthorized',
-        message: 'Missing or invalid authorization header. Use: Authorization: Bearer <token>'
-      });
+    // For SSE message endpoint, trust valid session IDs
+    const sessionId = req.query.sessionId as string;
+    if (req.path === '/message' && sessionId && transports[sessionId]) {
+      return next();
     }
 
-    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    let token: string | undefined;
+    
+    // Try Authorization header first (preferred for API clients)
+    const authHeader = req.headers['authorization'];
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    }
+    // Fallback to query parameter (required for Claude connectors)
+    else if (req.query.token) {
+      token = req.query.token as string;
+    }
     
     if (!config) {
       // Initialize config if not already done (shouldn't happen, but safety check)
       config = getConfig();
     }
 
-    if (token !== config.AUTH_TOKEN) {
-      console.error('[StravaLambda] Invalid bearer token');
+    if (!token || token !== config.AUTH_TOKEN) {
+      console.error('[StravaLambda] Invalid or missing token');
       return res.status(401).json({ 
         error: 'Unauthorized',
-        message: 'Invalid bearer token'
+        message: 'Invalid or missing token. Use: Authorization: Bearer <token> OR ?token=<token>'
       });
     }
 
@@ -328,7 +340,37 @@ function initializeServer(): express.Application {
     res.json({ status: 'healthy', version: '2.0.0', environment: 'lambda' });
   });
 
-  // MCP endpoint - handles JSON-RPC requests
+  // SSE endpoint - establishes the server-to-client event stream
+  app.get('/sse', async (_req: Request, res: Response) => {
+    console.error('[StravaLambda] New SSE connection established');
+    const transport = new SSEServerTransport('/message', res);
+    const sessionId = randomUUID();
+    transports[sessionId] = transport;
+
+    // Clean up transport on connection close
+    res.on('close', () => {
+      console.error(`[StravaLambda] SSE connection closed for session ${sessionId}`);
+      delete transports[sessionId];
+    });
+
+    await mcpServer.connect(transport);
+    console.error(`[StravaLambda] Session ${sessionId} initialized`);
+  });
+
+  // Message endpoint - handles client-to-server messages
+  app.post('/message', async (req: Request, res: Response) => {
+    const sessionId = req.query.sessionId as string;
+    const transport = transports[sessionId];
+
+    if (!transport) {
+      res.status(400).json({ error: 'Invalid or expired session ID' });
+      return;
+    }
+
+    await transport.handlePostMessage(req, res, req.body);
+  });
+
+  // MCP endpoint - handles JSON-RPC requests (for testing and direct API access)
   app.post('/mcp', async (req: Request, res: Response) => {
     try {
       console.error('[StravaLambda] MCP request received:', req.body.method);

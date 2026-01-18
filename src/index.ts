@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
+import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import express, { Request, Response } from 'express';
+import { randomUUID } from 'node:crypto';
 
 import { getConfig } from './config/env.js';
 import { StravaClient } from './lib/strava-client.js';
@@ -282,12 +284,82 @@ async function main() {
   const app = express();
   app.use(express.json());
 
+  // Store transports by session ID
+  const transports: Record<string, SSEServerTransport> = {};
+
+  // Authentication middleware for local dev (optional - can be disabled)
+  // Supports both Authorization header and query parameter
+  app.use((req: Request, res: Response, next) => {
+    if (req.path === '/health') {
+      return next();
+    }
+
+    // For SSE message endpoint, trust valid session IDs
+    const sessionId = req.query.sessionId as string;
+    if (req.path === '/message' && sessionId && transports[sessionId]) {
+      return next();
+    }
+
+    // For local development, authentication is optional
+    // If AUTH_TOKEN is set in .env, validate it
+    if (config.AUTH_TOKEN && config.AUTH_TOKEN.length > 0) {
+      let token: string | undefined;
+      
+      const authHeader = req.headers['authorization'];
+      if (authHeader && authHeader.startsWith('Bearer ')) {
+        token = authHeader.substring(7);
+      } else if (req.query.token) {
+        token = req.query.token as string;
+      }
+      
+      if (!token || token !== config.AUTH_TOKEN) {
+        console.error('[StravaServer] Invalid or missing token');
+        return res.status(401).json({ 
+          error: 'Unauthorized',
+          message: 'Invalid or missing token'
+        });
+      }
+    }
+    
+    next();
+  });
+
   // Health check endpoint
   app.get('/health', (_req: Request, res: Response) => {
     res.json({ status: 'healthy', version: '2.0.0' });
   });
 
-  // MCP endpoint - handles JSON-RPC requests
+  // SSE endpoint - establishes the server-to-client event stream
+  app.get('/sse', async (_req: Request, res: Response) => {
+    console.error('[StravaServer] New SSE connection established');
+    const transport = new SSEServerTransport('/message', res);
+    const sessionId = randomUUID();
+    transports[sessionId] = transport;
+
+    // Clean up transport on connection close
+    res.on('close', () => {
+      console.error(`[StravaServer] SSE connection closed for session ${sessionId}`);
+      delete transports[sessionId];
+    });
+
+    await server.connect(transport);
+    console.error(`[StravaServer] Session ${sessionId} initialized`);
+  });
+
+  // Message endpoint - handles client-to-server messages
+  app.post('/message', async (req: Request, res: Response) => {
+    const sessionId = req.query.sessionId as string;
+    const transport = transports[sessionId];
+
+    if (!transport) {
+      res.status(400).json({ error: 'Invalid or expired session ID' });
+      return;
+    }
+
+    await transport.handlePostMessage(req, res, req.body);
+  });
+
+  // MCP endpoint - handles JSON-RPC requests (for testing and direct API access)
   app.post('/mcp', async (req: Request, res: Response) => {
     try {
       console.error('[StravaServer] MCP request received:', req.body.method);

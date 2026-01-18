@@ -1,18 +1,14 @@
 name: Deploy Lambda to AWS (Optional CI/CD)
 
-# This workflow is optional - you can deploy manually or enable this for automated deployments
-# To use: Add AWS credentials as GitHub secrets and uncomment the 'on' triggers below
-
 on:
-  # Uncomment to enable automated deployments:
-  # push:
-  #   branches:
-  #     - main
-  #   paths:
-  #     - 'src/**'
-  #     - 'template.yaml'
-  #     - 'package.json'
-  workflow_dispatch:
+   push:
+     branches:
+       - main
+     paths:
+       - 'src/**'
+       - 'template.yaml'
+       - 'package.json'
+workflow_dispatch:
     inputs:
       stack_name:
         description: 'CloudFormation stack name'
@@ -21,7 +17,7 @@ on:
       region:
         description: 'AWS region'
         required: true
-        default: 'us-east-1'
+        default: 'us-west-2'
 
 jobs:
   deploy:
@@ -51,7 +47,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ github.event.inputs.region || 'us-east-1' }}
+          aws-region: ${{ github.event.inputs.region || 'us-west-2' }}
 
       - name: SAM Build
         run: sam build
