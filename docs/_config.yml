@@ -1,6 +1,5 @@
 title: Strava MCP Server
 description: Remote MCP Server for Strava API running on AWS Lambda (Free Tier)
-theme: just-the-docs
 
 url: https://stealinglight.github.io
 baseurl: /StravaMCP
