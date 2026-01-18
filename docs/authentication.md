@@ -100,33 +100,21 @@ parameter_overrides = [
 
 After deployment, get your Function URL from the deployment output.
 
-#### Claude Desktop
+#### All Claude Platforms
 
-Edit `~/Library/Application Support/Claude/claude_desktop_config.json`:
+Add as a Custom Connector in Claude Settings:
 
 ```json
 {
-  "mcpServers": {
-    "strava": {
-      "url": "https://your-function-url.lambda-url.us-east-1.on.aws/sse",
-      "headers": {
-        "Authorization": "Bearer your-auth-token-here"
-      },
-      "description": "Strava MCP Server (authenticated)"
-    }
+  "name": "strava",
+  "url": "https://your-function-url.lambda-url.us-east-1.on.aws/mcp",
+  "headers": {
+    "Authorization": "Bearer your-auth-token-here"
   }
 }
 ```
 
-#### Claude Web/Mobile
-
-1. Go to Settings → MCP Servers
-2. Add New Server:
-   - **Name**: `strava`
-   - **URL**: `https://your-function-url.lambda-url.us-east-1.on.aws/sse`
-   - **Headers**:
-     - Key: `Authorization`
-     - Value: `Bearer your-auth-token-here`
+**Important**: The URL must end with `/mcp` - this is the MCP endpoint.
 
 ### 4. Test Authentication
 

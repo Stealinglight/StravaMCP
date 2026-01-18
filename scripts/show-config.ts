@@ -46,7 +46,7 @@ function getFunctionUrl(): string | null {
     
     const match = output.match(/ClaudeConnectionUrl\s+(.+?)(?:\s|$)/);
     if (match) {
-      return match[1].replace(/sse$/, '');
+      return match[1].replace(/mcp$/, '');
     }
     
     const urlMatch = output.match(/(https:\/\/[a-z0-9-]+\.lambda-url\.[a-z0-9-]+\.on\.aws\/)/);
@@ -76,27 +76,24 @@ function main() {
     process.exit(1);
   }
   
-  const sseUrl = functionUrl.endsWith('/') ? `${functionUrl}sse` : `${functionUrl}/sse`;
+  const mcpUrl = functionUrl.endsWith('/') ? `${functionUrl}mcp` : `${functionUrl}/mcp`;
   
-  log('Claude Desktop Configuration:', colors.bright);
-  log('~/Library/Application Support/Claude/claude_desktop_config.json\n', colors.yellow);
+  log('Claude Connector Configuration:', colors.bright);
+  log('Add this connector in Claude settings:\n', colors.yellow);
   
   const config = {
-    mcpServers: {
-      strava: {
-        url: sseUrl,
-        headers: {
-          Authorization: `Bearer ${authToken}`
-        }
-      }
+    name: 'strava',
+    url: mcpUrl,
+    headers: {
+      Authorization: `Bearer ${authToken}`
     }
   };
   
   log(JSON.stringify(config, null, 2), colors.green);
   
   log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);
-  log('\nClaude Web/Mobile:', colors.bright);
-  log(`  URL: ${sseUrl}`, colors.blue);
+  log('\nConnection Details:', colors.bright);
+  log(`  URL: ${mcpUrl}`, colors.blue);
   log(`  Header: Authorization: Bearer ${authToken}`, colors.blue);
   
   log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);

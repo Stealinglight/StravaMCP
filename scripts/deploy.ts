@@ -97,35 +97,24 @@ parameter_overrides = [
 }
 
 function displayMCPConfig(functionUrl: string, authToken: string) {
-  const sseUrl = functionUrl.endsWith('/') ? `${functionUrl}sse` : `${functionUrl}/sse`;
+  const mcpUrl = functionUrl.endsWith('/') ? `${functionUrl}mcp` : `${functionUrl}/mcp`;
   
   log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);
   log('🎉 DEPLOYMENT SUCCESSFUL!', colors.green + colors.bright);
   log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n', colors.cyan);
   
-  log('📋 Claude Desktop Configuration', colors.bright);
-  log('Copy this to: ~/Library/Application Support/Claude/claude_desktop_config.json\n', colors.yellow);
+  log('📋 Claude Connector Configuration', colors.bright);
+  log('Add this connector in Claude settings:\n', colors.yellow);
   
   const config = {
-    mcpServers: {
-      strava: {
-        url: sseUrl,
-        headers: {
-          Authorization: `Bearer ${authToken}`
-        }
-      }
+    name: 'strava',
+    url: mcpUrl,
+    headers: {
+      Authorization: `Bearer ${authToken}`
     }
   };
   
   log(JSON.stringify(config, null, 2), colors.green);
-  
-  log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);
-  log('\n📱 Claude Web/Mobile Configuration\n', colors.bright);
-  log('In Settings → MCP Servers, add:', colors.yellow);
-  log(`  Name: strava`, colors.blue);
-  log(`  URL: ${sseUrl}`, colors.blue);
-  log(`  Headers:`, colors.blue);
-  log(`    Authorization: Bearer ${authToken}`, colors.blue);
   
   log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);
   log('\n🔐 Security Information\n', colors.bright);
@@ -143,7 +132,7 @@ function extractFunctionUrl(output: string): string | null {
   // Look for ClaudeConnectionUrl in CloudFormation outputs
   const match = output.match(/ClaudeConnectionUrl\s+(.+?)(?:\s|$)/);
   if (match) {
-    return match[1].replace(/sse$/, ''); // Remove 'sse' suffix to get base URL
+    return match[1].replace(/mcp$/, ''); // Remove 'mcp' suffix to get base URL
   }
   
   // Fallback: look for any lambda-url

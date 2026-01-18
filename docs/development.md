@@ -62,11 +62,11 @@ This opens your browser for Strava authorization and displays your refresh token
 bun run dev
 
 # Server runs at http://localhost:3000
-# SSE endpoint: http://localhost:3000/sse
+# MCP endpoint: http://localhost:3000/mcp
 ```
 
 {: .note }
-> The local server uses SSE (Server-Sent Events) transport for MCP connections.
+> The local server uses JSON-RPC over HTTP for MCP connections.
 
 ---
 
@@ -168,7 +168,7 @@ graph LR
 StravaMCP/
 ├── src/
 │   ├── lambda.ts              # Lambda entry point (Streamable HTTP)
-│   ├── index.ts               # Local dev server (SSE transport)
+│   ├── index.ts               # Local dev server (JSON-RPC over HTTP)
 │   ├── lib/
 │   │   └── strava-client.ts   # OAuth client with auto-refresh
 │   ├── tools/                 # MCP tool implementations
@@ -212,7 +212,7 @@ The Lambda entry point implements:
 - **Streamable HTTP Transport** for remote MCP
 - **Bearer Token Authentication** middleware
 - **MCP Server Integration** via @modelcontextprotocol/sdk
-- **SSE Streaming** for tool responses
+- **JSON-RPC over HTTP** for tool communication
 
 **Key Functions:**
 - `handler()` - Main Lambda handler
@@ -435,7 +435,7 @@ bun run deploy:fast
    {
      "mcpServers": {
        "strava-local": {
-         "url": "http://localhost:3000/sse"
+         "url": "http://localhost:3000/mcp"
        }
      }
    }

@@ -57,18 +57,11 @@ Resources:
         AuthType: NONE  # Public URL with Bearer token authentication in application code
         Cors:
           AllowOrigins:
-            - '*'  # WARNING: Restrict this in production!
+            - '*'
           AllowMethods:
-            - GET
-            - POST
-            - DELETE
-            - OPTIONS
+            - '*'
           AllowHeaders:
-            - Content-Type
-            - Accept
-            - Mcp-Session-Id
-            - Last-Event-ID
-          MaxAge: 86400
+            - '*'
         InvokeMode: BUFFERED  # Standard mode (not streaming)
       Tags:
         Project: StravaMCP
@@ -85,8 +78,8 @@ Outputs:
     Value: !GetAtt StravaMCPFunction.Arn
 
   ClaudeConnectionUrl:
-    Description: "URL to use in Claude Desktop for MCP connection (SSE transport)"
-    Value: !Sub "${StravaMCPFunctionUrl.FunctionUrl}sse"
+    Description: "URL to use for Claude MCP connector"
+    Value: !Sub "${StravaMCPFunctionUrl.FunctionUrl}mcp"
 
   HealthCheckUrl:
     Description: "Health check endpoint"

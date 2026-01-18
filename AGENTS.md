@@ -19,18 +19,19 @@
 │  MCP Clients    │  (Claude Desktop, Web, Mobile)
 │  (Any Device)   │
 └────────┬────────┘
-         │ HTTPS (Streamable HTTP)
+         │ HTTPS POST /mcp
          │ Authorization: Bearer <AUTH_TOKEN>
+         │ JSON-RPC 2.0
          ▼
 ┌─────────────────┐
 │  AWS Lambda     │
 │  Function URL   │  (Public endpoint with auth middleware)
 └────────┬────────┘
-         │ MCP Protocol
+         │ JSON-RPC Handler
          ▼
 ┌─────────────────┐
-│  MCP Server     │  (@modelcontextprotocol/sdk)
-│  11 Tools       │
+│  Tool Router    │  (11 Strava Tools)
+│  Express App    │
 └────────┬────────┘
          │
          ▼
@@ -49,8 +50,8 @@
 ```
 StravaMCP/
 ├── src/
-│   ├── lambda.ts              # Lambda entry point (Streamable HTTP)
-│   ├── index.ts               # Local dev server (SSE transport)
+│   ├── lambda.ts              # Lambda entry point (JSON-RPC over HTTP)
+│   ├── index.ts               # Local dev server (JSON-RPC over HTTP)
 │   ├── lib/
 │   │   └── strava-client.ts   # OAuth client with auto-refresh
 │   ├── tools/                 # MCP tool implementations
@@ -82,10 +83,10 @@ StravaMCP/
 **Purpose**: Serverless entry point with remote MCP support
 
 **Key Features**:
-- Implements Streamable HTTP transport for remote MCP
+- Implements JSON-RPC over HTTP transport for Claude connectors
 - Bearer token authentication middleware
-- Integrates with @modelcontextprotocol/sdk
-- SSE streaming for tool responses
+- Direct JSON-RPC request/response handling
+- All 11 Strava tools exposed via single `/mcp` endpoint
 - CORS enabled for cross-origin requests
 
 **Authentication Flow**:
@@ -187,6 +188,55 @@ export const myToolDefinitions = [
 - Fetches Function URL from CloudFormation outputs
 - Displays complete MCP client configuration (JSON ready to copy)
 
+## MCP Protocol
+
+### Transport Mechanism
+
+The server uses HTTP POST with JSON-RPC 2.0 for MCP communication:
+
+**Request Format:**
+```json
+{
+  "jsonrpc": "2.0",
+  "method": "tools/call",
+  "params": {
+    "name": "get_activities",
+    "arguments": {
+      "per_page": 10
+    }
+  },
+  "id": 1
+}
+```
+
+**Response Format:**
+```json
+{
+  "jsonrpc": "2.0",
+  "result": {
+    "content": [
+      {
+        "type": "text",
+        "text": "[...activity data...]"
+      }
+    ]
+  },
+  "id": 1
+}
+```
+
+### Supported Methods
+
+1. **initialize** - Establishes MCP session
+   - Returns protocol version and capabilities
+   
+2. **tools/list** - Lists all available tools
+   - Returns array of 11 Strava tool definitions
+   
+3. **tools/call** - Executes a specific tool
+   - Requires tool name and arguments
+   - Returns tool execution result
+
 ## Development Patterns
 
 ### Adding a New Tool
@@ -268,19 +318,16 @@ cp .env.example .env
 # 4. Start dev server
 bun run dev
 # Server runs at http://localhost:3000
-# SSE endpoint: http://localhost:3000/sse
+# MCP endpoint: http://localhost:3000/mcp
 
-# 5. Configure Claude Desktop
-# Edit ~/Library/Application Support/Claude/claude_desktop_config.json
+# 5. Configure Claude
+# Add as connector in Claude Settings
 {
-  "mcpServers": {
-    "strava-local": {
-      "url": "http://localhost:3000/sse"
-    }
-  }
+  "name": "strava-local",
+  "url": "http://localhost:3000/mcp"
 }
 
-# 6. Test with Claude Desktop
+# 6. Test with Claude
 # Ask Claude: "Get my recent Strava activities"
 ```
 

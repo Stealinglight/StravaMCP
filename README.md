@@ -196,7 +196,7 @@ bun install
 bun run dev
 ```
 
-Server runs at `http://localhost:3000` with SSE transport.
+Server runs at `http://localhost:3000` with MCP endpoint at `/mcp`.
 
 ## Updating
 

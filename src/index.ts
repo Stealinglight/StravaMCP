@@ -1,14 +1,12 @@
 #!/usr/bin/env node
 
 import { Server } from '@modelcontextprotocol/sdk/server/index.js';
-import { SSEServerTransport } from '@modelcontextprotocol/sdk/server/sse.js';
 import {
   CallToolRequestSchema,
   ListToolsRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
 import express, { Request, Response } from 'express';
-import { randomUUID } from 'node:crypto';
 
 import { getConfig } from './config/env.js';
 import { StravaClient } from './lib/strava-client.js';
@@ -284,49 +282,253 @@ async function main() {
   const app = express();
   app.use(express.json());
 
-  // Store transports by session ID
-  const transports: Record<string, SSEServerTransport> = {};
-
   // Health check endpoint
   app.get('/health', (_req: Request, res: Response) => {
     res.json({ status: 'healthy', version: '2.0.0' });
   });
 
-  // SSE endpoint - establishes the server-to-client event stream
-  app.get('/sse', async (_req: Request, res: Response) => {
-    console.error('[StravaServer] New SSE connection established');
-    const transport = new SSEServerTransport('/message', res);
-    const sessionId = randomUUID();
-    transports[sessionId] = transport;
-
-    // Clean up transport on connection close
-    res.on('close', () => {
-      console.error(`[StravaServer] SSE connection closed for session ${sessionId}`);
-      delete transports[sessionId];
-    });
-
-    await server.connect(transport);
-    console.error(`[StravaServer] Session ${sessionId} initialized`);
-  });
-
-  // Message endpoint - handles client-to-server messages
-  app.post('/message', async (req: Request, res: Response) => {
-    const sessionId = req.query.sessionId as string;
-    const transport = transports[sessionId];
-
-    if (!transport) {
-      res.status(400).json({ error: 'Invalid or expired session ID' });
-      return;
+  // MCP endpoint - handles JSON-RPC requests
+  app.post('/mcp', async (req: Request, res: Response) => {
+    try {
+      console.error('[StravaServer] MCP request received:', req.body.method);
+      
+      const { jsonrpc, id, method, params } = req.body;
+      
+      // Validate JSON-RPC request
+      if (jsonrpc !== '2.0' || !method) {
+        return res.status(400).json({
+          jsonrpc: '2.0',
+          error: {
+            code: -32600,
+            message: 'Invalid Request',
+          },
+          id: id || null,
+        });
+      }
+      
+      // Route to appropriate handler
+      let result;
+      switch (method) {
+        case 'tools/list':
+          result = { tools: allTools };
+          break;
+          
+        case 'tools/call':
+          if (!params || !params.name) {
+            return res.status(400).json({
+              jsonrpc: '2.0',
+              error: {
+                code: -32602,
+                message: 'Invalid params: missing tool name',
+              },
+              id,
+            });
+          }
+          result = await handleToolCall(params.name, params.arguments || {});
+          break;
+          
+        case 'initialize':
+          result = {
+            protocolVersion: '2024-11-05',
+            capabilities: {
+              tools: {},
+            },
+            serverInfo: {
+              name: 'strava-mcp-server',
+              version: '2.0.0',
+            },
+          };
+          break;
+          
+        default:
+          return res.status(400).json({
+            jsonrpc: '2.0',
+            error: {
+              code: -32601,
+              message: `Method not found: ${method}`,
+            },
+            id,
+          });
+      }
+      
+      res.json({
+        jsonrpc: '2.0',
+        result,
+        id,
+      });
+    } catch (error) {
+      console.error('[StravaServer] MCP request error:', error);
+      res.status(500).json({
+        jsonrpc: '2.0',
+        error: {
+          code: -32603,
+          message: 'Internal server error',
+          data: error instanceof Error ? error.message : String(error),
+        },
+        id: req.body.id || null,
+      });
     }
-
-    await transport.handlePostMessage(req, res, req.body);
   });
+  
+  // Helper function to handle tool calls
+  async function handleToolCall(name: string, args: any) {
+    switch (name) {
+      // Activity tools
+      case 'get_activities': {
+        const params = GetActivitiesSchema.parse(args);
+        const result = await getActivities(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_activity_by_id': {
+        const params = GetActivityByIdSchema.parse(args);
+        const result = await getActivityById(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'create_activity': {
+        const params = CreateActivitySchema.parse(args);
+        const result = await createActivity(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'update_activity': {
+        const params = UpdateActivitySchema.parse(args);
+        const result = await updateActivity(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_activity_zones': {
+        const params = GetActivityZonesSchema.parse(args);
+        const result = await getActivityZones(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      // Athlete tools
+      case 'get_athlete': {
+        const result = await getAthlete(stravaClient);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_athlete_stats': {
+        const params = GetAthleteStatsSchema.parse(args || {});
+        const result = await getAthleteStats(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      // Streams tools
+      case 'get_activity_streams': {
+        const params = GetActivityStreamsSchema.parse(args);
+        const result = await getActivityStreams(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      // Clubs tools
+      case 'get_club_activities': {
+        const params = GetClubActivitiesSchema.parse(args);
+        const result = await getClubActivities(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      // Uploads tools
+      case 'create_upload': {
+        const params = CreateUploadSchema.parse(args);
+        const result = await createUpload(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      case 'get_upload': {
+        const params = GetUploadSchema.parse(args);
+        const result = await getUpload(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      default:
+        throw new Error(`Unknown tool: ${name}`);
+    }
+  }
 
   const port = config.PORT;
   app.listen(port, () => {
     console.error(`[StravaServer] Remote MCP server running on http://localhost:${port}`);
-    console.error(`[StravaServer] SSE endpoint: http://localhost:${port}/sse`);
-    console.error(`[StravaServer] Message endpoint: http://localhost:${port}/message`);
+    console.error(`[StravaServer] MCP endpoint: http://localhost:${port}/mcp`);
     console.error(`[StravaServer] Health check: http://localhost:${port}/health`);
   });
 }

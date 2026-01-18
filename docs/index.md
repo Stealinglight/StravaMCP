@@ -113,11 +113,11 @@ After deployment, copy the `ClaudeConnectionUrl` and add it to Claude:
 
 Traditional MCP servers run locally and can't be used with Claude web or mobile. By deploying to AWS Lambda:
 
-✅ Access your Strava data from **any device**
-✅ Works with **Claude web and mobile**
-✅ **Zero infrastructure** to manage
-✅ **Free tier** means $0/month for personal use
-✅ **Auto-scales** from zero to thousands of requests
+- ✅ Access your Strava data from **any device**
+- ✅ Works with **Claude web and mobile**
+- ✅ **Zero infrastructure** to manage
+- ✅ **Free tier** means $0/month for personal use
+- ✅ **Auto-scales** from zero to thousands of requests
 
 ## Cost
 

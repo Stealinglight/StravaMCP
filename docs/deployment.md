@@ -196,26 +196,25 @@ Expected response:
 
 ## Connecting to Claude
 
-### Claude Web
+### All Claude Platforms (Web, Desktop, Mobile)
 
-1. Go to [claude.ai](https://claude.ai)
-2. Click your profile → **Settings**
-3. Navigate to **Model Context Protocol**
-4. Click **Add Remote Server**
-5. Enter:
-   - **Name**: `Strava`
-   - **URL**: Your `ClaudeConnectionUrl`
-6. Click **Save**
-
-### Claude Mobile (iOS/Android)
-
-1. Open Claude app
-2. Go to **Settings** → **MCP Servers**
-3. Tap **Add Server**
-4. Enter:
-   - **Name**: `Strava`
-   - **URL**: Your `ClaudeConnectionUrl`
+1. Open Claude Settings
+2. Navigate to **Custom Connectors** (or **MCP Servers**)
+3. Click **Add Connector**
+4. Enter the configuration from deployment:
+   ```json
+   {
+     "name": "strava",
+     "url": "https://your-function-url/mcp",
+     "headers": {
+       "Authorization": "Bearer your-auth-token"
+     }
+   }
+   ```
 5. Save
+
+{: .tip }
+> The URL must end with `/mcp` - this is the MCP endpoint that handles all requests.
 
 {: .tip }
 > You can now use Strava MCP tools in any Claude conversation!
