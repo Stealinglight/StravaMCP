@@ -1,0 +1,80 @@
+name: Deploy Lambda to AWS (Optional CI/CD)
+
+# This workflow is optional - you can deploy manually or enable this for automated deployments
+# To use: Add AWS credentials as GitHub secrets and uncomment the 'on' triggers below
+
+on:
+  # Uncomment to enable automated deployments:
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'src/**'
+  #     - 'template.yaml'
+  #     - 'package.json'
+  workflow_dispatch:
+    inputs:
+      stack_name:
+        description: 'CloudFormation stack name'
+        required: true
+        default: 'strava-mcp-stack'
+      region:
+        description: 'AWS region'
+        required: true
+        default: 'us-east-1'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Install dependencies
+        run: bun install
+
+      - name: Build Lambda package
+        run: bun run build:lambda
+
+      - name: Setup AWS SAM
+        uses: aws-actions/setup-sam@v2
+        with:
+          use-installer: true
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ github.event.inputs.region || 'us-east-1' }}
+
+      - name: SAM Build
+        run: sam build
+
+      - name: SAM Deploy
+        run: |
+          sam deploy \
+            --stack-name ${{ github.event.inputs.stack_name || 'strava-mcp-stack' }} \
+            --no-confirm-changeset \
+            --no-fail-on-empty-changeset \
+            --parameter-overrides \
+              StravaClientId=${{ secrets.STRAVA_CLIENT_ID }} \
+              StravaClientSecret=${{ secrets.STRAVA_CLIENT_SECRET }} \
+              StravaRefreshToken=${{ secrets.STRAVA_REFRESH_TOKEN }}
+
+# Required GitHub Secrets (Settings > Secrets and variables > Actions):
+# - AWS_ACCESS_KEY_ID
+# - AWS_SECRET_ACCESS_KEY
+# - STRAVA_CLIENT_ID
+# - STRAVA_CLIENT_SECRET
+# - STRAVA_REFRESH_TOKEN
+#
+# To enable automated deployments:
+# 1. Add the required secrets to your repository
+# 2. Uncomment the 'push' trigger in the 'on' section above
+# 3. Push to main branch to trigger automatic deployment
