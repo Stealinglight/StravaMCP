@@ -67,19 +67,22 @@ export const athleteTools = [
     name: 'get_athlete',
     description: `Retrieves the authenticated athlete's profile information.
 
+**OAuth Scope**: Requires profile:read_all for detailed representation.
+
 Returns comprehensive profile data including:
 - Name and username
 - Location (city, state, country)
-- Profile pictures
+- Profile pictures (avatar, profile medium, profile)
 - Account type (premium/summit status)
 - Account creation and update dates
+- Weight (if profile:read_all scope)
 - Basic settings and preferences
 
 Use this to:
 - Get the athlete's ID for other API calls
 - Display profile information
 - Check account status
-- Personalize responses with the athlete's name
+- Personalize responses with the athlete's name ("Hi Sarah!")
 
 This is useful when you need to reference the athlete by name or understand their account status.`,
     inputSchema: {
@@ -90,6 +93,8 @@ This is useful when you need to reference the athlete by name or understand thei
   {
     name: 'get_athlete_stats',
     description: `Retrieves comprehensive statistics about an athlete's activities.
+
+**OAuth Scope**: Requires profile:read_all. Can only retrieve stats for the authenticated athlete.
 
 **Performance Coaching Value**: Essential for understanding training volume, trends, and progress over different time periods.
 

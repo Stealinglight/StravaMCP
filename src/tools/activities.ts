@@ -175,15 +175,19 @@ export const activitiesTools = [
 
 **Key for Enrichment Workflow**: Use this to find activities from specific time periods, especially "today's run" or recent activities that need updating.
 
+**OAuth Scope**: Requires activity:read. Note: "Only Me" privacy activities require activity:read_all scope.
+
 Features:
 - Filter by date range using 'before' and 'after' epoch timestamps
-- Paginate through results
-- Returns summary information for each activity
+- Paginate through results (max 200 per page)
+- Returns summary information for each activity (not full details)
 
 Common use cases:
 - Find today's activities: Set 'after' to today's start timestamp
 - Find this week's activities: Set 'after' to the start of the week
 - Browse recent activities: Use default parameters
+
+**Privacy Note**: Only returns activities the authenticated athlete has permission to view based on privacy settings and OAuth scope.
 
 Example: To find today's runs, calculate today's start epoch timestamp and use it as the 'after' parameter.`,
     inputSchema: {
@@ -240,23 +244,29 @@ Use this after 'get_activities' to get full details about a specific activity be
     name: 'create_activity',
     description: `Creates a new manual activity on Strava.
 
+**OAuth Scope**: Requires activity:write permission.
+
 Use this when:
 - Adding activities that weren't automatically recorded
 - Logging cross-training or activities from non-connected devices
 - Backdating activities that were missed
+- Creating placeholder activities for training logs
 
-Requires:
+**Required Fields**:
 - name: Activity title
 - sport_type: Type of activity (Run, Ride, Swim, etc.)
-- start_date_local: When the activity started (ISO 8601 format)
+- start_date_local: When the activity started (ISO 8601 format: YYYY-MM-DDTHH:MM:SSZ)
 - elapsed_time: Duration in seconds
 
-Optional but recommended:
+**Optional but Recommended**:
 - distance: Distance in meters
 - description: Detailed notes about the activity
-- trainer: Whether it was indoors on a trainer
+- trainer: Whether it was indoors on a trainer (boolean)
+- commute: Whether this was a commute (boolean)
 
-All sport types: Run, TrailRun, Walk, Hike, VirtualRun, Ride, MountainBikeRide, GravelRide, EBikeRide, VirtualRide, Handcycle, Swim, Crossfit, Elliptical, Rowing, StairStepper, WeightTraining, Workout, Yoga, and many more.`,
+**Valid Sport Types**: Run, TrailRun, Walk, Hike, VirtualRun, Ride, MountainBikeRide, GravelRide, EBikeRide, VirtualRide, Handcycle, Swim, Crossfit, Elliptical, Rowing, StairStepper, WeightTraining, Workout, Yoga, and many more.
+
+**Example**: Logging a gym workout that wasn't tracked: name="Strength Training", sport_type="WeightTraining", elapsed_time=3600 (1 hour).`,
     inputSchema: {
       type: 'object' as const,
       properties: {
@@ -303,6 +313,8 @@ All sport types: Run, TrailRun, Walk, Hike, VirtualRun, Ride, MountainBikeRide, 
   {
     name: 'update_activity',
     description: `**[CRITICAL - PRIMARY ENRICHMENT TOOL]** Updates an existing Strava activity.
+
+**OAuth Scope**: Requires activity:write permission.
 
 **This is THE most important tool for the enrichment workflow.** Use this to transform basic auto-imported activities (especially from Apple Watch) into detailed, meaningful training logs.
 
@@ -378,20 +390,26 @@ All sport types: Run, TrailRun, Walk, Hike, VirtualRun, Ride, MountainBikeRide, 
     name: 'get_activity_zones',
     description: `Retrieves the zones of a given activity.
 
+**Note**: This is a **Strava Summit feature**. Requires appropriate activity:read scope based on privacy settings.
+
 Returns time spent in different intensity zones:
 - Heart rate zones (if HR data available)
 - Power zones (if power data available)
 
+Zone response includes:
+- Distribution buckets showing time in each zone
+- Whether zones are sensor-based vs calculated
+- Whether custom zones or default zones are used
+- Zone score and max values
+
 Useful for:
 - Analyzing training intensity distribution
-- Verifying if an activity met zone targets
+- Verifying if an activity met zone targets (e.g., "Did I stay in Zone 2?")
 - Understanding effort distribution across an activity
 - Performance coaching and analysis
+- Tracking training load by zone
 
-Zone data shows:
-- Time spent in each zone (seconds)
-- Zone boundaries (min/max values)
-- Whether zones are custom or default`,
+**Coaching Value**: Essential for verifying that easy runs stayed easy, tempo runs hit the right intensity, and interval workouts achieved target zones.`,
     inputSchema: {
       type: 'object' as const,
       properties: {

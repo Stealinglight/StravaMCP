@@ -31,3 +31,10 @@ npm-debug.log*
 # Temporary files
 tmp/
 temp/
+
+# Bun
+bun.lockb
+
+# AWS SAM
+.aws-sam/
+samconfig.toml

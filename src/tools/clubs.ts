@@ -44,6 +44,8 @@ export const clubsTools = [
     name: 'get_club_activities',
     description: `Retrieves recent activities from members of a specific club.
 
+**OAuth Scope**: Requires read scope. Only shows activities visible based on member privacy settings.
+
 Clubs on Strava are groups of athletes who share activities, compete on leaderboards, and stay connected. This tool lets you see what club members have been up to.
 
 Returns activity summaries including:

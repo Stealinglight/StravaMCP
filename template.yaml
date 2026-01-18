@@ -1,0 +1,86 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Strava MCP Server - Remote MCP running on AWS Lambda (Free Tier Compatible)
+
+  A Model Context Protocol server for the Strava API that runs serverless on AWS Lambda.
+  Designed to stay within AWS Free Tier limits for personal portfolio use.
+
+Globals:
+  Function:
+    Timeout: 300  # 5 minutes (Lambda max for Function URLs)
+    MemorySize: 512  # MB (Free tier allows up to 3.2M seconds of 512MB compute)
+    Runtime: nodejs20.x
+    Architectures:
+      - arm64  # Graviton2 - cheaper and faster
+    Environment:
+      Variables:
+        NODE_ENV: production
+
+Parameters:
+  StravaClientId:
+    Type: String
+    Description: Strava API Client ID
+    NoEcho: false
+
+  StravaClientSecret:
+    Type: String
+    Description: Strava API Client Secret
+    NoEcho: true
+
+  StravaRefreshToken:
+    Type: String
+    Description: Strava API Refresh Token
+    NoEcho: true
+
+Resources:
+  StravaMCPFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      FunctionName: strava-mcp-server
+      Description: Strava MCP Server with Streamable HTTP transport
+      CodeUri: dist/
+      Handler: lambda.handler
+      Environment:
+        Variables:
+          STRAVA_CLIENT_ID: !Ref StravaClientId
+          STRAVA_CLIENT_SECRET: !Ref StravaClientSecret
+          STRAVA_REFRESH_TOKEN: !Ref StravaRefreshToken
+      FunctionUrlConfig:
+        AuthType: NONE  # WARNING: Change to AWS_IAM for production!
+        Cors:
+          AllowOrigins:
+            - '*'  # WARNING: Restrict this in production!
+          AllowMethods:
+            - GET
+            - POST
+            - DELETE
+            - OPTIONS
+          AllowHeaders:
+            - Content-Type
+            - Accept
+            - Mcp-Session-Id
+            - Last-Event-ID
+          MaxAge: 86400
+        InvokeMode: BUFFERED  # Standard mode (not streaming)
+      Tags:
+        Project: StravaMCP
+        Environment: Production
+        CostCenter: FreeTier
+
+Outputs:
+  StravaMCPUrl:
+    Description: "Function URL for Strava MCP Server"
+    Value: !GetAtt StravaMCPFunctionUrl.FunctionUrl
+
+  StravaMCPFunctionArn:
+    Description: "Lambda Function ARN"
+    Value: !GetAtt StravaMCPFunction.Arn
+
+  ClaudeConnectionUrl:
+    Description: "URL to use in Claude Desktop for MCP connection (SSE transport)"
+    Value: !Sub "${StravaMCPFunctionUrl.FunctionUrl}sse"
+
+  HealthCheckUrl:
+    Description: "Health check endpoint"
+    Value: !Sub "${StravaMCPFunctionUrl.FunctionUrl}health"

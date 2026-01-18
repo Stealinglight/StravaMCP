@@ -7,7 +7,7 @@ import {
   ListToolsRequestSchema,
   Tool,
 } from '@modelcontextprotocol/sdk/types.js';
-import express from 'express';
+import express, { Request, Response } from 'express';
 import { randomUUID } from 'node:crypto';
 
 import { getConfig } from './config/env.js';
@@ -288,12 +288,12 @@ async function main() {
   const transports: Record<string, SSEServerTransport> = {};
 
   // Health check endpoint
-  app.get('/health', (_req, res) => {
-    res.json({ status: 'healthy', version: '1.0.0' });
+  app.get('/health', (_req: Request, res: Response) => {
+    res.json({ status: 'healthy', version: '2.0.0' });
   });
 
   // SSE endpoint - establishes the server-to-client event stream
-  app.get('/sse', async (_req, res) => {
+  app.get('/sse', async (_req: Request, res: Response) => {
     console.error('[StravaServer] New SSE connection established');
     const transport = new SSEServerTransport('/message', res);
     const sessionId = randomUUID();
@@ -310,7 +310,7 @@ async function main() {
   });
 
   // Message endpoint - handles client-to-server messages
-  app.post('/message', async (req, res) => {
+  app.post('/message', async (req: Request, res: Response) => {
     const sessionId = req.query.sessionId as string;
     const transport = transports[sessionId];
 
