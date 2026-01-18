@@ -33,6 +33,12 @@ Parameters:
     Description: Strava API Refresh Token
     NoEcho: true
 
+  AuthToken:
+    Type: String
+    Description: Bearer token for authenticating MCP client requests (use a long random string)
+    NoEcho: true
+    MinLength: 32
+
 Resources:
   StravaMCPFunction:
     Type: AWS::Serverless::Function
@@ -46,8 +52,9 @@ Resources:
           STRAVA_CLIENT_ID: !Ref StravaClientId
           STRAVA_CLIENT_SECRET: !Ref StravaClientSecret
           STRAVA_REFRESH_TOKEN: !Ref StravaRefreshToken
+          AUTH_TOKEN: !Ref AuthToken
       FunctionUrlConfig:
-        AuthType: NONE  # WARNING: Change to AWS_IAM for production!
+        AuthType: NONE  # Public URL with Bearer token authentication in application code
         Cors:
           AllowOrigins:
             - '*'  # WARNING: Restrict this in production!

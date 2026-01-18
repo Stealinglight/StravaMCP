@@ -9,7 +9,7 @@
     "strava-mcp": "dist/index.js"
   },
   "scripts": {
-    "build": "bun run typecheck && bun build:tsc",
+    "build": "bun run typecheck && bun run build:tsc",
     "build:tsc": "tsc",
     "build:lambda": "bun run build && bun run copy-files",
     "copy-files": "cp package.json dist/ && cp .env.example dist/",
@@ -17,8 +17,9 @@
     "dev:lambda": "bun src/lambda.ts",
     "start": "bun dist/index.js",
     "typecheck": "tsc --noEmit",
-    "deploy": "bun run build:lambda && sam build && sam deploy --guided",
-    "deploy:fast": "bun run build:lambda && sam build && sam deploy"
+    "deploy": "bun run build:lambda && bun scripts/deploy.ts",
+    "deploy:fast": "bun run build:lambda && sam build && sam deploy",
+    "deploy:show-config": "bun scripts/show-config.ts"
   },
   "keywords": [
     "mcp",
