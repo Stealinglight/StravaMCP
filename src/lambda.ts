@@ -78,6 +78,42 @@ function initializeServer(): express.Application {
   const app = express();
   app.use(express.json());
 
+  // Authentication middleware - verify Bearer token
+  // Skip auth for health check endpoint
+  app.use((req: Request, res: Response, next) => {
+    if (req.path === '/health') {
+      return next();
+    }
+
+    const authHeader = req.headers['authorization'];
+    
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      console.error('[StravaLambda] Missing or invalid authorization header');
+      return res.status(401).json({ 
+        error: 'Unauthorized',
+        message: 'Missing or invalid authorization header. Use: Authorization: Bearer <token>'
+      });
+    }
+
+    const token = authHeader.substring(7); // Remove 'Bearer ' prefix
+    
+    if (!config) {
+      // Initialize config if not already done (shouldn't happen, but safety check)
+      config = getConfig();
+    }
+
+    if (token !== config.AUTH_TOKEN) {
+      console.error('[StravaLambda] Invalid bearer token');
+      return res.status(401).json({ 
+        error: 'Unauthorized',
+        message: 'Invalid bearer token'
+      });
+    }
+
+    // Token is valid, proceed
+    next();
+  });
+
   try {
     config = getConfig();
     stravaClient = new StravaClient({

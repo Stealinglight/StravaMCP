@@ -16,7 +16,8 @@ Perfect for portfolios - demonstrates cloud architecture, serverless deployment,
 
 ## Features
 
-- 🔐 **Automatic OAuth Token Refresh** - Set it and forget it
+- 🔐 **Bearer Token Authentication** - Secure access to your data (100% free)
+- 🔄 **Automatic OAuth Token Refresh** - Set it and forget it
 - ☁️ **AWS Lambda Deployment** - $0/month on free tier
 - 📱 **Claude Web & Mobile Support** - Use anywhere
 - 🏃 **11 Strava API Tools** - Complete API coverage
@@ -82,9 +83,13 @@ bun install
 node get-token.js YOUR_CLIENT_ID YOUR_CLIENT_SECRET
 ```
 
-### 3. Deploy to AWS
+### 3. Deploy to AWS (Automated)
 
-**First-Time Deployment** (with guided prompts):
+The deployment script automatically:
+1. **Generates AUTH_TOKEN** (if not already present)
+2. **Builds and deploys** your Lambda function
+3. **Displays MCP configuration** ready to copy-paste
+
 ```bash
 bun run deploy
 ```
@@ -97,10 +102,12 @@ You'll be prompted for:
 - **Strava Refresh Token**: From `get-token.js` output
 - **Confirm changes**: `y` to proceed
 
-The deployment takes ~2 minutes and creates:
-- Lambda function with Function URL
-- IAM roles and policies
-- CloudWatch logs
+**No need to manually generate AUTH_TOKEN** - the script creates a secure 64-character token automatically!
+
+After ~2 minutes of deployment, you'll see:
+- ✅ Complete MCP configuration (JSON format)
+- ✅ Ready-to-paste into Claude settings
+- ✅ Test command with your token
 
 **Subsequent Deployments** (uses saved config):
 ```bash
@@ -111,21 +118,25 @@ This uses the saved `samconfig.toml` configuration for instant re-deployment.
 
 ### 4. Connect to Claude
 
-Copy the `ClaudeConnectionUrl` from the deployment output.
+The deployment automatically shows your complete configuration!
 
-**Claude Web**:
-1. Go to [claude.ai](https://claude.ai) → Settings → MCP
-2. Add Remote Server with your URL
+Simply **copy the JSON configuration** displayed after deployment and paste it into:
 
-**Claude Mobile**:
-1. Open Claude app → Settings → MCP Servers
-2. Add Server with your URL
+**Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+
+**Claude Web/Mobile**: Settings → MCP Servers (add URL and Authorization header)
+
+Need to see the config again? Run:
+```bash
+bun run deploy:show-config
+```
 
 ## Documentation
 
 📚 **[Full Documentation](https://stealinglight.github.io/StravaMCP)**
 
 - [Deployment Guide](https://stealinglight.github.io/StravaMCP/deployment) - Step-by-step AWS setup
+- [Authentication Guide](https://stealinglight.github.io/StravaMCP/authentication) - Secure your Lambda function
 - [Free Tier Guide](https://stealinglight.github.io/StravaMCP/freetier) - Stay at $0/month
 - [API Reference](https://stealinglight.github.io/StravaMCP/api) - All 11 tools documented
 - [Examples](https://stealinglight.github.io/StravaMCP/examples) - Common use cases
@@ -191,11 +202,15 @@ Server runs at `http://localhost:3000` with SSE transport.
 
 ```bash
 # Make code changes in src/
-bun run build:lambda
 bun run deploy:fast
 ```
 
-Updates deploy in 30-60 seconds.
+Quick updates deploy in 30-60 seconds (skips guided prompts).
+
+Show configuration anytime:
+```bash
+bun run deploy:show-config
+```
 
 ## Example Usage
 
@@ -247,10 +262,12 @@ Contributions welcome! Please feel free to submit a Pull Request.
 
 ## Security
 
-- OAuth tokens stored in Lambda environment variables
-- Function URLs support IAM authentication (enable for production)
+- **Bearer Token Authentication** - All requests require valid token
+- OAuth tokens stored in Lambda environment variables (encrypted at rest)
+- Function URLs are public but application validates tokens
 - No data persistence - stateless architecture
 - CORS configurable in SAM template
+- See [Authentication Guide](https://stealinglight.github.io/StravaMCP/authentication) for details
 
 ## Troubleshooting
 
