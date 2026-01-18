@@ -54,3 +54,9 @@ enable_copy_code_button: true
 
 # Navigation
 nav_sort: case_insensitive
+
+# Collections
+collections:
+  docs:
+    permalink: "/:collection/:path/"
+    output: true

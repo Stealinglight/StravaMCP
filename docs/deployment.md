@@ -124,17 +124,17 @@ bun run deploy
 
 You'll be prompted for:
 
-| Prompt | What to Enter |
-|--------|---------------|
-| Stack name | Press Enter (uses `strava-mcp-stack`) |
-| AWS Region | Your region (e.g., `us-east-1`) |
-| StravaClientId | Your Strava Client ID |
-| StravaClientSecret | Your Strava Client Secret |
-| StravaRefreshToken | Your Strava Refresh Token |
-| Confirm changes before deploy | `y` |
-| Allow SAM CLI IAM role creation | `y` |
-| Disable rollback | `n` |
-| Save arguments to samconfig.toml | `y` |
+| Prompt                           | What to Enter                         |
+| -------------------------------- | ------------------------------------- |
+| Stack name                       | Press Enter (uses `strava-mcp-stack`) |
+| AWS Region                       | Your region (e.g., `us-east-1`)       |
+| StravaClientId                   | Your Strava Client ID                 |
+| StravaClientSecret               | Your Strava Client Secret             |
+| StravaRefreshToken               | Your Strava Refresh Token             |
+| Confirm changes before deploy    | `y`                                   |
+| Allow SAM CLI IAM role creation  | `y`                                   |
+| Disable rollback                 | `n`                                   |
+| Save arguments to samconfig.toml | `y`                                   |
 
 **Subsequent deployments**:
 ```bash
@@ -166,7 +166,24 @@ Value               https://abc123xyz.lambda-url.us-east-1.on.aws/health
 {: .note }
 > **Save the `ClaudeConnectionUrl`** - you'll need it to connect from Claude!
 
-### Step 4: Test the Deployment
+### Step 4: View Configuration Anytime
+
+Forgot your connection details? Retrieve them anytime with:
+
+```bash
+bun run deploy:show-config
+```
+
+This displays:
+- Complete Claude Desktop JSON configuration (ready to copy-paste)
+- Claude Web/Mobile connection details
+- Your AUTH_TOKEN (for authentication)
+- Test command with your credentials
+
+{: .tip }
+> Use this command whenever you need to reconnect Claude or check your deployment details!
+
+### Step 5: Test the Deployment
 
 ```bash
 curl https://YOUR-FUNCTION-URL/health

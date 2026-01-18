@@ -33,22 +33,30 @@ The Lambda function uses **Bearer token authentication** to secure access to you
 
 ## Setup Steps
 
-### 1. Generate Your AUTH_TOKEN
+### 1. Deploy and Auto-Generate AUTH_TOKEN
 
-Run the configuration generator:
+The deployment script automatically generates a secure AUTH_TOKEN for you:
 
 ```bash
-node generate-mcp-config.js
+bun run deploy
 ```
 
-This creates:
-- A secure 64-character random token
-- The complete MCP client configuration
-- Deployment commands
+This will:
+- Generate a secure 64-character random token
+- Store it in `samconfig.toml` (gitignored for security)
+- Deploy your Lambda function with authentication enabled
+- Display your complete MCP configuration
 
-**Save this token securely!** You'll need it for:
-1. Deploying the Lambda function
-2. Configuring your MCP client (Claude)
+**View your configuration anytime:**
+```bash
+bun run deploy:show-config
+```
+
+This displays:
+- Complete Claude Desktop JSON configuration
+- Claude Web/Mobile connection details  
+- Your AUTH_TOKEN
+- Health check test command
 
 ### 2. Deploy with Authentication
 
@@ -141,19 +149,25 @@ curl -H "Authorization: Bearer $AUTH_TOKEN" ${FUNCTION_URL}health
 
 To rotate your authentication token:
 
-1. **Generate new token**:
+1. **Generate new token manually**:
    ```bash
-   node generate-mcp-config.js https://your-function-url.lambda-url.us-east-1.on.aws/
+   # Generate a secure random token
+   node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
    ```
 
-2. **Update Lambda deployment**:
+2. **Update samconfig.toml** with the new token in the `parameter_overrides` section, or update directly during deployment:
    ```bash
    sam deploy --parameter-overrides AuthToken=NEW_TOKEN
    ```
 
-3. **Update MCP client config** with new token
+3. **View updated configuration**:
+   ```bash
+   bun run deploy:show-config
+   ```
 
-4. **Restart Claude** (Desktop) or refresh (Web/Mobile)
+4. **Update all MCP clients** with the new token
+
+5. **Restart Claude** (Desktop) or refresh (Web/Mobile)
 
 ### Token Best Practices
 
