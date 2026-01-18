@@ -7,9 +7,13 @@ A remote [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server 
 Most MCP servers run locally and only work with Claude Desktop. This project solves that by:
 
 ✅ Running on **AWS Lambda** (serverless, scales to zero)
+
 ✅ Working with **Claude web and mobile** (remote MCP)
+
 ✅ Staying **100% free** with AWS Free Tier
+
 ✅ Using **Bun** for fast builds and deploys
+
 ✅ Supporting **Streamable HTTP** (modern MCP transport)
 
 Perfect for portfolios - demonstrates cloud architecture, serverless deployment, and AI integration!
@@ -80,13 +84,13 @@ Copy the `ClaudeConnectionUrl` from the deployment output.
 
 ## Available Tools
 
-| Category | Tools |
-|----------|-------|
+| Category       | Tools                                                                                    |
+| -------------- | ---------------------------------------------------------------------------------------- |
 | **Activities** | get_activities, get_activity_by_id, create_activity, update_activity, get_activity_zones |
-| **Athlete** | get_athlete, get_athlete_stats |
-| **Streams** | get_activity_streams (telemetry data) |
-| **Clubs** | get_club_activities |
-| **Uploads** | create_upload, get_upload |
+| **Athlete**    | get_athlete, get_athlete_stats                                                           |
+| **Streams**    | get_activity_streams (telemetry data)                                                    |
+| **Clubs**      | get_club_activities                                                                      |
+| **Uploads**    | create_upload, get_upload                                                                |
 
 ## Architecture
 
