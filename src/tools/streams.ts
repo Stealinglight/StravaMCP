@@ -156,10 +156,12 @@ export const streamsTools = [
 4. Use insights to plan future training: "Your pacing was perfect for the first half but dropped 15s/km in the second half - let's work on endurance"
 
 **Technical Notes**:
-- Not all streams available for all activities (depends on device/sensors)
+- Not all streams available for all activities (depends on device/sensors used)
 - Data points are time-aligned across all streams
 - Arrays are same length - index [i] in time corresponds to index [i] in all other streams
 - Request only needed streams for efficiency (or omit 'keys' for all available)
+- **Resolution**: Strava may return data at different resolutions (low, medium, high) depending on original recording frequency
+- **OAuth Scope**: Requires activity:read for Everyone/Followers activities, activity:read_all for Only Me activities
 
 **Pro Tip**: Combine streams for advanced insights:
 - velocity_smooth + heartrate = aerobic efficiency

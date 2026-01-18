@@ -73,6 +73,8 @@ export const uploadsTools = [
     name: 'create_upload',
     description: `Uploads a new activity file to Strava.
 
+**OAuth Scope**: Requires activity:write permission.
+
 Supports uploading activity files in these formats:
 - **FIT** (.fit) - Garmin and most GPS watches
 - **TCX** (.tcx) - Training Center XML format
@@ -149,6 +151,8 @@ Supports uploading activity files in these formats:
   {
     name: 'get_upload',
     description: `Retrieves the status of a file upload.
+
+**OAuth Scope**: Requires activity:read permission.
 
 After uploading an activity file with 'create_upload', use this tool to check the processing status.
 

@@ -1,274 +1,225 @@
 # Strava MCP Server
 
-A production-ready [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for the Strava API. This server enables AI assistants like Claude to manage your Strava account, with a focus on enriching workout data - especially activities imported from devices like Apple Watch.
+A remote [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for the Strava API that runs serverless on AWS Lambda. Use your Strava data with Claude web, Claude mobile, or any MCP client - completely free with AWS Free Tier.
+
+## Why This Project?
+
+Most MCP servers run locally and only work with Claude Desktop. This project solves that by:
+
+✅ Running on **AWS Lambda** (serverless, scales to zero)
+✅ Working with **Claude web and mobile** (remote MCP)
+✅ Staying **100% free** with AWS Free Tier
+✅ Using **Bun** for fast builds and deploys
+✅ Supporting **Streamable HTTP** (modern MCP transport)
+
+Perfect for portfolios - demonstrates cloud architecture, serverless deployment, and AI integration!
 
 ## Features
 
-- 🔐 **Automatic OAuth Token Refresh**: Never worry about expired tokens
-- 🏃 **Comprehensive Activity Management**: Get, create, and update activities
-- 📊 **Telemetry Data Access**: Deep analysis with activity streams (heart rate, pace, power, elevation)
-- 👤 **Athlete Profile & Stats**: Access profile information and training statistics
-- 👥 **Club Integration**: Monitor club activities
-- 📁 **File Uploads**: Import activities from FIT, TCX, and GPX files
-- 🎯 **Enrichment Focused**: Transform generic activity titles into detailed training logs
+- 🔐 **Automatic OAuth Token Refresh** - Set it and forget it
+- ☁️ **AWS Lambda Deployment** - $0/month on free tier
+- 📱 **Claude Web & Mobile Support** - Use anywhere
+- 🏃 **11 Strava API Tools** - Complete API coverage
+- 🎯 **Activity Enrichment** - Transform generic titles into detailed training logs
+- ⚡ **Built with Bun** - Lightning-fast builds
+- 📊 **Telemetry Data Access** - Deep performance analysis
 
-## Primary Use Case: Activity Enrichment
-
-Many fitness devices (especially Apple Watch) auto-sync activities to Strava with generic names like "Morning Run" and no description. This MCP server excels at helping AI assistants enrich these activities with:
-
-- Meaningful, descriptive titles
-- Detailed descriptions (weather, effort, training notes)
-- Proper sport type classification
-- Training insights and analysis
-
-See [agents.md](./agents.md) for comprehensive guidance on using this server as a Performance Coach.
-
-## Installation
+## Quick Start
 
 ### Prerequisites
 
-- Node.js 18+ and npm
-- A Strava account
-- Strava API credentials (Client ID and Client Secret)
+- [Bun](https://bun.sh) installed
+- [AWS Account](https://aws.amazon.com/free) (free tier)
+- [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html)
+- [Strava API](https://www.strava.com/settings/api) credentials
 
-### Setup
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/Stealinglight/StravaMCP.git
-   cd StravaMCP
-   ```
-
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
-
-3. **Create a Strava API Application**
-   
-   Go to https://www.strava.com/settings/api and create a new application:
-   - **Application Name**: Choose any name (e.g., "My MCP Server")
-   - **Category**: Choose the most appropriate category
-   - **Club**: Leave blank unless you have a specific club
-   - **Website**: Can be http://localhost
-   - **Authorization Callback Domain**: Set to `localhost`
-   
-   After creating, note your **Client ID** and **Client Secret**.
-
-4. **Get OAuth Tokens**
-   
-   Run the token retrieval script:
-   ```bash
-   node get-token.js <your_client_id> <your_client_secret>
-   ```
-   
-   This will:
-   - Start a local server on port 8888
-   - Open your browser for Strava authorization
-   - Exchange the authorization code for tokens
-   - Display your credentials
-
-5. **Configure Environment Variables**
-   
-   Create a `.env` file in the project root:
-   ```bash
-   cp .env.example .env
-   ```
-   
-   Edit `.env` and add your credentials:
-   ```env
-   STRAVA_CLIENT_ID=your_client_id
-   STRAVA_CLIENT_SECRET=your_client_secret
-   STRAVA_REFRESH_TOKEN=your_refresh_token
-   PORT=3000  # Optional, defaults to 3000
-   ```
-
-6. **Build the Project**
-   ```bash
-   npm run build
-   ```
-
-## Usage
-
-### Running the MCP Server
-
-This server runs as a **remote MCP server** using SSE (Server-Sent Events) transport, accessible over HTTP.
-
-#### Development Mode (with auto-reload)
-```bash
-npm run dev
-```
-
-#### Production Mode
-```bash
-npm start
-```
-
-The server will start on `http://localhost:3000` (or the port specified in your `.env` file) with the following endpoints:
-- **SSE endpoint**: `http://localhost:3000/sse` - For establishing server-to-client event streams
-- **Message endpoint**: `http://localhost:3000/message` - For client-to-server messages
-- **Health check**: `http://localhost:3000/health` - Server status
-
-### Integrating with Claude Desktop
-
-First, start the server:
-```bash
-npm start
-```
-
-Then add this to your Claude Desktop configuration file:
-
-**macOS**: `~/Library/Application Support/Claude/claude_desktop_config.json`
-**Windows**: `%APPDATA%\Claude\claude_desktop_config.json`
-
-```json
-{
-  "mcpServers": {
-    "strava": {
-      "url": "http://localhost:3000/sse"
-    }
-  }
-}
-```
-
-Restart Claude Desktop to load the new configuration.
-
-### Using with Other MCP Clients
-
-This server uses **SSE (Server-Sent Events) transport**, making it compatible with any MCP client that supports remote SSE connections.
-
-**Connection Details:**
-- **SSE URL**: `http://localhost:3000/sse`
-- **Message endpoint**: `http://localhost:3000/message`
-- **Transport type**: SSE
-
-Refer to your MCP client's documentation for specific remote server integration instructions.
-
-### Testing with MCP Inspector
-
-You can test the server using the official MCP Inspector:
+### 1. Clone & Install
 
 ```bash
-# Start the server first
-npm start
-
-# In another terminal, run the inspector
-npx @modelcontextprotocol/inspector http://localhost:3000/sse
+git clone https://github.com/Stealinglight/StravaMCP.git
+cd StravaMCP
+bun install
 ```
 
-The inspector will open at `http://localhost:6274` with an interactive UI to test all available tools.
+### 2. Get Strava Tokens
+
+```bash
+# Get your Client ID and Secret from https://www.strava.com/settings/api
+node get-token.js YOUR_CLIENT_ID YOUR_CLIENT_SECRET
+```
+
+### 3. Deploy to AWS
+
+```bash
+bun run build:lambda
+bun run deploy
+```
+
+Follow the prompts to enter your Strava credentials. The deployment takes ~2 minutes.
+
+### 4. Connect to Claude
+
+Copy the `ClaudeConnectionUrl` from the deployment output.
+
+**Claude Web**:
+1. Go to [claude.ai](https://claude.ai) → Settings → MCP
+2. Add Remote Server with your URL
+
+**Claude Mobile**:
+1. Open Claude app → Settings → MCP Servers
+2. Add Server with your URL
+
+## Documentation
+
+📚 **[Full Documentation](https://stealinglight.github.io/StravaMCP)**
+
+- [Deployment Guide](https://stealinglight.github.io/StravaMCP/deployment) - Step-by-step AWS setup
+- [Free Tier Guide](https://stealinglight.github.io/StravaMCP/freetier) - Stay at $0/month
+- [API Reference](https://stealinglight.github.io/StravaMCP/api) - All 11 tools documented
+- [Examples](https://stealinglight.github.io/StravaMCP/examples) - Common use cases
 
 ## Available Tools
 
-### Activities
-- **get_activities**: List recent activities with date filtering
-- **get_activity_by_id**: Get detailed information about a specific activity
-- **create_activity**: Create a new manual activity
-- **update_activity**: Update existing activity (name, description, type, etc.) ⭐
-- **get_activity_zones**: Get heart rate and power zone data
-
-### Athlete
-- **get_athlete**: Get authenticated athlete's profile
-- **get_athlete_stats**: Get activity statistics (recent, YTD, all-time)
-
-### Streams (Telemetry)
-- **get_activity_streams**: Get time-series data (heart rate, pace, power, GPS, elevation, etc.)
-
-### Clubs
-- **get_club_activities**: Get recent activities from club members
-
-### Uploads
-- **create_upload**: Upload activity files (FIT, TCX, GPX)
-- **get_upload**: Check upload processing status
+| Category | Tools |
+|----------|-------|
+| **Activities** | get_activities, get_activity_by_id, create_activity, update_activity, get_activity_zones |
+| **Athlete** | get_athlete, get_athlete_stats |
+| **Streams** | get_activity_streams (telemetry data) |
+| **Clubs** | get_club_activities |
+| **Uploads** | create_upload, get_upload |
 
 ## Architecture
 
 ```
-/src
-  /config         - Environment configuration and TypeScript types
-  /lib            - Core StravaClient with OAuth auto-refresh
-  /tools          - MCP tool definitions organized by domain
-    activities.ts - Activity CRUD operations
-    athlete.ts    - Athlete profile and statistics
-    streams.ts    - Telemetry data access
-    clubs.ts      - Club activities
-    uploads.ts    - File uploads
-  /utils          - Utility functions (error handling, formatting)
-  index.ts        - Main MCP server entry point
+┌─────────────────┐
+│ Claude (Web/App)│
+└────────┬────────┘
+         │ HTTPS (Streamable HTTP)
+         ▼
+┌─────────────────┐
+│  Lambda + URL   │
+│  (ARM64, 512MB) │
+└────────┬────────┘
+         │ OAuth 2.0
+         ▼
+┌─────────────────┐
+│   Strava API    │
+└─────────────────┘
 ```
 
-### Key Design Decisions
+**Key Technologies**:
+- **Runtime**: Bun + TypeScript
+- **Deployment**: AWS SAM (CloudFormation)
+- **Compute**: Lambda with Function URLs
+- **Transport**: MCP Streamable HTTP
+- **Auth**: OAuth 2.0 with auto-refresh
 
-1. **Remote SSE Transport**: Uses Server-Sent Events (SSE) transport over HTTP, enabling the server to be accessed remotely by any MCP client. Supports multiple concurrent sessions with automatic cleanup on disconnect.
+## Cost
 
-2. **Generic Request Method**: The `StravaClient` has a generic `request()` method that can call ANY Strava API endpoint, making the server future-proof as new endpoints are added.
+**$0/month** on AWS Free Tier:
+- 1M Lambda requests/month (free forever)
+- 400,000 GB-seconds compute/month (free for 12 months)
 
-3. **Automatic Token Refresh**: OAuth tokens are automatically refreshed before expiry (with a 5-minute buffer), ensuring uninterrupted access.
+Typical usage (10K requests/month): **$0**
 
-4. **Modular Tool Structure**: Tools are organized by domain (activities, athlete, streams, etc.) for maintainability.
+Even after free tier expires: ~**$0.07/month** for personal use.
 
-5. **Rich Tool Descriptions**: Every tool has detailed descriptions to help AI assistants understand when and how to use them.
+## Local Development
 
-6. **TypeScript with Zod**: Strong typing with runtime validation for reliability.
+Run locally with Express server:
 
-## Development
-
-### Type Checking
 ```bash
-npm run typecheck
+bun install
+bun run dev
 ```
 
-### Building
+Server runs at `http://localhost:3000` with SSE transport.
+
+## Updating
+
 ```bash
-npm run build
+# Make code changes in src/
+bun run build:lambda
+bun run deploy:fast
 ```
 
-### Project Structure
-- **src/**: TypeScript source code
-- **dist/**: Compiled JavaScript (generated by `npm run build`)
-- **get-token.js**: OAuth token retrieval helper script
-- **agents.md**: AI agent guidance documentation
+Updates deploy in 30-60 seconds.
 
-## Troubleshooting
+## Example Usage
 
-### "Missing or invalid environment variables"
-- Ensure your `.env` file exists and contains all required variables
-- Check that variable names are spelled correctly
-- Verify there are no extra spaces around the `=` signs
+**You**: "Update my run from this morning"
 
-### "Failed to refresh access token"
-- Your refresh token may have expired or been revoked
-- Re-run `get-token.js` to get a new refresh token
-- Check that your Client ID and Client Secret are correct
+**Claude**:
+1. Finds your activity using `get_activities`
+2. Asks how it felt
+3. Updates with `update_activity`:
 
-### "Rate limit exceeded"
-- Strava limits API requests to 100 per 15 minutes and 1000 per day
-- Wait a few minutes before trying again
-- Consider caching results to reduce API calls
+```
+Title: Progressive Long Run - 10K
+Description: Perfect weather at 55°F. Started easy in Zone 2,
+building to threshold in final 3K. Felt strong throughout...
+```
 
-### "Authentication failed"
-- Verify your credentials in `.env`
-- Ensure you authorized all required scopes when running `get-token.js`
-- Try regenerating tokens with `get-token.js`
+See [Examples](https://stealinglight.github.io/StravaMCP/examples) for more workflows.
 
-## Security Notes
+## Why Lambda?
 
-- **Never commit your `.env` file**: It contains sensitive credentials
-- **Keep your refresh token secure**: It provides ongoing access to your Strava account
-- **Use environment variables**: Don't hardcode credentials in the source code
-- **Revoke access**: You can revoke this application's access at https://www.strava.com/settings/apps
+Traditional MCP servers can't be used with Claude web/mobile because they run locally. Lambda deployment enables:
 
-## API Rate Limits
+✅ **Remote Access** - Use from any device
+✅ **Zero Infrastructure** - No servers to manage
+✅ **Free Tier** - $0/month for personal use
+✅ **Auto-scaling** - Handle any load
+✅ **Always Available** - No local server required
 
-Strava enforces the following rate limits:
-- **100 requests per 15 minutes**
-- **1,000 requests per day**
+## Project Structure
 
-The server doesn't implement rate limit handling - the calling application should monitor usage and handle rate limit errors appropriately.
+```
+/StravaMCP
+├── src/
+│   ├── lambda.ts         # Lambda handler (Streamable HTTP)
+│   ├── index.ts          # Express server (local dev)
+│   ├── lib/              # Strava client with OAuth
+│   ├── tools/            # MCP tool definitions
+│   ├── config/           # Environment & types
+│   └── utils/            # Formatters & errors
+├── docs/                 # GitHub Pages documentation
+├── template.yaml         # AWS SAM template
+├── get-token.js          # OAuth token helper
+└── package.json          # Bun project config
+```
 
 ## Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contributions welcome! Please feel free to submit a Pull Request.
+
+## Security
+
+- OAuth tokens stored in Lambda environment variables
+- Function URLs support IAM authentication (enable for production)
+- No data persistence - stateless architecture
+- CORS configurable in SAM template
+
+## Troubleshooting
+
+### "Function URL returned 500"
+
+Check logs:
+```bash
+sam logs -n StravaMCPFunction --stack-name strava-mcp-stack --tail
+```
+
+### Refresh Token Expired
+
+Re-run token script:
+```bash
+node get-token.js YOUR_CLIENT_ID YOUR_CLIENT_SECRET
+sam deploy --parameter-overrides StravaRefreshToken=NEW_TOKEN
+```
+
+### More Help
+
+See [Deployment Guide](https://stealinglight.github.io/StravaMCP/deployment#troubleshooting) for full troubleshooting guide.
 
 ## License
 
@@ -276,10 +227,11 @@ ISC
 
 ## Resources
 
-- [Strava API Documentation](https://developers.strava.com/docs/reference/)
-- [Model Context Protocol](https://modelcontextprotocol.io)
-- [MCP TypeScript SDK](https://github.com/modelcontextprotocol/typescript-sdk)
-- [Claude Desktop](https://claude.ai/download)
+- **[Documentation](https://stealinglight.github.io/StravaMCP)** - Full guides and API reference
+- **[Strava API](https://developers.strava.com)** - Official Strava API docs
+- **[Model Context Protocol](https://modelcontextprotocol.io)** - MCP specification
+- **[AWS Lambda](https://aws.amazon.com/lambda/)** - Serverless compute
+- **[Bun](https://bun.sh)** - Fast JavaScript runtime
 
 ## Acknowledgments
 
@@ -287,20 +239,20 @@ Built with:
 - [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk) - MCP SDK
 - [axios](https://axios-http.com/) - HTTP client
 - [zod](https://zod.dev/) - Schema validation
-- [TypeScript](https://www.typescriptlang.org/) - Type-safe JavaScript
+- [AWS SAM](https://aws.amazon.com/serverless/sam/) - Serverless deployment
 
 ---
 
-**Ready to transform your Strava workouts into meaningful training logs!** 🏃‍♂️🚴‍♀️💪
+**Made with ❤️ for athletes and AI**
+
+Deploy your own Strava MCP server in 10 minutes! ⚡
 
 ## Development Notes
 
 ### Logging Convention
 
-This MCP server uses `console.error()` for **all** logging output (including success messages). This is intentional and correct for MCP servers:
-
+This MCP server uses `console.error()` for **all** logging output. This is correct for MCP servers:
 - **stdout** (console.log) is reserved for MCP protocol communication
-- **stderr** (console.error) is used for all logging, diagnostics, and debug output
+- **stderr** (console.error) is used for all logging and diagnostics
 
-Do not change `console.error()` to `console.log()` as this will break the MCP protocol communication.
-
+Do not change `console.error()` to `console.log()` - this will break MCP protocol communication.
