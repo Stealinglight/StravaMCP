@@ -1,14 +1,14 @@
 name: Deploy Lambda to AWS (Optional CI/CD)
 
 on:
-   push:
-     branches:
-       - main
-     paths:
-       - 'src/**'
-       - 'template.yaml'
-       - 'package.json'
-workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - 'src/**'
+      - 'template.yaml'
+      - 'package.json'
+  workflow_dispatch:
     inputs:
       stack_name:
         description: 'CloudFormation stack name'
