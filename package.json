@@ -1,7 +1,7 @@
 {
   "name": "stravamcp",
-  "version": "2.0.0",
-  "description": "Remote MCP Server for Strava API - Runs on AWS Lambda (Free Tier)",
+  "version": "3.0.0",
+  "description": "Remote MCP Server for Strava API - Works with Claude & ChatGPT - Runs on AWS Lambda (Free Tier)",
   "type": "module",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",

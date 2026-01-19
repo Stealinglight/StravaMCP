@@ -188,3 +188,32 @@ export interface Zone {
   max: number;
   time: number;
 }
+
+/**
+ * OpenAI search tool result format
+ * Must be JSON-encoded in tool response
+ */
+export interface OpenAISearchResult {
+  id: string;
+  title: string;
+  url: string;
+}
+
+/**
+ * OpenAI search tool response format
+ */
+export interface OpenAISearchResponse {
+  results: OpenAISearchResult[];
+}
+
+/**
+ * OpenAI fetch tool result format
+ * Must be JSON-encoded in tool response
+ */
+export interface OpenAIFetchResult {
+  id: string;
+  title: string;
+  text: string;
+  url: string;
+  metadata?: Record<string, any>;
+}
