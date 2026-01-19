@@ -96,6 +96,12 @@ function initializeServer(): express.Application {
       return next();
     }
 
+    // For SSE endpoint, authentication happens via query param or header
+    if (req.path === '/sse' || req.path === '/sse/') {
+      // SSE authentication happens here before establishing connection
+      // Continue to token validation below
+    }
+
     // For SSE message endpoint, trust valid session IDs
     const sessionId = req.query.sessionId as string;
     if (req.path === '/message' && sessionId && transports[sessionId]) {
@@ -377,7 +383,8 @@ function initializeServer(): express.Application {
   });
 
   // SSE endpoint - establishes the server-to-client event stream
-  app.get('/sse', async (_req: Request, res: Response) => {
+  // Support both /sse and /sse/ for compatibility
+  const sseHandler = async (_req: Request, res: Response) => {
     console.error('[StravaLambda] New SSE connection established');
     const transport = new SSEServerTransport('/message', res);
     const sessionId = randomUUID();
@@ -391,7 +398,10 @@ function initializeServer(): express.Application {
 
     await mcpServer.connect(transport);
     console.error(`[StravaLambda] Session ${sessionId} initialized`);
-  });
+  };
+  
+  app.get('/sse', sseHandler);
+  app.get('/sse/', sseHandler);
 
   // Message endpoint - handles client-to-server messages
   app.post('/message', async (req: Request, res: Response) => {
