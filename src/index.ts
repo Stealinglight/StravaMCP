@@ -56,6 +56,14 @@ import {
   GetUploadSchema,
 } from './tools/uploads.js';
 
+import {
+  openaiTools,
+  searchActivities,
+  SearchSchema,
+  fetchActivity,
+  FetchSchema,
+} from './tools/openai.js';
+
 /**
  * Strava MCP Server
  * 
@@ -100,6 +108,7 @@ const allTools = [
   ...streamsTools,
   ...clubsTools,
   ...uploadsTools,
+  ...openaiTools,
 ];
 
 // Handle tool listing
@@ -257,6 +266,33 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
             {
               type: 'text',
               text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      // OpenAI tools
+      case 'search': {
+        const params = SearchSchema.parse(args);
+        const result = await searchActivities(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result),
+            },
+          ],
+        };
+      }
+
+      case 'fetch': {
+        const params = FetchSchema.parse(args);
+        const result = await fetchActivity(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result),
             },
           ],
         };
@@ -587,6 +623,33 @@ async function main() {
             {
               type: 'text',
               text: JSON.stringify(result, null, 2),
+            },
+          ],
+        };
+      }
+
+      // OpenAI tools
+      case 'search': {
+        const params = SearchSchema.parse(args);
+        const result = await searchActivities(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result),
+            },
+          ],
+        };
+      }
+
+      case 'fetch': {
+        const params = FetchSchema.parse(args);
+        const result = await fetchActivity(stravaClient, params);
+        return {
+          content: [
+            {
+              type: 'text',
+              text: JSON.stringify(result),
             },
           ],
         };

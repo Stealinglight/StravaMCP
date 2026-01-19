@@ -62,7 +62,7 @@ Resources:
             - '*'
           AllowHeaders:
             - '*'
-        InvokeMode: BUFFERED  # Standard mode (not streaming)
+        InvokeMode: RESPONSE_STREAM  # Enable streaming for SSE support
       Tags:
         Project: StravaMCP
         Environment: Production

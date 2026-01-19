@@ -1,13 +1,14 @@
 # Strava MCP Server
 
-A remote [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for the Strava API that runs serverless on AWS Lambda. Use your Strava data with Claude web, Claude mobile, or any MCP client - completely free with AWS Free Tier.
+A remote [Model Context Protocol (MCP)](https://modelcontextprotocol.io) server for the Strava API that runs serverless on AWS Lambda. Use your Strava data with **Claude Desktop, Claude Web, Claude Mobile, ChatGPT, or any MCP client** - completely free with AWS Free Tier.
 
 ## Why This Project?
 
 Most MCP servers run locally and only work with Claude Desktop. This project solves that by:
 
 - ✅ Running on **AWS Lambda** (serverless, scales to zero)
-- ✅ Working with **Claude web and mobile** (remote MCP)
+- ✅ Working with **Claude web, mobile, AND ChatGPT** (remote MCP)
+- ✅ **OpenAI ChatGPT compatible** with `search` and `fetch` tools
 - ✅ Staying **100% free** with AWS Free Tier
 - ✅ Using **Bun** for fast builds and deploys
 - ✅ Supporting **Streamable HTTP** (modern MCP transport)
@@ -20,7 +21,9 @@ Perfect for portfolios - demonstrates cloud architecture, serverless deployment,
 - 🔄 **Automatic OAuth Token Refresh** - Set it and forget it
 - ☁️ **AWS Lambda Deployment** - $0/month on free tier
 - 📱 **Claude Web & Mobile Support** - Use anywhere
-- 🏃 **11 Strava API Tools** - Complete API coverage
+- 🤖 **ChatGPT Compatible** - Works with OpenAI's ChatGPT connectors
+- 🏃 **13 Strava API Tools** - Complete API coverage (11 Strava-specific + 2 OpenAI-required)
+- 🔍 **Smart Search** - Natural language activity search for ChatGPT
 - 🎯 **Activity Enrichment** - Transform generic titles into detailed training logs
 - ⚡ **Built with Bun** - Lightning-fast builds
 - 📊 **Telemetry Data Access** - Deep performance analysis
@@ -150,6 +153,7 @@ bun run deploy:show-config
 | **Streams**    | get_activity_streams (telemetry data)                                                    |
 | **Clubs**      | get_club_activities                                                                      |
 | **Uploads**    | create_upload, get_upload                                                                |
+| **OpenAI**     | search, fetch                                                                            |
 
 ## Architecture
 
