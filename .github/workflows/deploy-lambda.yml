@@ -59,6 +59,7 @@ jobs:
             --resolve-s3 \
             --no-confirm-changeset \
             --no-fail-on-empty-changeset \
+            --capabilities CAPABILITY_IAM \
             --parameter-overrides \
               StravaClientId=${{ secrets.STRAVA_CLIENT_ID }} \
               StravaClientSecret=${{ secrets.STRAVA_CLIENT_SECRET }} \
