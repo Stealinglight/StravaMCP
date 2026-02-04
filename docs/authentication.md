@@ -252,16 +252,16 @@ When disabled:
 
 ### Security Implications
 
-**Authless mode enabled (`ALLOW_AUTHLESS=true`):**
-- ⚠️ Anyone with your Lambda URL can access your Strava data via SSE
-- ✅ Keep your Lambda Function URL private
-- ✅ Acceptable for personal use where URL is not shared
-- 💡 Consider AWS WAF for IP allowlisting in production
+**Authless mode enabled (`ALLOW_AUTHLESS=true`, advanced / opt-in):**
+- ⚠️ Not enabled by default. Enabling this on a publicly accessible Lambda URL exposes `/sse`, `/sse/`, and `/message` without authentication.
+- ⚠️ Anyone who learns your Lambda URL (via logs, screenshots, or misconfiguration) can access your Strava-backed tools via SSE; URL secrecy alone is **not** sufficient protection.
+- ✅ Only enable for strictly local or personal use where you fully control access to the URL.
+- 💡 If you must use authless mode in a cloud environment, combine it with additional controls such as AWS WAF/IP allowlisting and/or an extra shared secret (e.g., a query parameter or header checked by your Lambda).
 
-**Authless mode disabled (`ALLOW_AUTHLESS=false`):**
-- ✅ All requests require valid Bearer token
+**Authless mode disabled (`ALLOW_AUTHLESS=false`, recommended default):**
+- ✅ All requests require a valid Bearer token
 - ❌ Claude.ai custom connectors won't work
-- ✅ Maximum security for shared environments
+- ✅ Maximum security for shared, team, or production environments
 
 ## Security Considerations
 
