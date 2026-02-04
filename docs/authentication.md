@@ -11,7 +11,13 @@ The Lambda function uses **Bearer token authentication** to secure access to you
 - ✅ Works with Claude web, mobile, and desktop
 - ✅ Easy to rotate tokens when needed
 
-## How It Works
+## Authentication Modes
+
+The server supports two authentication modes:
+
+### 1. Bearer Token Authentication (Default for `/mcp` endpoint)
+
+For Claude Desktop and other MCP clients that support custom headers.
 
 ```
 ┌──────────────┐
@@ -30,6 +36,33 @@ The Lambda function uses **Bearer token authentication** to secure access to you
 │ (Strava API) │
 └──────────────┘
 ```
+
+### 2. Authless Mode (For Claude.ai Custom Connectors)
+
+Claude.ai custom connectors only support authless or OAuth 2.1 (DCR) connections. Since OAuth 2.1 with DCR is complex to implement, this server provides an **authless mode** for SSE endpoints.
+
+When `ALLOW_AUTHLESS=true` (default), the SSE transport endpoints (`/sse`, `/sse/`, `/message`) bypass authentication, allowing Claude.ai to connect without Bearer tokens.
+
+```
+┌──────────────┐
+│  Claude.ai   │
+│ (Web/Mobile) │
+└──────┬───────┘
+       │ SSE connection (no auth required)
+       ▼
+┌──────────────┐
+│   Lambda     │─── ALLOW_AUTHLESS=true
+│  (Middleware)│    Skips auth for SSE
+└──────┬───────┘
+       │ Direct access
+       ▼
+┌──────────────┐
+│  MCP Server  │
+│ (Strava API) │
+└──────────────┘
+```
+
+**Important**: The `/mcp` JSON-RPC endpoint still requires Bearer token authentication for backward compatibility with other clients.
 
 ## Setup Steps
 
@@ -116,6 +149,20 @@ Add as a Custom Connector in Claude Settings:
 
 **Important**: The URL must end with `/mcp` - this is the MCP endpoint.
 
+#### Claude.ai Custom Connectors (Authless Mode)
+
+For Claude.ai web and mobile, use the authless SSE transport:
+
+1. Go to **Claude.ai** → **Settings** → **Connectors** → **Add custom connector**
+2. Enter just the **base URL** (no `/mcp` or `/sse` path):
+   ```
+   https://your-function-url.lambda-url.us-east-1.on.aws
+   ```
+3. Claude.ai will automatically discover the `/sse` endpoint
+4. Verify tools appear in the conversation
+
+**Note**: Authless mode is enabled by default (`ALLOW_AUTHLESS=true`). Claude.ai cannot send custom headers, so Bearer token auth is not supported for Claude.ai connectors.
+
 ### 4. Test Authentication
 
 Test that authentication is working:
@@ -170,6 +217,51 @@ To rotate your authentication token:
 - Share tokens publicly
 - Use short or predictable tokens
 - Reuse tokens across multiple services
+
+## Authless Mode Configuration
+
+### Enabling Authless Mode (Default)
+
+Authless mode is **enabled by default** for Claude.ai compatibility. The `ALLOW_AUTHLESS` parameter is set to `"true"` in the SAM template.
+
+When enabled:
+- SSE endpoints (`/sse`, `/sse/`, `/message`) do not require authentication
+- The `/mcp` JSON-RPC endpoint still requires Bearer token authentication
+- Claude.ai custom connectors can connect using the base URL
+
+### Disabling Authless Mode
+
+To require Bearer token authentication for all endpoints:
+
+```bash
+# During deployment
+sam deploy --parameter-overrides AllowAuthless=false
+
+# Or update samconfig.toml
+[default.deploy.parameters]
+parameter_overrides = [
+  "AllowAuthless=false",
+  # ... other parameters
+]
+```
+
+When disabled:
+- All endpoints require Bearer token authentication
+- Claude.ai custom connectors will NOT work (they cannot send custom headers)
+- Only Claude Desktop and clients supporting custom headers can connect
+
+### Security Implications
+
+**Authless mode enabled (`ALLOW_AUTHLESS=true`):**
+- ⚠️ Anyone with your Lambda URL can access your Strava data via SSE
+- ✅ Keep your Lambda Function URL private
+- ✅ Acceptable for personal use where URL is not shared
+- 💡 Consider AWS WAF for IP allowlisting in production
+
+**Authless mode disabled (`ALLOW_AUTHLESS=false`):**
+- ✅ All requests require valid Bearer token
+- ❌ Claude.ai custom connectors won't work
+- ✅ Maximum security for shared environments
 
 ## Security Considerations
 

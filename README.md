@@ -134,6 +134,32 @@ Need to see the config again? Run:
 bun run deploy:show-config
 ```
 
+### 5. Claude.ai Custom Connectors (Web/Mobile)
+
+Claude.ai custom connectors use **authless mode** via SSE transport. This is enabled by default (`ALLOW_AUTHLESS=true`).
+
+**Setup Steps:**
+1. Go to **Claude.ai** → **Settings** → **Connectors** → **Add custom connector**
+2. Enter just the **base URL** (no path): `https://your-function-url.lambda-url.us-east-1.on.aws`
+3. Claude.ai will automatically discover the `/sse` endpoint and connect
+4. Verify tools appear and can be invoked
+
+**Important Notes:**
+- Claude.ai does NOT support custom headers (no Bearer token auth)
+- Authless mode only applies to SSE endpoints (`/sse`, `/message`)
+- The `/mcp` JSON-RPC endpoint still requires Bearer token authentication
+- Keep your Lambda Function URL private for security
+
+**Security Considerations:**
+- Anyone with your Lambda URL can access your Strava data in authless mode
+- This is acceptable for personal use where the URL is not shared
+- For production, consider adding IP allowlisting via AWS WAF
+
+To disable authless mode (require Bearer tokens everywhere):
+```bash
+sam deploy --parameter-overrides AllowAuthless=false
+```
+
 ## Documentation
 
 📚 **[Full Documentation](https://stealinglight.github.io/StravaMCP)**

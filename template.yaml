@@ -39,6 +39,14 @@ Parameters:
     NoEcho: true
     MinLength: 32
 
+  AllowAuthless:
+    Type: String
+    Description: When "true", allows SSE connections without authentication (for Claude.ai custom connectors)
+    Default: "true"
+    AllowedValues:
+      - "true"
+      - "false"
+
 Resources:
   StravaMCPFunction:
     Type: AWS::Serverless::Function
@@ -53,6 +61,7 @@ Resources:
           STRAVA_CLIENT_SECRET: !Ref StravaClientSecret
           STRAVA_REFRESH_TOKEN: !Ref StravaRefreshToken
           AUTH_TOKEN: !Ref AuthToken
+          ALLOW_AUTHLESS: !Ref AllowAuthless
       FunctionUrlConfig:
         AuthType: NONE  # Public URL with Bearer token authentication in application code
         Cors:

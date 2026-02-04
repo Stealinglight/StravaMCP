@@ -325,20 +325,27 @@ async function main() {
 
   // Authentication middleware for local dev (optional - can be disabled)
   // Supports both Authorization header and query parameter
+  // When ALLOW_AUTHLESS=true, SSE endpoints bypass auth for Claude.ai custom connectors
   app.use((req: Request, res: Response, next) => {
     if (req.path === '/health') {
       return next();
     }
 
-    // For SSE endpoint, authentication happens via query param or header
-    if (req.path === '/sse' || req.path === '/sse/') {
-      // SSE authentication happens here before establishing connection
-      // Continue to token validation below
+    // Check if authless mode is enabled for SSE endpoints
+    // This allows Claude.ai custom connectors to connect without Bearer tokens
+    const isSSEEndpoint = req.path === '/sse' || req.path === '/sse/';
+    const isMessageEndpoint = req.path === '/message';
+
+    if (config.ALLOW_AUTHLESS && (isSSEEndpoint || isMessageEndpoint)) {
+      if (isSSEEndpoint) {
+        console.error('[StravaServer] Authless SSE connection allowed (ALLOW_AUTHLESS=true)');
+      }
+      return next();
     }
 
-    // For SSE message endpoint, trust valid session IDs
+    // For SSE message endpoint with valid session, trust the session
     const sessionId = req.query.sessionId as string;
-    if (req.path === '/message' && sessionId && transports[sessionId]) {
+    if (isMessageEndpoint && sessionId && transports[sessionId]) {
       return next();
     }
 
@@ -346,23 +353,23 @@ async function main() {
     // If AUTH_TOKEN is set in .env, validate it
     if (config.AUTH_TOKEN && config.AUTH_TOKEN.length > 0) {
       let token: string | undefined;
-      
+
       const authHeader = req.headers['authorization'];
       if (authHeader && authHeader.startsWith('Bearer ')) {
         token = authHeader.substring(7);
       } else if (req.query.token) {
         token = req.query.token as string;
       }
-      
+
       if (!token || token !== config.AUTH_TOKEN) {
         console.error('[StravaServer] Invalid or missing token');
-        return res.status(401).json({ 
+        return res.status(401).json({
           error: 'Unauthorized',
           message: 'Invalid or missing token'
         });
       }
     }
-    
+
     next();
   });
 

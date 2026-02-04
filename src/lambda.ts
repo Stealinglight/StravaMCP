@@ -91,25 +91,37 @@ function initializeServer(): express.Application {
   // Authentication middleware - verify Bearer token
   // Skip auth for health check endpoint
   // Supports both Authorization header and query parameter for Claude connector compatibility
+  // When ALLOW_AUTHLESS=true, SSE endpoints bypass auth for Claude.ai custom connectors
   app.use((req: Request, res: Response, next) => {
     if (req.path === '/health') {
       return next();
     }
 
-    // For SSE endpoint, authentication happens via query param or header
-    if (req.path === '/sse' || req.path === '/sse/') {
-      // SSE authentication happens here before establishing connection
-      // Continue to token validation below
+    if (!config) {
+      // Initialize config if not already done (shouldn't happen, but safety check)
+      config = getConfig();
     }
 
-    // For SSE message endpoint, trust valid session IDs
+    // Check if authless mode is enabled for SSE endpoints
+    // This allows Claude.ai custom connectors to connect without Bearer tokens
+    const isSSEEndpoint = req.path === '/sse' || req.path === '/sse/';
+    const isMessageEndpoint = req.path === '/message';
+
+    if (config.ALLOW_AUTHLESS && (isSSEEndpoint || isMessageEndpoint)) {
+      if (isSSEEndpoint) {
+        console.error('[StravaLambda] Authless SSE connection allowed (ALLOW_AUTHLESS=true)');
+      }
+      return next();
+    }
+
+    // For SSE message endpoint with valid session, trust the session
     const sessionId = req.query.sessionId as string;
-    if (req.path === '/message' && sessionId && transports[sessionId]) {
+    if (isMessageEndpoint && sessionId && transports[sessionId]) {
       return next();
     }
 
     let token: string | undefined;
-    
+
     // Try Authorization header first (preferred for API clients)
     const authHeader = req.headers['authorization'];
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -119,15 +131,10 @@ function initializeServer(): express.Application {
     else if (req.query.token) {
       token = req.query.token as string;
     }
-    
-    if (!config) {
-      // Initialize config if not already done (shouldn't happen, but safety check)
-      config = getConfig();
-    }
 
     if (!token || token !== config.AUTH_TOKEN) {
       console.error('[StravaLambda] Invalid or missing token');
-      return res.status(401).json({ 
+      return res.status(401).json({
         error: 'Unauthorized',
         message: 'Invalid or missing token. Use: Authorization: Bearer <token> OR ?token=<token>'
       });

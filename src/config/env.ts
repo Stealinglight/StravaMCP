@@ -12,6 +12,9 @@ const envSchema = z.object({
   STRAVA_REFRESH_TOKEN: z.string().min(1, 'STRAVA_REFRESH_TOKEN is required'),
   AUTH_TOKEN: z.string().min(32, 'AUTH_TOKEN must be at least 32 characters'),
   PORT: z.string().default('3000').transform(Number),
+  // ALLOW_AUTHLESS: When "true", bypasses auth for SSE endpoints (/sse, /sse/, /message)
+  // This enables Claude.ai custom connectors which don't support Bearer token auth
+  ALLOW_AUTHLESS: z.string().default('false').transform((val) => val.toLowerCase() === 'true'),
 });
 
 /**
@@ -25,6 +28,7 @@ export function getConfig() {
     STRAVA_REFRESH_TOKEN: process.env.STRAVA_REFRESH_TOKEN,
     AUTH_TOKEN: process.env.AUTH_TOKEN,
     PORT: process.env.PORT,
+    ALLOW_AUTHLESS: process.env.ALLOW_AUTHLESS,
   });
 
   if (!result.success) {
