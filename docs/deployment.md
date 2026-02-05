@@ -154,8 +154,8 @@ CloudFormation outputs from deployed stack
 Outputs
 ---------------------------------------------------------
 Key                 ClaudeConnectionUrl
-Description         URL to use in Claude web/mobile for MCP connection
-Value               https://abc123xyz.lambda-url.us-east-1.on.aws/mcp
+Description         Base URL for Claude OAuth connector
+Value               https://abc123xyz.lambda-url.us-east-1.on.aws
 
 Key                 HealthCheckUrl
 Description         Health check endpoint
@@ -175,10 +175,9 @@ bun run deploy:show-config
 ```
 
 This displays:
-- Complete Claude Desktop JSON configuration (ready to copy-paste)
-- Claude Web/Mobile connection details
-- Your AUTH_TOKEN (for authentication)
-- Test command with your credentials
+- Base URL for Claude OAuth connector
+- OAuth metadata endpoint
+- MCP endpoint for desktop clients
 
 {: .tip }
 > Use this command whenever you need to reconnect Claude or check your deployment details!
@@ -196,12 +195,20 @@ Expected response:
 
 ## Connecting to Claude
 
-### All Claude Platforms (Web, Desktop, Mobile)
+### Claude Web/Mobile (OAuth)
+
+1. Open Claude Settings
+2. Navigate to **Connectors**
+3. Click **Add custom connector**
+4. Enter the **base URL** from deployment (no `/mcp` or `/sse`)
+5. Claude will complete OAuth automatically
+
+### Claude Desktop (Bearer Token)
 
 1. Open Claude Settings
 2. Navigate to **Custom Connectors** (or **MCP Servers**)
 3. Click **Add Connector**
-4. Enter the configuration from deployment:
+4. Enter:
    ```json
    {
      "name": "strava",
@@ -212,9 +219,6 @@ Expected response:
    }
    ```
 5. Save
-
-{: .tip }
-> The URL must end with `/mcp` - this is the MCP endpoint that handles all requests.
 
 {: .tip }
 > You can now use Strava MCP tools in any Claude conversation!

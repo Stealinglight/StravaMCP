@@ -20,7 +20,7 @@ Perfect for portfolios - demonstrates cloud architecture, serverless deployment,
 - 🔐 **Bearer Token Authentication** - Secure access to your data (100% free)
 - 🔄 **Automatic OAuth Token Refresh** - Set it and forget it
 - ☁️ **AWS Lambda Deployment** - $0/month on free tier
-- 📱 **Claude Web & Mobile Support** - Use anywhere
+- 📱 **Claude Web & Mobile OAuth** - Secure connector support
 - 🤖 **ChatGPT Compatible** - Works with OpenAI's ChatGPT connectors
 - 🏃 **13 Strava API Tools** - Complete API coverage (11 Strava-specific + 2 OpenAI-required)
 - 🔍 **Smart Search** - Natural language activity search for ChatGPT
@@ -125,9 +125,11 @@ The deployment automatically shows your complete configuration!
 
 Simply **copy the JSON configuration** displayed after deployment and paste it into:
 
-**Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json`
+**Claude Desktop**: `~/Library/Application Support/Claude/claude_desktop_config.json`  
+Use the `/mcp` endpoint and Bearer token authentication.
 
-**Claude Web/Mobile**: Settings → MCP Servers (add URL and Authorization header)
+**Claude Web/Mobile (OAuth)**: Settings → Connectors → Add custom connector  
+Use the **base URL only** (no `/mcp` or `/sse`), and Claude will complete the OAuth flow.
 
 Need to see the config again? Run:
 ```bash
@@ -274,7 +276,7 @@ Traditional MCP servers can't be used with Claude web/mobile because they run lo
 ```
 /StravaMCP
 ├── src/
-│   ├── lambda.ts         # Lambda handler (Streamable HTTP)
+│   ├── lambda-web.ts         # Lambda handler (Streamable HTTP)
 │   ├── index.ts          # Express server (local dev)
 │   ├── lib/              # Strava client with OAuth
 │   ├── tools/            # MCP tool definitions

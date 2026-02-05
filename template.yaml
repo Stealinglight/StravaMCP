@@ -37,15 +37,34 @@ Parameters:
     Type: String
     Description: Bearer token for authenticating MCP client requests (use a long random string)
     NoEcho: true
-    MinLength: 32
+    Default: ""
+    AllowedPattern: '^$|.{32,}$'
 
-  AllowAuthless:
+  SecretsManagerArn:
     Type: String
-    Description: When "true", allows SSE connections without authentication (for Claude.ai custom connectors)
+    Description: Optional Secrets Manager ARN containing Strava credentials (JSON payload)
+    Default: ""
+
+  OAuthEnabled:
+    Type: String
+    Description: Enable OAuth 2.1 endpoints for Claude Web connectors
     Default: "true"
     AllowedValues:
       - "true"
       - "false"
+
+  OAuthAllowedRedirectUris:
+    Type: String
+    Description: Comma-separated list of allowed OAuth redirect URIs
+    Default: "https://claude.ai/api/mcp/auth_callback,https://claude.com/api/mcp/auth_callback"
+
+  OAuthRegistrationToken:
+    Type: String
+    Description: Optional bearer token to protect dynamic client registration
+    Default: ""
+
+Conditions:
+  HasSecretsManagerArn: !Not [!Equals [!Ref SecretsManagerArn, ""]]
 
 Resources:
   StravaMCPFunction:
@@ -54,19 +73,42 @@ Resources:
       FunctionName: strava-mcp-server
       Description: Strava MCP Server with Streamable HTTP transport
       CodeUri: dist/
-      Handler: lambda.handler
+      Handler: run.sh
       Environment:
         Variables:
           STRAVA_CLIENT_ID: !Ref StravaClientId
           STRAVA_CLIENT_SECRET: !Ref StravaClientSecret
           STRAVA_REFRESH_TOKEN: !Ref StravaRefreshToken
           AUTH_TOKEN: !Ref AuthToken
-          ALLOW_AUTHLESS: !Ref AllowAuthless
+          SECRETS_MANAGER_ARN: !Ref SecretsManagerArn
+          OAUTH_ENABLED: !Ref OAuthEnabled
+          OAUTH_CLIENTS_TABLE: !Ref OAuthClientsTable
+          OAUTH_CODES_TABLE: !Ref OAuthAuthCodesTable
+          OAUTH_TOKENS_TABLE: !Ref OAuthTokensTable
+          OAUTH_ALLOWED_REDIRECT_URIS: !Ref OAuthAllowedRedirectUris
+          OAUTH_REGISTRATION_TOKEN: !Ref OAuthRegistrationToken
+          AWS_LAMBDA_EXEC_WRAPPER: /opt/bootstrap
+          AWS_LWA_PORT: 8080
+          AWS_LWA_READINESS_CHECK_PATH: /health
+      Layers:
+        - !Sub arn:aws:lambda:${AWS::Region}:753240598075:layer:LambdaAdapterLayerArm64:25
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OAuthClientsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OAuthAuthCodesTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref OAuthTokensTable
+        - Statement:
+            Effect: Allow
+            Action:
+              - secretsmanager:GetSecretValue
+            Resource: !If [HasSecretsManagerArn, !Ref SecretsManagerArn, !Ref AWS::NoValue]
       FunctionUrlConfig:
         AuthType: NONE  # Public URL with Bearer token authentication in application code
         Cors:
           AllowOrigins:
-            - '*'  # Allow all origins for flexibility (Claude.ai, Claude Desktop, etc.)
+            - '*'
           AllowMethods:
             - GET
             - POST
@@ -77,12 +119,63 @@ Resources:
             - Accept
             - X-Requested-With
           AllowCredentials: false
-          MaxAge: 86400  # Cache preflight for 24 hours
+          MaxAge: 86400
         InvokeMode: RESPONSE_STREAM  # Enable streaming for SSE support
       Tags:
         Project: StravaMCP
         Environment: Production
         CostCenter: FreeTier
+
+  OAuthClientsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: strava-mcp-oauth-clients
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: client_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: client_id
+          KeyType: HASH
+
+  OAuthAuthCodesTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: strava-mcp-oauth-codes
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: code
+          AttributeType: S
+      KeySchema:
+        - AttributeName: code
+          KeyType: HASH
+      TimeToLiveSpecification:
+        AttributeName: expires_at
+        Enabled: true
+
+  OAuthTokensTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: strava-mcp-oauth-tokens
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: access_token
+          AttributeType: S
+        - AttributeName: refresh_token
+          AttributeType: S
+      KeySchema:
+        - AttributeName: access_token
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: refresh_token_index
+          KeySchema:
+            - AttributeName: refresh_token
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+      TimeToLiveSpecification:
+        AttributeName: expires_at
+        Enabled: true
 
 Outputs:
   StravaMCPUrl:
@@ -94,8 +187,8 @@ Outputs:
     Value: !GetAtt StravaMCPFunction.Arn
 
   ClaudeConnectionUrl:
-    Description: "URL to use for Claude MCP connector"
-    Value: !Sub "${StravaMCPFunctionUrl.FunctionUrl}mcp"
+    Description: "Base URL to use for Claude MCP connector"
+    Value: !GetAtt StravaMCPFunctionUrl.FunctionUrl
 
   HealthCheckUrl:
     Description: "Health check endpoint"

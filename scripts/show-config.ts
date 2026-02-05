@@ -22,7 +22,7 @@ const colors = {
 };
 
 function log(message: string, color: string = colors.reset) {
-  console.log(`${color}${message}${colors.reset}`);
+  console.error(`${color}${message}${colors.reset}`);
 }
 
 function getAuthToken(): string | null {
@@ -46,7 +46,7 @@ function getFunctionUrl(): string | null {
     
     const match = output.match(/ClaudeConnectionUrl\s+(.+?)(?:\s|$)/);
     if (match) {
-      return match[1].replace(/mcp$/, '');
+      return match[1].replace(/\/?mcp$/, '').replace(/\/$/, '');
     }
     
     const urlMatch = output.match(/(https:\/\/[a-z0-9-]+\.lambda-url\.[a-z0-9-]+\.on\.aws\/)/);
@@ -64,33 +64,31 @@ function main() {
   const authToken = getAuthToken();
   const functionUrl = getFunctionUrl();
   
-  if (!authToken) {
-    log('❌ No AUTH_TOKEN found in samconfig.toml', colors.red);
-    log('   Run: bun run deploy\n', colors.yellow);
-    process.exit(1);
-  }
-  
   if (!functionUrl) {
     log('❌ Stack not deployed or unable to retrieve Function URL', colors.red);
     log('   Run: bun run deploy\n', colors.yellow);
     process.exit(1);
   }
-  
-  const sseUrl = functionUrl.endsWith('/') ? `${functionUrl}sse?token=${authToken}` : `${functionUrl}/sse?token=${authToken}`;
-  
-  log('Claude Connector Configuration:', colors.bright);
-  log('Copy and paste this URL into Claude Settings → Connectors:\n', colors.yellow);
-  
-  log(sseUrl, colors.green + colors.bright);
-  
+
+  const baseUrl = functionUrl.endsWith('/') ? functionUrl.slice(0, -1) : functionUrl;
+  const metadataUrl = `${baseUrl}/.well-known/oauth-authorization-server`;
+
+  log('Claude Connector Configuration (OAuth):', colors.bright);
+  log('Use the BASE URL in Claude Settings → Connectors:\n', colors.yellow);
+
+  log(baseUrl, colors.green + colors.bright);
+
   log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);
   log('\nConnection Details:', colors.bright);
-  log(`  SSE URL: ${sseUrl}`, colors.blue);
-  log(`  Token embedded in URL for Claude compatibility`, colors.blue);
-  
-  log('\n━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━', colors.cyan);
-  log('\nTest:', colors.bright);
-  log(`  curl -H "Authorization: Bearer ${authToken}" ${functionUrl}health\n`, colors.blue);
+  log(`  OAuth metadata: ${metadataUrl}`, colors.blue);
+  log(`  SSE endpoint: ${baseUrl}/sse`, colors.blue);
+  log(`  MCP endpoint: ${baseUrl}/mcp`, colors.blue);
+
+  if (authToken) {
+    log('\nLegacy Token Test:', colors.bright);
+    log(`  curl -H "Authorization: Bearer ${authToken}" ${baseUrl}/health\n`, colors.blue);
+  }
+
   log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n', colors.cyan);
 }
 

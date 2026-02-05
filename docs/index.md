@@ -23,7 +23,7 @@ The **Strava MCP Server** is a production-ready Model Context Protocol server th
 
 - 🔐 **Automatic OAuth Token Refresh** - Set it and forget it
 - ☁️ **Serverless AWS Lambda** - Runs in the free tier
-- 📱 **Works with Claude Web & Mobile** - Use MCP anywhere
+- 📱 **Claude Web & Mobile OAuth** - Secure connector support
 - 🏃 **11 Strava API Tools** - Activities, athlete stats, streams, clubs, uploads
 - 🎯 **Activity Enrichment** - Transform generic workout titles into detailed training logs
 - ⚡ **Built with Bun** - Fast builds and deployments
@@ -64,7 +64,7 @@ Follow the prompts to enter your Strava credentials and AWS region.
 
 After deployment, copy the `ClaudeConnectionUrl` and add it to Claude:
 
-**Claude Web**: Settings → MCP → Add Remote Server
+**Claude Web**: Settings → Connectors → Add custom connector (OAuth, base URL)
 **Claude Mobile**: Settings → MCP Servers → Add Server
 
 ## Architecture

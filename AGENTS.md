@@ -50,7 +50,7 @@
 ```
 StravaMCP/
 ├── src/
-│   ├── lambda.ts              # Lambda entry point (JSON-RPC over HTTP)
+│   ├── lambda-web.ts              # Lambda entry point (JSON-RPC over HTTP)
 │   ├── index.ts               # Local dev server (JSON-RPC over HTTP)
 │   ├── lib/
 │   │   └── strava-client.ts   # OAuth client with auto-refresh
@@ -78,7 +78,7 @@ StravaMCP/
 
 ## Key Components
 
-### 1. Lambda Handler (src/lambda.ts)
+### 1. Lambda Handler (src/lambda-web.ts)
 
 **Purpose**: Serverless entry point with remote MCP support
 
@@ -266,7 +266,7 @@ export const myNewTools = [
 ];
 ```
 
-**Step 2**: Register in `src/lambda.ts` and `src/index.ts`:
+**Step 2**: Register in `src/lambda-web.ts` and `src/index.ts`:
 ```typescript
 import { myNewTools } from './tools/my-new-tool.js';
 
@@ -452,7 +452,7 @@ Lambda functions "sleep" after inactivity:
 ### Fix Authentication Issue
 
 1. Check `samconfig.toml` has AUTH_TOKEN
-2. Verify middleware in `lambda.ts` validates correctly
+2. Verify middleware in `lambda-web.ts` validates correctly
 3. Test: `curl -H "Authorization: Bearer <token>" <url>/health`
 4. Check CloudWatch logs: `sam logs -n StravaMCPFunction --stack-name strava-mcp-stack --tail`
 
@@ -561,7 +561,7 @@ sam delete --stack-name strava-mcp-stack  # Delete deployment
 
 ### File Locations
 
-- Lambda handler: `src/lambda.ts`
+- Lambda handler: `src/lambda-web.ts`
 - Local dev server: `src/index.ts`
 - Tools: `src/tools/*.ts`
 - StravaClient: `src/lib/strava-client.ts`
