@@ -56,7 +56,7 @@ Parameters:
   OAuthAllowedRedirectUris:
     Type: String
     Description: Comma-separated list of allowed OAuth redirect URIs
-    Default: "https://claude.ai/api/mcp/auth_callback,https://claude.com/api/mcp/auth_callback"
+    Default: "https://claude.ai/api/mcp/auth_callback,https://claude.com/api/mcp/auth_callback,https://chatgpt.com/connector_platform_oauth_redirect"
 
   OAuthRegistrationToken:
     Type: String
