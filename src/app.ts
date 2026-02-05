@@ -62,7 +62,7 @@ import {
   FetchSchema,
 } from './tools/openai.js';
 
-const ALLOWED_REDIRECT_URIS = [
+const DEFAULT_ALLOWED_REDIRECT_URIS = [
   'https://claude.ai/api/mcp/auth_callback',
   'https://claude.com/api/mcp/auth_callback',
 ];
@@ -197,6 +197,11 @@ export async function createApp(runtime: 'local' | 'lambda') {
 
   const transports: Record<string, SSEServerTransport> = {};
 
+  const allowedRedirectUris =
+    config.OAUTH_ALLOWED_REDIRECT_URIS && config.OAUTH_ALLOWED_REDIRECT_URIS.length > 0
+      ? config.OAUTH_ALLOWED_REDIRECT_URIS
+      : DEFAULT_ALLOWED_REDIRECT_URIS;
+
   const oauthConfig = {
     enabled: config.OAUTH_ENABLED,
     clientsTable: config.OAUTH_CLIENTS_TABLE || '',
@@ -204,7 +209,8 @@ export async function createApp(runtime: 'local' | 'lambda') {
     tokensTable: config.OAUTH_TOKENS_TABLE || '',
     accessTokenTtlSeconds: config.OAUTH_ACCESS_TOKEN_TTL_SECONDS,
     refreshTokenTtlSeconds: config.OAUTH_REFRESH_TOKEN_TTL_SECONDS,
-    allowedRedirectUris: ALLOWED_REDIRECT_URIS,
+    allowedRedirectUris,
+    registrationToken: config.OAUTH_REGISTRATION_TOKEN,
   };
 
   registerOAuthRoutes(app, oauthConfig);

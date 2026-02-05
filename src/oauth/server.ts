@@ -20,6 +20,7 @@ export interface OAuthConfig {
   accessTokenTtlSeconds: number;
   refreshTokenTtlSeconds: number;
   allowedRedirectUris: string[];
+  registrationToken?: string;
 }
 
 const DEFAULT_SCOPES = ['strava'];
@@ -43,9 +44,6 @@ function normalizeScopes(scope?: string): string[] {
 }
 
 function ensureRedirectAllowed(redirectUri: string, allowed: string[]): boolean {
-  if (!redirectUri.startsWith('https://')) {
-    return false;
-  }
   return allowed.includes(redirectUri);
 }
 
@@ -54,6 +52,73 @@ function writeOAuthError(res: Response, status: number, error: string, descripti
     error,
     error_description: description,
   });
+}
+
+function getBearerToken(value?: string): string | null {
+  if (!value) {
+    return null;
+  }
+  if (value.startsWith('Bearer ')) {
+    return value.substring(7);
+  }
+  return null;
+}
+
+function renderConsentPage(params: Record<string, string>, clientName?: string): string {
+  const safe = (value: string) =>
+    value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  const fields = Object.entries(params)
+    .map(([key, value]) => `<input type="hidden" name="${safe(key)}" value="${safe(value)}" />`)
+    .join('\n');
+
+  const title = clientName ? `Authorize ${safe(clientName)}` : 'Authorize Strava MCP';
+
+  return `<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>${title}</title>
+    <style>
+      body { font-family: sans-serif; margin: 32px; color: #1f2933; }
+      .card { max-width: 520px; border: 1px solid #d9e2ec; padding: 24px; border-radius: 12px; }
+      h1 { font-size: 20px; margin: 0 0 12px; }
+      p { margin: 0 0 20px; }
+      button { background: #2563eb; color: #fff; border: none; padding: 10px 16px; border-radius: 8px; cursor: pointer; }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>${title}</h1>
+      <p>Approve this request to allow Claude to access your Strava data.</p>
+      <form method="post" action="/authorize">
+        ${fields}
+        <button type="submit">Approve</button>
+      </form>
+    </div>
+  </body>
+</html>`;
+}
+
+function parseAuthorizeInput(source: Record<string, string | undefined>) {
+  const response_type = source.response_type;
+  const client_id = source.client_id;
+  const redirect_uri = source.redirect_uri;
+  const state = source.state;
+  const code_challenge = source.code_challenge;
+  const code_challenge_method = source.code_challenge_method;
+  const scope = source.scope;
+
+  return {
+    response_type,
+    client_id,
+    redirect_uri,
+    state,
+    code_challenge,
+    code_challenge_method,
+    scope,
+  };
 }
 
 export function registerOAuthRoutes(app: Express, config: OAuthConfig): void {
@@ -78,6 +143,14 @@ export function registerOAuthRoutes(app: Express, config: OAuthConfig): void {
 
   app.post('/register', async (req: Request, res: Response) => {
     try {
+      if (config.registrationToken) {
+        const authHeader = req.headers['authorization'] as string | undefined;
+        const headerToken = getBearerToken(authHeader) || (req.headers['x-registration-token'] as string | undefined);
+        if (headerToken !== config.registrationToken) {
+          return writeOAuthError(res, 401, 'invalid_client', 'Registration token required');
+        }
+      }
+
       const { redirect_uris, client_name } = req.body || {};
 
       if (!Array.isArray(redirect_uris) || redirect_uris.length === 0) {
@@ -126,7 +199,67 @@ export function registerOAuthRoutes(app: Express, config: OAuthConfig): void {
         code_challenge,
         code_challenge_method,
         scope,
-      } = req.query as Record<string, string | undefined>;
+      } = parseAuthorizeInput(req.query as Record<string, string | undefined>);
+
+      if (response_type !== 'code') {
+        return writeOAuthError(res, 400, 'unsupported_response_type');
+      }
+
+      if (!client_id || !redirect_uri || !code_challenge || !code_challenge_method) {
+        return writeOAuthError(res, 400, 'invalid_request', 'Missing required parameters');
+      }
+
+      if (code_challenge_method !== 'S256') {
+        return writeOAuthError(res, 400, 'invalid_request', 'Only S256 is supported');
+      }
+
+      const client = await getClient(config.clientsTable, client_id);
+      if (!client) {
+        return writeOAuthError(res, 400, 'invalid_client', 'Unknown client');
+      }
+
+      if (!client.redirect_uris.includes(redirect_uri)) {
+        return writeOAuthError(res, 400, 'invalid_redirect_uri', 'Redirect URI mismatch');
+      }
+
+      if (!ensureRedirectAllowed(redirect_uri, config.allowedRedirectUris)) {
+        return writeOAuthError(res, 400, 'invalid_redirect_uri', 'Redirect URI not allowed');
+      }
+
+      const consentParams: Record<string, string> = {
+        response_type,
+        client_id,
+        redirect_uri,
+        code_challenge,
+        code_challenge_method,
+      };
+
+      if (state) {
+        consentParams.state = state;
+      }
+
+      if (scope) {
+        consentParams.scope = scope;
+      }
+
+      res.status(200).send(renderConsentPage(consentParams, client.client_name));
+    } catch (error) {
+      console.error('[OAuth] Authorize error:', error);
+      writeOAuthError(res, 500, 'server_error', 'Authorization failed');
+    }
+  });
+
+  app.post('/authorize', async (req: Request, res: Response) => {
+    try {
+      const {
+        response_type,
+        client_id,
+        redirect_uri,
+        state,
+        code_challenge,
+        code_challenge_method,
+        scope,
+      } = parseAuthorizeInput(req.body as Record<string, string | undefined>);
 
       if (response_type !== 'code') {
         return writeOAuthError(res, 400, 'unsupported_response_type');

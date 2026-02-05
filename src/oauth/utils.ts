@@ -18,5 +18,14 @@ export function generateToken(bytes = 32): string {
 }
 
 export function isValidPkceS256(verifier: string, challenge: string): boolean {
+  const length = verifier.length;
+  if (length < 43 || length > 128) {
+    return false;
+  }
+
+  if (!/^[A-Za-z0-9\-._~]+$/.test(verifier)) {
+    return false;
+  }
+
   return sha256Base64Url(verifier) === challenge;
 }
