@@ -73,6 +73,19 @@ import {
  *
  * Wraps the Express-based MCP server for AWS Lambda using serverless-express.
  * Implements JSON-RPC over HTTP transport for Claude connector compatibility.
+ *
+ * SSE STREAMING NOTE:
+ * The @codegenie/serverless-express library does NOT support Lambda response streaming
+ * (see https://github.com/CodeGenieApp/serverless-express/issues/655).
+ * While the Lambda Function URL is configured with InvokeMode: RESPONSE_STREAM,
+ * the serverless-express wrapper buffers responses before sending.
+ *
+ * CURRENT WORKAROUND: The /mcp JSON-RPC endpoint works reliably for all clients.
+ * Claude.ai should connect to the base URL and use SSE, but if SSE doesn't work,
+ * alternative approaches include:
+ * 1. AWS Lambda Web Adapter (https://github.com/awslabs/aws-lambda-web-adapter)
+ * 2. Direct Lambda streaming without Express wrapper for SSE endpoints
+ * 3. Using awslambda.streamifyResponse() for native streaming support
  */
 
 // Initialize configuration
@@ -89,27 +102,39 @@ function initializeServer(): express.Application {
   const transports: Record<string, SSEServerTransport> = {};
 
   // Authentication middleware - verify Bearer token
-  // Skip auth for health check endpoint
+  // Skip auth for health check and debug endpoints
   // Supports both Authorization header and query parameter for Claude connector compatibility
+  // When ALLOW_AUTHLESS=true, SSE endpoints bypass auth for Claude.ai custom connectors
   app.use((req: Request, res: Response, next) => {
-    if (req.path === '/health') {
+    if (req.path === '/health' || req.path === '/debug') {
       return next();
     }
 
-    // For SSE endpoint, authentication happens via query param or header
-    if (req.path === '/sse' || req.path === '/sse/') {
-      // SSE authentication happens here before establishing connection
-      // Continue to token validation below
+    if (!config) {
+      // Initialize config if not already done (shouldn't happen, but safety check)
+      config = getConfig();
     }
 
-    // For SSE message endpoint, trust valid session IDs
+    // Check if authless mode is enabled for SSE endpoints
+    // This allows Claude.ai custom connectors to connect without Bearer tokens
+    const isSSEEndpoint = req.path === '/sse' || req.path === '/sse/';
+    const isMessageEndpoint = req.path === '/message';
+
+    if (config.ALLOW_AUTHLESS && (isSSEEndpoint || isMessageEndpoint)) {
+      if (isSSEEndpoint) {
+        console.error('[StravaLambda] Authless SSE connection allowed (ALLOW_AUTHLESS=true)');
+      }
+      return next();
+    }
+
+    // For SSE message endpoint with valid session, trust the session
     const sessionId = req.query.sessionId as string;
-    if (req.path === '/message' && sessionId && transports[sessionId]) {
+    if (isMessageEndpoint && sessionId && transports[sessionId]) {
       return next();
     }
 
     let token: string | undefined;
-    
+
     // Try Authorization header first (preferred for API clients)
     const authHeader = req.headers['authorization'];
     if (authHeader && authHeader.startsWith('Bearer ')) {
@@ -119,15 +144,10 @@ function initializeServer(): express.Application {
     else if (req.query.token) {
       token = req.query.token as string;
     }
-    
-    if (!config) {
-      // Initialize config if not already done (shouldn't happen, but safety check)
-      config = getConfig();
-    }
 
     if (!token || token !== config.AUTH_TOKEN) {
       console.error('[StravaLambda] Invalid or missing token');
-      return res.status(401).json({ 
+      return res.status(401).json({
         error: 'Unauthorized',
         message: 'Invalid or missing token. Use: Authorization: Bearer <token> OR ?token=<token>'
       });
@@ -154,7 +174,7 @@ function initializeServer(): express.Application {
   mcpServer = new Server(
     {
       name: 'strava-mcp-server',
-      version: '2.0.0',
+      version: '3.0.0',
     },
     {
       capabilities: {
@@ -377,9 +397,48 @@ function initializeServer(): express.Application {
     }
   });
 
-  // Health check endpoint
+  // Health check endpoint - enhanced with diagnostic info
   app.get('/health', (_req: Request, res: Response) => {
-    res.json({ status: 'healthy', version: '2.0.0', environment: 'lambda' });
+    res.json({
+      status: 'healthy',
+      version: '3.0.0',
+      runtime: 'lambda',
+      authless: config?.ALLOW_AUTHLESS ?? false,
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  // Debug endpoint - helps troubleshoot Claude.ai connection issues
+  app.get('/debug', (_req: Request, res: Response) => {
+    res.json({
+      status: 'ok',
+      version: '3.0.0',
+      authless_enabled: config?.ALLOW_AUTHLESS ?? false,
+      environment: process.env.NODE_ENV || 'development',
+      endpoints: {
+        health: '/health',
+        debug: '/debug',
+        sse: '/sse (GET, establishes SSE connection)',
+        message: '/message (POST, requires sessionId query param)',
+        mcp: '/mcp (POST, requires Bearer token)',
+      },
+      claude_ai_setup: {
+        connector_url: 'Use base URL only, no path (e.g., https://xyz.lambda-url.us-east-1.on.aws)',
+        auth_mode: config?.ALLOW_AUTHLESS ? 'Authless (SSE endpoints bypass auth)' : 'Bearer token required',
+        transport: 'SSE',
+        note: 'Claude.ai will auto-discover /sse endpoint from base URL',
+      },
+      sse_headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+      },
+      known_limitations: {
+        sse_streaming: 'serverless-express does not support Lambda response streaming (see GitHub issue #655)',
+        workaround: 'If SSE fails, consider AWS Lambda Web Adapter or direct Lambda streaming',
+        mcp_endpoint: '/mcp JSON-RPC endpoint works reliably for all clients',
+      },
+    });
   });
 
   // SSE endpoint - establishes the server-to-client event stream
@@ -464,7 +523,7 @@ function initializeServer(): express.Application {
             },
             serverInfo: {
               name: 'strava-mcp-server',
-              version: '2.0.0',
+              version: '3.0.0',
             },
           };
           break;

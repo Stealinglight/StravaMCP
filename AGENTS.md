@@ -288,19 +288,36 @@ server.setRequestHandler(ListToolsRequestSchema, async () => ({
 
 ### Authentication Flow
 
-**Two Types of Auth**:
+**Three Types of Auth**:
 
 1. **Bearer Token** (AUTH_TOKEN):
    - Static token for Lambda authentication
    - Generated during deployment
    - Validates client requests to Lambda function
    - Stored in environment variable
+   - Required for `/mcp` JSON-RPC endpoint
 
-2. **OAuth Tokens** (Strava):
+2. **Authless Mode** (ALLOW_AUTHLESS):
+   - When `ALLOW_AUTHLESS=true` (default), SSE endpoints bypass auth
+   - Enables Claude.ai custom connectors (which don't support custom headers)
+   - Applies to: `/sse`, `/sse/`, `/message` endpoints
+   - Does NOT apply to: `/mcp` endpoint (still requires Bearer token)
+   - Security: Keep Lambda URL private when enabled
+
+3. **OAuth Tokens** (Strava):
    - Access token (short-lived, ~6 hours)
    - Refresh token (long-lived)
    - Automatically managed by StravaClient
    - Stored in environment variables (CLIENT_ID, CLIENT_SECRET, REFRESH_TOKEN)
+
+**Authentication Middleware Logic**:
+```typescript
+// Simplified auth flow
+if (path === '/health') → bypass auth
+if (ALLOW_AUTHLESS && (path === '/sse' || path === '/message')) → bypass auth
+if (path === '/message' && valid session) → bypass auth
+else → require Bearer token
+```
 
 ### Local Development Workflow
 
@@ -539,6 +556,7 @@ sam delete --stack-name strava-mcp-stack  # Delete deployment
 - `STRAVA_CLIENT_SECRET` - Strava API client secret
 - `STRAVA_REFRESH_TOKEN` - Strava OAuth refresh token
 - `AUTH_TOKEN` - Bearer token for Lambda authentication
+- `ALLOW_AUTHLESS` - When "true", SSE endpoints bypass auth (default: "true")
 - `NODE_ENV` - Environment (production/development)
 
 ### File Locations
