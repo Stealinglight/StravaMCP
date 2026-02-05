@@ -14,7 +14,7 @@ const envSchema = z.object({
   PORT: z.string().default('3000').transform(Number),
   // ALLOW_AUTHLESS: When "true", bypasses auth for SSE endpoints (/sse, /sse/, /message)
   // This enables Claude.ai custom connectors which don't support Bearer token auth
-  ALLOW_AUTHLESS: z.string().default('false').transform((val) => val.toLowerCase() === 'true'),
+  ALLOW_AUTHLESS: z.string().default('true').transform((val) => val.toLowerCase() === 'true'),
 });
 
 /**
