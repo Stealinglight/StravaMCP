@@ -92,7 +92,7 @@ try {
 const server = new Server(
   {
     name: 'strava-mcp-server',
-    version: '1.0.0',
+    version: '3.0.0',
   },
   {
     capabilities: {
@@ -327,7 +327,7 @@ async function main() {
   // Supports both Authorization header and query parameter
   // When ALLOW_AUTHLESS=true, SSE endpoints bypass auth for Claude.ai custom connectors
   app.use((req: Request, res: Response, next) => {
-    if (req.path === '/health') {
+    if (req.path === '/health' || req.path === '/debug') {
       return next();
     }
 
@@ -373,9 +373,43 @@ async function main() {
     next();
   });
 
-  // Health check endpoint
+  // Health check endpoint - enhanced with diagnostic info
   app.get('/health', (_req: Request, res: Response) => {
-    res.json({ status: 'healthy', version: '2.0.0' });
+    res.json({
+      status: 'healthy',
+      version: '3.0.0',
+      runtime: 'local',
+      authless: config?.ALLOW_AUTHLESS ?? false,
+      timestamp: new Date().toISOString(),
+    });
+  });
+
+  // Debug endpoint - helps troubleshoot Claude.ai connection issues
+  app.get('/debug', (_req: Request, res: Response) => {
+    res.json({
+      status: 'ok',
+      version: '3.0.0',
+      authless_enabled: config?.ALLOW_AUTHLESS ?? false,
+      environment: process.env.NODE_ENV || 'development',
+      endpoints: {
+        health: '/health',
+        debug: '/debug',
+        sse: '/sse (GET, establishes SSE connection)',
+        message: '/message (POST, requires sessionId query param)',
+        mcp: '/mcp (POST, requires Bearer token)',
+      },
+      claude_ai_setup: {
+        connector_url: `Use base URL only: http://localhost:${config.PORT}`,
+        auth_mode: config?.ALLOW_AUTHLESS ? 'Authless (SSE endpoints bypass auth)' : 'Bearer token required',
+        transport: 'SSE',
+        note: 'For local testing with Claude.ai, use ngrok or similar to expose localhost',
+      },
+      sse_headers: {
+        'Content-Type': 'text/event-stream',
+        'Cache-Control': 'no-cache',
+        Connection: 'keep-alive',
+      },
+    });
   });
 
   // SSE endpoint - establishes the server-to-client event stream
@@ -460,7 +494,7 @@ async function main() {
             },
             serverInfo: {
               name: 'strava-mcp-server',
-              version: '2.0.0',
+              version: '3.0.0',
             },
           };
           break;
@@ -681,7 +715,10 @@ async function main() {
   app.listen(port, () => {
     console.error(`[StravaServer] Remote MCP server running on http://localhost:${port}`);
     console.error(`[StravaServer] MCP endpoint: http://localhost:${port}/mcp`);
+    console.error(`[StravaServer] SSE endpoint: http://localhost:${port}/sse`);
     console.error(`[StravaServer] Health check: http://localhost:${port}/health`);
+    console.error(`[StravaServer] Debug info: http://localhost:${port}/debug`);
+    console.error(`[StravaServer] Authless mode: ${config.ALLOW_AUTHLESS ? 'ENABLED' : 'DISABLED'}`);
   });
 }
 

@@ -8,7 +8,7 @@ Description: >
 
 Globals:
   Function:
-    Timeout: 300  # 5 minutes (Lambda max for Function URLs)
+    Timeout: 900  # 15 minutes (max for Lambda Function URLs) - needed for long SSE connections
     MemorySize: 512  # MB (Free tier allows up to 3.2M seconds of 512MB compute)
     Runtime: nodejs20.x
     Architectures:
@@ -66,11 +66,18 @@ Resources:
         AuthType: NONE  # Public URL with Bearer token authentication in application code
         Cors:
           AllowOrigins:
-            - '*'
+            - '*'  # Allow all origins for flexibility (Claude.ai, Claude Desktop, etc.)
           AllowMethods:
-            - '*'
+            - GET
+            - POST
+            - OPTIONS
           AllowHeaders:
-            - '*'
+            - Content-Type
+            - Authorization
+            - Accept
+            - X-Requested-With
+          AllowCredentials: false
+          MaxAge: 86400  # Cache preflight for 24 hours
         InvokeMode: RESPONSE_STREAM  # Enable streaming for SSE support
       Tags:
         Project: StravaMCP
