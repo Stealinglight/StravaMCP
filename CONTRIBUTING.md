@@ -367,7 +367,7 @@ export const myTools = [
 
 ### 2. Register Tool
 
-Update `src/lambda.ts` and `src/index.ts`:
+Update `src/lambda-web.ts` and `src/index.ts`:
 
 ```typescript
 import { myTools } from './tools/my-tool.js';

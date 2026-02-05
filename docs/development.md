@@ -86,7 +86,7 @@ graph TB
     end
     
     subgraph "AWS Lambda"
-        D[Lambda Handler<br/>lambda.ts]
+        D[Lambda Handler<br/>lambda-web.ts]
         E[Bearer Token<br/>Middleware]
         F[MCP Server<br/>@modelcontextprotocol/sdk]
     end
@@ -170,7 +170,7 @@ graph LR
 ```
 StravaMCP/
 ├── src/
-│   ├── lambda.ts              # Lambda entry point (Streamable HTTP)
+│   ├── lambda-web.ts              # Lambda entry point (Streamable HTTP)
 │   ├── index.ts               # Local dev server (JSON-RPC over HTTP)
 │   ├── lib/
 │   │   └── strava-client.ts   # OAuth client with auto-refresh
@@ -209,7 +209,7 @@ StravaMCP/
 
 ## Key Components
 
-### 1. Lambda Handler (`src/lambda.ts`)
+### 1. Lambda Handler (`src/lambda-web.ts`)
 
 The Lambda entry point implements:
 - **Streamable HTTP Transport** for remote MCP
@@ -359,7 +359,7 @@ export const myNewTools = [
 
 ### Step 2: Register Tool
 
-Add to `src/lambda.ts` (Lambda) and `src/index.ts` (local dev):
+Add to `src/lambda-web.ts` (Lambda) and `src/index.ts` (local dev):
 
 ```typescript
 import { myNewTools } from './tools/my-new-tool.js';
