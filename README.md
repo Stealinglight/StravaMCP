@@ -151,11 +151,11 @@ Claude.ai custom connectors use **authless mode** via SSE transport. This is ena
 - Keep your Lambda Function URL private for security
 
 **Security Considerations:**
-- Anyone with your Lambda URL can access your Strava data in authless mode
-- This is acceptable for personal use where the URL is not shared
-- For production, consider adding IP allowlisting via AWS WAF
+- Authless mode is **high risk** and should be treated as **personal-use-only**
+- If authless mode is enabled, anyone with your Lambda URL can access and act on your Strava data
+- Authless mode is **not recommended for production**; if you must use it, combine it with stricter controls such as AWS WAF IP allowlisting or an additional shared secret
 
-To disable authless mode (require Bearer tokens everywhere):
+**Recommended secure deployment (authless disabled, Bearer tokens required everywhere):**
 ```bash
 sam deploy --parameter-overrides AllowAuthless=false
 ```
