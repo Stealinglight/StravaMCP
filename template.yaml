@@ -99,11 +99,14 @@ Resources:
             TableName: !Ref OAuthAuthCodesTable
         - DynamoDBCrudPolicy:
             TableName: !Ref OAuthTokensTable
-        - Statement:
-            Effect: Allow
-            Action:
-              - secretsmanager:GetSecretValue
-            Resource: !If [HasSecretsManagerArn, !Ref SecretsManagerArn, !Ref AWS::NoValue]
+        - !If
+          - HasSecretsManagerArn
+          - Statement:
+              Effect: Allow
+              Action:
+                - secretsmanager:GetSecretValue
+              Resource: !Ref SecretsManagerArn
+          - !Ref AWS::NoValue
       FunctionUrlConfig:
         AuthType: NONE  # Public URL with Bearer token authentication in application code
         Cors:
@@ -112,7 +115,6 @@ Resources:
           AllowMethods:
             - GET
             - POST
-            - OPTIONS
           AllowHeaders:
             - Content-Type
             - Authorization
