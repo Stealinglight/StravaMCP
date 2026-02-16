@@ -1,5 +1,5 @@
 {
-  "name": "@stealinglight/openclaw-strava",
+  "name": "@stealinglight/strava",
   "version": "1.0.0",
   "description": "OpenClaw plugin providing 11 native Strava API tools for fitness data management, activity enrichment, and training analysis",
   "type": "module",
