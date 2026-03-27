@@ -7,11 +7,11 @@
 
 ### Infrastructure
 
-- [ ] **INFRA-01**: Go project scaffolded with mcp-go SDK, stderr-only logging, go.mod initialized
-- [ ] **INFRA-02**: File-based token store with atomic write-then-rename at configurable path (~/.strava/tokens.json)
+- [x] **INFRA-01**: Go project scaffolded with mcp-go SDK, stderr-only logging, go.mod initialized
+- [x] **INFRA-02**: File-based token store with atomic write-then-rename at configurable path (~/.strava/tokens.json)
 - [ ] **INFRA-03**: Built-in OAuth browser flow that opens system browser, runs ephemeral localhost callback, exchanges code, persists tokens
 - [ ] **INFRA-04**: Strava HTTP client with automatic token refresh (5-min buffer), concurrent refresh protection (singleflight), and rate limit header tracking
-- [ ] **INFRA-05**: MCP server wired with mcp-go ServeStdio, all tools registered declaratively
+- [x] **INFRA-05**: MCP server wired with mcp-go ServeStdio, all tools registered declaratively
 
 ### Activity Tools (Port)
 
@@ -108,11 +108,11 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 1 | Pending |
-| INFRA-02 | Phase 1 | Pending |
+| INFRA-01 | Phase 1 | Complete |
+| INFRA-02 | Phase 1 | Complete |
 | INFRA-03 | Phase 1 | Pending |
 | INFRA-04 | Phase 1 | Pending |
-| INFRA-05 | Phase 1 | Pending |
+| INFRA-05 | Phase 1 | Complete |
 | ACT-01 | Phase 2 | Pending |
 | ACT-02 | Phase 2 | Pending |
 | ACT-03 | Phase 2 | Pending |

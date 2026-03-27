@@ -31,7 +31,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- Go project scaffold, config loader, token store, and MCP server shell
+- [x] 01-01-PLAN.md -- Go project scaffold, config loader, token store, and MCP server shell
 - [ ] 01-02-PLAN.md -- Strava HTTP client with auto-refresh and OAuth browser flow
 
 ### Phase 2: Tool Suite
