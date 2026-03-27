@@ -12,7 +12,7 @@ This roadmap delivers a complete Go rewrite of the Strava MCP server in three ph
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation and Auth** - Go project scaffold, file-based token store, OAuth browser flow, Strava HTTP client, and MCP server wiring
+- [x] **Phase 1: Foundation and Auth** - Go project scaffold, file-based token store, OAuth browser flow, Strava HTTP client, and MCP server wiring (completed 2026-03-27)
 - [ ] **Phase 2: Tool Suite** - Port all 11 existing Strava tools with full feature parity (activities, athlete, streams, clubs, uploads)
 - [ ] **Phase 3: Polish and Distribution** - Portfolio-quality README and single-binary cross-platform release pipeline
 
@@ -32,7 +32,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 Plans:
 - [x] 01-01-PLAN.md -- Go project scaffold, config loader, token store, and MCP server shell
-- [ ] 01-02-PLAN.md -- Strava HTTP client with auto-refresh and OAuth browser flow
+- [x] 01-02-PLAN.md -- Strava HTTP client with auto-refresh and OAuth browser flow
 
 ### Phase 2: Tool Suite
 **Goal**: Users can access all core Strava data through 11 MCP tools matching the existing TypeScript feature set
@@ -70,6 +70,6 @@ Phases execute in numeric order: 1 -> 2 -> 3
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation and Auth | 0/2 | Not started | - |
+| 1. Foundation and Auth | 2/2 | Complete   | 2026-03-27 |
 | 2. Tool Suite | 0/2 | Not started | - |
 | 3. Polish and Distribution | 0/1 | Not started | - |
