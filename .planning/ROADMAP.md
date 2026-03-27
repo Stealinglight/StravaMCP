@@ -49,7 +49,7 @@ Plans:
 Plans:
 - [x] 02-01-PLAN.md -- Shared helpers (formatResponse, handleToolError) and 5 activity tools
 - [x] 02-02-PLAN.md -- Athlete, streams, and club tools (4 tools)
-- [ ] 02-03-PLAN.md -- PostMultipart client method, upload tools, and RegisterAll wiring (2 tools + final wiring)
+- [x] 02-03-PLAN.md -- PostMultipart client method, upload tools, and RegisterAll wiring (2 tools + final wiring)
 
 ### Phase 3: Polish and Distribution
 **Goal**: The project is portfolio-ready with a polished README and frictionless installation via single-binary releases

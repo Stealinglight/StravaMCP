@@ -36,8 +36,8 @@
 
 ### Upload Tools (Port)
 
-- [ ] **UPL-01**: User can upload activity files (GPX, TCX, FIT) via proper multipart form data
-- [ ] **UPL-02**: User can check upload processing status and get resulting activity ID
+- [x] **UPL-01**: User can upload activity files (GPX, TCX, FIT) via proper multipart form data
+- [x] **UPL-02**: User can check upload processing status and get resulting activity ID
 
 ### Presentation
 
@@ -122,8 +122,8 @@
 | ATH-02 | Phase 2 | Complete |
 | STR-01 | Phase 2 | Complete |
 | CLB-01 | Phase 2 | Complete |
-| UPL-01 | Phase 2 | Pending |
-| UPL-02 | Phase 2 | Pending |
+| UPL-01 | Phase 2 | Complete |
+| UPL-02 | Phase 2 | Complete |
 | DOCS-01 | Phase 3 | Pending |
 | DOCS-02 | Phase 3 | Pending |
 
