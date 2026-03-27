@@ -528,6 +528,94 @@ func TestRateLimitWarningBelowThreshold(t *testing.T) {
 	}
 }
 
+// Test 12: PostMultipart sends correct Content-Type with boundary and POST method
+func TestPostMultipartSendsCorrectContentType(t *testing.T) {
+	var gotContentType string
+	var gotMethod string
+	var gotAuth string
+	var gotBody string
+
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		gotMethod = r.Method
+		gotContentType = r.Header.Get("Content-Type")
+		gotAuth = r.Header.Get("Authorization")
+		body, _ := io.ReadAll(r.Body)
+		gotBody = string(body)
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"id":123,"status":"processing"}`))
+	}))
+	defer srv.Close()
+
+	store := newMockTokenStore(&auth.Tokens{
+		AccessToken:  "test-multipart-token",
+		RefreshToken: "test-refresh-token",
+		ExpiresAt:    time.Now().Add(1 * time.Hour).Unix(),
+	}, false)
+
+	cfg := &config.Config{ClientID: "id", ClientSecret: "secret"}
+	client := strava.NewClient(cfg, store, testLogger())
+	client.SetBaseURL(srv.URL)
+
+	// Build a simple multipart body
+	body := strings.NewReader("--boundary\r\nContent-Disposition: form-data; name=\"field\"\r\n\r\nvalue\r\n--boundary--\r\n")
+	contentType := "multipart/form-data; boundary=boundary"
+
+	data, err := client.PostMultipart(context.Background(), "/uploads", body, contentType)
+	if err != nil {
+		t.Fatalf("PostMultipart() error: %v", err)
+	}
+
+	if gotMethod != "POST" {
+		t.Errorf("method = %q, want POST", gotMethod)
+	}
+	if gotContentType != contentType {
+		t.Errorf("Content-Type = %q, want %q", gotContentType, contentType)
+	}
+	if gotAuth != "Bearer test-multipart-token" {
+		t.Errorf("Authorization = %q, want %q", gotAuth, "Bearer test-multipart-token")
+	}
+	if !strings.Contains(gotBody, "value") {
+		t.Errorf("body = %q, want to contain 'value'", gotBody)
+	}
+	if !strings.Contains(string(data), "processing") {
+		t.Errorf("response = %q, want to contain 'processing'", string(data))
+	}
+}
+
+// Test 13: PostMultipart returns StravaError on 4xx response
+func TestPostMultipartReturnsStravaErrorOn4xx(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusBadRequest)
+		w.Write([]byte(`{"message":"Bad Request","errors":[{"resource":"Upload","field":"file","code":"not_a_valid_file"}]}`))
+	}))
+	defer srv.Close()
+
+	store := newMockTokenStore(&auth.Tokens{
+		AccessToken:  "test-token",
+		RefreshToken: "refresh-token",
+		ExpiresAt:    time.Now().Add(1 * time.Hour).Unix(),
+	}, false)
+
+	cfg := &config.Config{ClientID: "id", ClientSecret: "secret"}
+	client := strava.NewClient(cfg, store, testLogger())
+	client.SetBaseURL(srv.URL)
+
+	body := strings.NewReader("invalid-multipart")
+	_, err := client.PostMultipart(context.Background(), "/uploads", body, "multipart/form-data; boundary=test")
+
+	if err == nil {
+		t.Fatal("expected error on 400, got nil")
+	}
+
+	var stravaErr *strava.StravaError
+	if !strava.AsStravaError(err, &stravaErr) {
+		t.Fatalf("expected StravaError, got %T: %v", err, err)
+	}
+	if stravaErr.StatusCode != 400 {
+		t.Errorf("StatusCode = %d, want 400", stravaErr.StatusCode)
+	}
+}
+
 // TestNewClientReturnsNonNil verifies the constructor works
 func TestNewClientReturnsNonNil(t *testing.T) {
 	dir := t.TempDir()
