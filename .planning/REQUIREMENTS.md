@@ -108,30 +108,30 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | TBD | Pending |
-| INFRA-02 | TBD | Pending |
-| INFRA-03 | TBD | Pending |
-| INFRA-04 | TBD | Pending |
-| INFRA-05 | TBD | Pending |
-| ACT-01 | TBD | Pending |
-| ACT-02 | TBD | Pending |
-| ACT-03 | TBD | Pending |
-| ACT-04 | TBD | Pending |
-| ACT-05 | TBD | Pending |
-| ATH-01 | TBD | Pending |
-| ATH-02 | TBD | Pending |
-| STR-01 | TBD | Pending |
-| CLB-01 | TBD | Pending |
-| UPL-01 | TBD | Pending |
-| UPL-02 | TBD | Pending |
-| DOCS-01 | TBD | Pending |
-| DOCS-02 | TBD | Pending |
+| INFRA-01 | Phase 1 | Pending |
+| INFRA-02 | Phase 1 | Pending |
+| INFRA-03 | Phase 1 | Pending |
+| INFRA-04 | Phase 1 | Pending |
+| INFRA-05 | Phase 1 | Pending |
+| ACT-01 | Phase 2 | Pending |
+| ACT-02 | Phase 2 | Pending |
+| ACT-03 | Phase 2 | Pending |
+| ACT-04 | Phase 2 | Pending |
+| ACT-05 | Phase 2 | Pending |
+| ATH-01 | Phase 2 | Pending |
+| ATH-02 | Phase 2 | Pending |
+| STR-01 | Phase 2 | Pending |
+| CLB-01 | Phase 2 | Pending |
+| UPL-01 | Phase 2 | Pending |
+| UPL-02 | Phase 2 | Pending |
+| DOCS-01 | Phase 3 | Pending |
+| DOCS-02 | Phase 3 | Pending |
 
 **Coverage:**
 - v1 requirements: 18 total
-- Mapped to phases: 0 (awaiting roadmap)
-- Unmapped: 18
+- Mapped to phases: 18/18
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-03-26*
-*Last updated: 2026-03-26 after initial definition*
+*Last updated: 2026-03-26 after roadmap creation*
