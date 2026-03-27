@@ -3,13 +3,13 @@ gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
 status: executing
-stopped_at: Phase 2 context gathered
-last_updated: "2026-03-27T16:30:57.891Z"
+stopped_at: Completed 02-01-PLAN.md
+last_updated: "2026-03-27T23:34:34.131Z"
 last_activity: 2026-03-27
 progress:
   total_phases: 3
   completed_phases: 1
-  total_plans: 2
+  total_plans: 5
   completed_plans: 2
   percent: 0
 ---
@@ -21,16 +21,16 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** A fast, self-contained Go binary that gives any MCP client full access to the Strava API with zero cloud infrastructure required.
-**Current focus:** Phase 01 — foundation-and-auth
+**Current focus:** Phase 02 — tool-suite
 
 ## Current Position
 
-Phase: 2 of 3 (tool suite)
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-03-27
+Phase: 02 (tool-suite) — EXECUTING
+Plan: 2 of 3
+Status: Executing Phase 02, Plan 01 complete
+Last activity: 2026-03-27 -- Completed 02-01 shared helpers + activity tools
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [████░░░░░░] 40%
 
 ## Performance Metrics
 
@@ -54,6 +54,7 @@ Progress: [░░░░░░░░░░] 0%
 *Updated after each plan completion*
 | Phase 01 P01 | 5min | 2 tasks | 11 files |
 | Phase 01 P02 | 8min | 2 tasks | 10 files |
+| Phase 02 P01 | 7min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -70,6 +71,8 @@ Recent decisions affecting current work:
 - [Phase 01]: Test isolation via URL setter methods (SetBaseURL/SetTokenURL) keeps production constructor clean
 - [Phase 01]: OAuth functions accept endpoint URLs as parameters for testability without global state
 - [Phase 01]: singleflight.Group coalesces concurrent token refreshes into single Strava API call
+- [Phase 02]: Used mcp-go v0.46.0 method-style API (request.GetInt, request.GetBool) instead of deprecated ParseInt64 helpers
+- [Phase 02]: Exported FormatResponse/HandleToolError for cross-package test access; handler closure pattern HandleXxx(client) returns ToolHandlerFunc
 
 ### Pending Todos
 
@@ -83,6 +86,6 @@ Recent decisions affecting current work:
 
 ## Session Continuity
 
-Last session: 2026-03-27T16:30:57.889Z
-Stopped at: Phase 2 context gathered
-Resume file: .planning/phases/02-tool-suite/02-CONTEXT.md
+Last session: 2026-03-27T23:34:34.129Z
+Stopped at: Completed 02-01-PLAN.md
+Resume file: None

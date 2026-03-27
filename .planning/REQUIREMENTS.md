@@ -15,11 +15,11 @@
 
 ### Activity Tools (Port)
 
-- [ ] **ACT-01**: User can list recent activities with date filtering (before/after) and pagination
-- [ ] **ACT-02**: User can get detailed activity by ID including laps, splits, segment efforts
-- [ ] **ACT-03**: User can create manual activities with name, sport type, start time, elapsed time
-- [ ] **ACT-04**: User can update existing activities (name, description, sport type, gear, trainer, commute, hide)
-- [ ] **ACT-05**: User can get heart rate and power zone distribution for an activity
+- [x] **ACT-01**: User can list recent activities with date filtering (before/after) and pagination
+- [x] **ACT-02**: User can get detailed activity by ID including laps, splits, segment efforts
+- [x] **ACT-03**: User can create manual activities with name, sport type, start time, elapsed time
+- [x] **ACT-04**: User can update existing activities (name, description, sport type, gear, trainer, commute, hide)
+- [x] **ACT-05**: User can get heart rate and power zone distribution for an activity
 
 ### Athlete Tools (Port)
 
@@ -113,11 +113,11 @@
 | INFRA-03 | Phase 1 | Complete |
 | INFRA-04 | Phase 1 | Complete |
 | INFRA-05 | Phase 1 | Complete |
-| ACT-01 | Phase 2 | Pending |
-| ACT-02 | Phase 2 | Pending |
-| ACT-03 | Phase 2 | Pending |
-| ACT-04 | Phase 2 | Pending |
-| ACT-05 | Phase 2 | Pending |
+| ACT-01 | Phase 2 | Complete |
+| ACT-02 | Phase 2 | Complete |
+| ACT-03 | Phase 2 | Complete |
+| ACT-04 | Phase 2 | Complete |
+| ACT-05 | Phase 2 | Complete |
 | ATH-01 | Phase 2 | Pending |
 | ATH-02 | Phase 2 | Pending |
 | STR-01 | Phase 2 | Pending |

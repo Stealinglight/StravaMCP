@@ -47,7 +47,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- Shared helpers (formatResponse, handleToolError) and 5 activity tools
+- [x] 02-01-PLAN.md -- Shared helpers (formatResponse, handleToolError) and 5 activity tools
 - [ ] 02-02-PLAN.md -- Athlete, streams, and club tools (4 tools)
 - [ ] 02-03-PLAN.md -- PostMultipart client method, upload tools, and RegisterAll wiring (2 tools + final wiring)
 
@@ -72,5 +72,5 @@ Phases execute in numeric order: 1 -> 2 -> 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Auth | 2/2 | Complete   | 2026-03-27 |
-| 2. Tool Suite | 0/3 | Not started | - |
+| 2. Tool Suite | 1/3 | In Progress | - |
 | 3. Polish and Distribution | 0/1 | Not started | - |
