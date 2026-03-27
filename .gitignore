@@ -38,3 +38,10 @@ bun.lockb
 # AWS SAM
 .aws-sam/
 samconfig.toml
+
+# Go
+strava-mcp
+*.exe
+*.test
+*.out
+/vendor/
