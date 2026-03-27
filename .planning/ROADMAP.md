@@ -28,11 +28,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. The MCP server connects via stdio and responds to MCP protocol handshake (list tools returns empty tool set)
   4. Token auto-refresh works transparently -- an expired access token triggers refresh without user intervention, and concurrent refresh attempts are coalesced into one
   5. All logging goes to stderr only -- stdout carries exclusively MCP JSON-RPC traffic
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: Project scaffold and MCP server shell
-- [ ] 01-02: Token store, OAuth flow, and Strava HTTP client
+- [ ] 01-01-PLAN.md -- Go project scaffold, config loader, token store, and MCP server shell
+- [ ] 01-02-PLAN.md -- Strava HTTP client with auto-refresh and OAuth browser flow
 
 ### Phase 2: Tool Suite
 **Goal**: Users can access all core Strava data through 11 MCP tools matching the existing TypeScript feature set
