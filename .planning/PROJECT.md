@@ -80,12 +80,15 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 | Drop all AWS infrastructure | Simplify to standalone binary, no cloud dependencies | ✓ Phase 1 |
 | All logging to stderr, stdout reserved for MCP JSON-RPC | Prevents protocol corruption from stray output | ✓ Phase 1 |
 | singleflight for token refresh coalescing | Prevents thundering herd on concurrent expired-token requests | ✓ Phase 1 |
+| Raw JSON responses (no Go structs for Strava data) | D-01: pass through Strava JSON with pretty-printing, avoid schema coupling | ✓ Phase 2 |
+| Map-based PUT body for update_activity | Avoids Go zero-value trap — only sends user-provided fields | ✓ Phase 2 |
+| Auto-detect upload data_type from file extension | D-04: .gpx/.fit/.tcx/.tcx.gz mapped automatically, explicit override available | ✓ Phase 2 |
 | Add segments/routes/gear/laps | Expand beyond current 11 tools to comprehensive Strava coverage | — Pending |
 | Heat map as future milestone | Separate project, don't couple it to the core rewrite | — Pending |
 
 ## Current State
 
-Phase 1 complete — Go project foundation built. Single binary compiles, config loader validates env vars, FileTokenStore implements atomic writes with 0600 permissions, OAuth browser flow authenticates via GET /athlete validation, Strava HTTP client auto-refreshes tokens with singleflight coalescing, MCP server shell ready for tool registration. 31 tests passing with race detector.
+Phase 2 complete — Full tool suite implemented. All 11 MCP tools (5 activity, 2 athlete, 1 streams, 1 clubs, 2 uploads) with shared helpers (FormatResponse, HandleToolError), RegisterAll wiring, and comprehensive tests. PostMultipart client method supports file uploads. update_activity uses map-based partial updates to avoid zero-value overwrite. 80+ tests passing across all packages. Ready for Phase 3 (polish and distribution).
 
 ---
-*Last updated: 2026-03-27 after Phase 1 completion*
+*Last updated: 2026-03-27 after Phase 2 completion*
