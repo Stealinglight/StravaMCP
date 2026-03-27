@@ -74,12 +74,18 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 
 | Decision | Rationale | Outcome |
 |----------|-----------|---------|
-| Rewrite in Go (not incremental refactor) | Ecosystem fit with RustyClaw, portfolio signal, clean break from AWS dependencies | — Pending |
-| Stdio transport only | Local MCP standard, matches RustyClaw pattern, eliminates server complexity | — Pending |
-| Research Go MCP library | Multiple options exist (mcp-go, etc.), need to find best fit before committing | — Pending |
-| Drop all AWS infrastructure | Simplify to standalone binary, no cloud dependencies | — Pending |
+| Rewrite in Go (not incremental refactor) | Ecosystem fit with RustyClaw, portfolio signal, clean break from AWS dependencies | ✓ Phase 1 |
+| Stdio transport only | Local MCP standard, matches RustyClaw pattern, eliminates server complexity | ✓ Phase 1 |
+| mcp-go v0.46.0 as MCP SDK | Best maintained Go MCP library, active development, clean API | ✓ Phase 1 |
+| Drop all AWS infrastructure | Simplify to standalone binary, no cloud dependencies | ✓ Phase 1 |
+| All logging to stderr, stdout reserved for MCP JSON-RPC | Prevents protocol corruption from stray output | ✓ Phase 1 |
+| singleflight for token refresh coalescing | Prevents thundering herd on concurrent expired-token requests | ✓ Phase 1 |
 | Add segments/routes/gear/laps | Expand beyond current 11 tools to comprehensive Strava coverage | — Pending |
 | Heat map as future milestone | Separate project, don't couple it to the core rewrite | — Pending |
 
+## Current State
+
+Phase 1 complete — Go project foundation built. Single binary compiles, config loader validates env vars, FileTokenStore implements atomic writes with 0600 permissions, OAuth browser flow authenticates via GET /athlete validation, Strava HTTP client auto-refreshes tokens with singleflight coalescing, MCP server shell ready for tool registration. 31 tests passing with race detector.
+
 ---
-*Last updated: 2026-03-26 after initialization*
+*Last updated: 2026-03-27 after Phase 1 completion*
