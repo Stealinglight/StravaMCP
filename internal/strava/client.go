@@ -109,6 +109,13 @@ func (c *Client) Put(ctx context.Context, path string, body interface{}) ([]byte
 	return c.doRequest(ctx, http.MethodPut, fullURL, bytes.NewReader(jsonBody), "application/json")
 }
 
+// PostMultipart makes an authenticated POST request with a pre-built multipart body.
+// The contentType must include the multipart boundary (use writer.FormDataContentType()).
+func (c *Client) PostMultipart(ctx context.Context, path string, body io.Reader, contentType string) ([]byte, error) {
+	fullURL := c.baseURL + path
+	return c.doRequest(ctx, http.MethodPost, fullURL, body, contentType)
+}
+
 // GetRateLimits returns the current rate limit state.
 func (c *Client) GetRateLimits() RateLimits {
 	c.rateLimitsMu.RLock()
