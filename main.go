@@ -9,7 +9,10 @@ import (
 	"github.com/pkg/browser"
 
 	mcpserver "github.com/mark3labs/mcp-go/server"
+	"strava-mcp/internal/auth"
+	"strava-mcp/internal/config"
 	"strava-mcp/internal/server"
+	"strava-mcp/internal/strava"
 )
 
 var (
@@ -66,7 +69,14 @@ func main() {
 }
 
 func runServer(debug bool) {
-	s := server.New(Version)
+	cfg, err := config.Load()
+	if err != nil {
+		slog.Error("configuration error", "err", err)
+		os.Exit(1)
+	}
+	store := auth.NewFileTokenStore(cfg.TokenPath)
+	client := strava.NewClient(cfg, store, slog.Default())
+	s := server.New(Version, client)
 	slog.Info("starting MCP server", "name", "strava-mcp", "version", Version)
 	if err := mcpserver.ServeStdio(s); err != nil {
 		slog.Error("server error", "err", err)
@@ -75,6 +85,14 @@ func runServer(debug bool) {
 }
 
 func runAuth() {
-	fmt.Fprintln(os.Stderr, "Auth flow not yet implemented. See Plan 02.")
-	os.Exit(1)
+	cfg, err := config.Load()
+	if err != nil {
+		slog.Error("configuration error", "err", err)
+		os.Exit(1)
+	}
+	store := auth.NewFileTokenStore(cfg.TokenPath)
+	if err := auth.RunOAuthFlow(cfg, store, slog.Default()); err != nil {
+		slog.Error("auth failed", "err", err)
+		os.Exit(1)
+	}
 }

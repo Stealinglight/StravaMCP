@@ -7,14 +7,14 @@ import (
 )
 
 func TestNewCreatesServer(t *testing.T) {
-	s := server.New("test")
+	s := server.New("test", nil)
 	if s == nil {
 		t.Fatal("New() returned nil, want non-nil MCPServer")
 	}
 }
 
 func TestServerHasCorrectNameAndVersion(t *testing.T) {
-	s := server.New("1.2.3")
+	s := server.New("1.2.3", nil)
 	if s == nil {
 		t.Fatal("New() returned nil")
 	}
