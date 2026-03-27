@@ -23,16 +23,16 @@
 
 ### Athlete Tools (Port)
 
-- [ ] **ATH-01**: User can get authenticated athlete profile (name, gear, preferences)
-- [ ] **ATH-02**: User can get athlete aggregate statistics (recent/YTD/all-time run/ride/swim totals)
+- [x] **ATH-01**: User can get authenticated athlete profile (name, gear, preferences)
+- [x] **ATH-02**: User can get athlete aggregate statistics (recent/YTD/all-time run/ride/swim totals)
 
 ### Stream Tools (Port)
 
-- [ ] **STR-01**: User can get activity time-series streams (HR, GPS, power, cadence, altitude, etc.)
+- [x] **STR-01**: User can get activity time-series streams (HR, GPS, power, cadence, altitude, etc.)
 
 ### Club Tools (Port)
 
-- [ ] **CLB-01**: User can list recent activities from a club's members with pagination
+- [x] **CLB-01**: User can list recent activities from a club's members with pagination
 
 ### Upload Tools (Port)
 
@@ -118,10 +118,10 @@
 | ACT-03 | Phase 2 | Complete |
 | ACT-04 | Phase 2 | Complete |
 | ACT-05 | Phase 2 | Complete |
-| ATH-01 | Phase 2 | Pending |
-| ATH-02 | Phase 2 | Pending |
-| STR-01 | Phase 2 | Pending |
-| CLB-01 | Phase 2 | Pending |
+| ATH-01 | Phase 2 | Complete |
+| ATH-02 | Phase 2 | Complete |
+| STR-01 | Phase 2 | Complete |
+| CLB-01 | Phase 2 | Complete |
 | UPL-01 | Phase 2 | Pending |
 | UPL-02 | Phase 2 | Pending |
 | DOCS-01 | Phase 3 | Pending |
