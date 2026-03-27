@@ -73,7 +73,9 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- Update GitHub repo description and metadata (area: docs)
+- Set up GitHub Actions release workflow for binary releases (area: tooling)
+- Add contributing guide and open source community setup (area: docs)
 
 ### Blockers/Concerns
 
