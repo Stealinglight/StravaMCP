@@ -44,11 +44,12 @@ Plans:
   3. User can upload activity files (GPX/TCX/FIT) via multipart form data and check upload status
   4. User can list club activities with pagination
   5. All 11 tool descriptions match the existing TypeScript versions in detail and quality (descriptions are the product UI for LLMs)
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 02-01: Activity and athlete tools
-- [ ] 02-02: Streams, clubs, and upload tools
+- [ ] 02-01-PLAN.md -- Shared helpers (formatResponse, handleToolError) and 5 activity tools
+- [ ] 02-02-PLAN.md -- Athlete, streams, and club tools (4 tools)
+- [ ] 02-03-PLAN.md -- PostMultipart client method, upload tools, and RegisterAll wiring (2 tools + final wiring)
 
 ### Phase 3: Polish and Distribution
 **Goal**: The project is portfolio-ready with a polished README and frictionless installation via single-binary releases
@@ -71,5 +72,5 @@ Phases execute in numeric order: 1 -> 2 -> 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Auth | 2/2 | Complete   | 2026-03-27 |
-| 2. Tool Suite | 0/2 | Not started | - |
+| 2. Tool Suite | 0/3 | Not started | - |
 | 3. Polish and Distribution | 0/1 | Not started | - |
