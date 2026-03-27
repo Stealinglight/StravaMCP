@@ -21,13 +21,13 @@ progress:
 See: .planning/PROJECT.md (updated 2026-03-26)
 
 **Core value:** A fast, self-contained Go binary that gives any MCP client full access to the Strava API with zero cloud infrastructure required.
-**Current focus:** Phase 1 - Foundation and Auth
+**Current focus:** Phase 01 — foundation-and-auth
 
 ## Current Position
 
 Phase: 1 of 3 (Foundation and Auth)
 Plan: 1 of 2 in current phase
-Status: Ready to execute
+Status: Executing Phase 01
 Last activity: 2026-03-27
 
 Progress: [░░░░░░░░░░] 0%
