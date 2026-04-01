@@ -1,0 +1,58 @@
+version: 2
+
+builds:
+  - id: strava-mcp
+    main: .
+    binary: strava-mcp
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - darwin
+      - linux
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X main.Version={{.Version}}
+      - -X main.Commit={{.ShortCommit}}
+      - -X main.Date={{.Date}}
+
+archives:
+  - id: default
+    format: tar.gz
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+    files:
+      - README.md
+      - LICENSE
+
+changelog:
+  use: github
+  sort: asc
+  groups:
+    - title: Features
+      regexp: '^.*?feat(\([[:word:]]+\))??!?:.+$'
+      order: 0
+    - title: Bug Fixes
+      regexp: '^.*?(fix|bug)(\([[:word:]]+\))??!?:.+$'
+      order: 1
+    - title: Others
+      order: 999
+  filters:
+    exclude:
+      - "^docs:"
+      - "^chore:"
+      - "^ci:"
+
+homebrew_casks:
+  - name: strava-mcp
+    repository:
+      owner: Stealinglight
+      name: homebrew-tap
+      branch: main
+    binaries:
+      - strava-mcp
+    description: "MCP server for Strava API - local Go binary with zero cloud infrastructure"
+    homepage: "https://github.com/Stealinglight/StravaMCP"
+    commit_msg_template: "Cask update for {{ .ProjectName }} {{ .Tag }}"
+    directory: Casks
