@@ -50,6 +50,7 @@ homebrew_casks:
       owner: Stealinglight
       name: homebrew-tap
       branch: main
+      token: "{{ .Env.HOMEBREW_TAP_GITHUB_TOKEN }}"
     binaries:
       - strava-mcp
     description: "MCP server for Strava API - local Go binary with zero cloud infrastructure"

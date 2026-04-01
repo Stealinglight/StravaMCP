@@ -13,9 +13,9 @@
 
 StravaMCP is a [Model Context Protocol](https://modelcontextprotocol.io) server that connects AI assistants to the Strava API through a single binary running on your machine. It communicates over stdio, works with Claude Desktop, Cursor, and any MCP-compatible client, handles OAuth authentication through an automatic browser flow, and stores tokens locally in a JSON file. No AWS, no Docker, no database -- just download and run.
 
-<!-- Terminal recording: see demo.tape for VHS source -->
-![Demo](demo.gif)
-*Authentication and tool usage with Claude Desktop*
+<!-- Terminal recording: run `vhs demo.tape` to generate demo.gif, then uncomment the line below -->
+<!-- ![Demo](demo.gif) -->
+<!-- *Authentication and tool usage with Claude Desktop* -->
 
 ## How It Works
 
