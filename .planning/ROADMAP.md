@@ -63,7 +63,7 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md -- Module path migration, legacy cleanup, LICENSE, .gitignore
-- [ ] 03-02-PLAN.md -- goreleaser config, release workflow, CONTRIBUTING.md, repo metadata
+- [x] 03-02-PLAN.md -- goreleaser config, release workflow, CONTRIBUTING.md, repo metadata
 - [ ] 03-03-PLAN.md -- Portfolio-quality README and docs site rewrite
 
 ## Progress
