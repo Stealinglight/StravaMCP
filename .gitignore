@@ -1,13 +1,15 @@
-# Dependencies
-node_modules/
-package-lock.json
+# Go binary
+strava-mcp
+StravaMCP
+*.exe
+*.test
+*.out
 
-# Build output
+# Go vendor (not used, but standard)
+/vendor/
+
+# goreleaser output
 dist/
-build/
-*.js
-*.d.ts
-!get-token.js
 
 # Environment variables
 .env
@@ -24,24 +26,8 @@ build/
 Thumbs.db
 
 # Logs
-logs/
 *.log
-npm-debug.log*
 
 # Temporary files
 tmp/
 temp/
-
-# Bun
-bun.lockb
-
-# AWS SAM
-.aws-sam/
-samconfig.toml
-
-# Go
-strava-mcp
-*.exe
-*.test
-*.out
-/vendor/
