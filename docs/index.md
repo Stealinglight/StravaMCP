@@ -4,10 +4,10 @@ title: Home
 nav_order: 1
 ---
 
-# Strava MCP Server
+# StravaMCP
 {: .fs-9 }
 
-A remote Model Context Protocol server for the Strava API that runs serverless on AWS Lambda.
+A fast Go binary that gives any MCP client full access to the Strava API -- zero cloud infrastructure required.
 {: .fs-6 .fw-300 }
 
 [Get Started](#quick-start){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
@@ -17,129 +17,103 @@ A remote Model Context Protocol server for the Strava API that runs serverless o
 
 ## What is this?
 
-The **Strava MCP Server** is a production-ready Model Context Protocol server that enables AI assistants like Claude to interact with your Strava account. It runs completely serverless on AWS Lambda, staying within the **FREE tier** for personal use.
+**StravaMCP** is a [Model Context Protocol](https://modelcontextprotocol.io) server that connects AI assistants like Claude to the Strava API. It runs as a single Go binary on your machine, communicates over stdio, and requires no cloud services, no Docker, and no database. Just download, authenticate, and go.
 
 ### Key Features
 
-- 🔐 **Automatic OAuth Token Refresh** - Set it and forget it
-- ☁️ **Serverless AWS Lambda** - Runs in the free tier
-- 📱 **Claude Web & Mobile OAuth** - Secure connector support
-- 🏃 **11 Strava API Tools** - Activities, athlete stats, streams, clubs, uploads
-- 🎯 **Activity Enrichment** - Transform generic workout titles into detailed training logs
-- ⚡ **Built with Bun** - Fast builds and deployments
+- **Single binary, no runtime dependencies** -- no Docker, no cloud, no database
+- **11 MCP tools** covering activities, athlete stats, streams, clubs, and uploads
+- **Automatic OAuth browser flow** -- one command to authenticate
+- **Transparent token refresh** with concurrent request coalescing via singleflight
+- **Cross-platform** -- macOS (Intel + Apple Silicon) and Linux (amd64 + arm64)
+- **Install via go install, Homebrew, or direct binary download**
 
 ## Quick Start
 
-### 1. Prerequisites
+### Install
 
-- [Bun](https://bun.sh) installed
-- [AWS Account](https://aws.amazon.com/free) (free tier)
-- [AWS SAM CLI](https://docs.aws.amazon.com/serverless-application-model/latest/developerguide/install-sam-cli.html) installed
-- [Strava API](https://www.strava.com/settings/api) credentials
+Choose your preferred installation method:
 
-### 2. Clone and Install
+**Option A: Go install**
 
 ```bash
-git clone https://github.com/Stealinglight/StravaMCP.git
-cd StravaMCP
-bun install
+go install github.com/Stealinglight/StravaMCP@latest
 ```
 
-### 3. Get Strava Credentials
+**Option B: Homebrew**
 
 ```bash
-node get-token.js YOUR_CLIENT_ID YOUR_CLIENT_SECRET
+brew install Stealinglight/tap/strava-mcp
 ```
 
-### 4. Build and Deploy
+**Option C: Download binary**
+
+Download the latest binary for your platform from [GitHub Releases](https://github.com/Stealinglight/StravaMCP/releases/latest).
+
+{: .note }
+> **macOS Gatekeeper:** If you download the binary directly, remove the quarantine attribute:
+> `xattr -d com.apple.quarantine strava-mcp`
+
+### Configure
+
+1. Create a Strava API application at [https://www.strava.com/settings/api](https://www.strava.com/settings/api)
+2. Set the **Authorization Callback Domain** to `localhost`
+3. Export your credentials:
 
 ```bash
-bun run build:lambda
-bun run deploy
+export STRAVA_CLIENT_ID=your_client_id
+export STRAVA_CLIENT_SECRET=your_client_secret
 ```
 
-Follow the prompts to enter your Strava credentials and AWS region.
+### Authenticate
 
-### 5. Connect to Claude
+Run the built-in OAuth flow. This opens your browser, completes authorization, and saves tokens locally:
 
-After deployment, copy the `ClaudeConnectionUrl` and add it to Claude:
-
-**Claude Web**: Settings → Connectors → Add custom connector (OAuth, base URL)
-**Claude Mobile**: Settings → MCP Servers → Add Server
-
-## Architecture
-
+```bash
+strava-mcp auth
 ```
-┌─────────────────┐
-│ Claude (Web/App)│
-└────────┬────────┘
-         │ Streamable HTTP
-         ▼
-┌─────────────────┐
-│ AWS Lambda      │
-│ Function URL    │
-└────────┬────────┘
-         │ MCP Protocol
-         ▼
-┌─────────────────┐
-│ Strava API      │
-└─────────────────┘
+
+You should see: `Authenticated as [Your Name]!`
+
+### Connect to Claude Desktop
+
+Add StravaMCP to your Claude Desktop configuration at `~/Library/Application Support/Claude/claude_desktop_config.json`:
+
+```json
+{
+  "mcpServers": {
+    "strava": {
+      "command": "strava-mcp",
+      "env": {
+        "STRAVA_CLIENT_ID": "your_client_id",
+        "STRAVA_CLIENT_SECRET": "your_client_secret"
+      }
+    }
+  }
+}
 ```
+
+Restart Claude Desktop and the Strava tools will be available.
 
 ## Available Tools
 
-### Activities
-- `get_activities` - List recent activities
-- `get_activity_by_id` - Get detailed activity info
-- `create_activity` - Create manual activities
-- `update_activity` - Enrich activities with details
-- `get_activity_zones` - Get heart rate/power zones
+| Category | Tools | Description |
+|----------|-------|-------------|
+| **Activities** | 5 tools | List, view, create, update activities and get zone data |
+| **Athlete** | 2 tools | Profile info and aggregate statistics (recent/YTD/all-time) |
+| **Streams** | 1 tool | Time-series telemetry (HR, GPS, power, cadence, altitude) |
+| **Clubs** | 1 tool | Recent activities from club members |
+| **Uploads** | 2 tools | Upload activity files (GPX, TCX, FIT) and check status |
 
-### Athlete
-- `get_athlete` - Get profile information
-- `get_athlete_stats` - Training statistics
-
-### Streams
-- `get_activity_streams` - Time-series telemetry data
-
-### Clubs
-- `get_club_activities` - Club member activities
-
-### Uploads
-- `create_upload` - Upload FIT/TCX/GPX files
-- `get_upload` - Check upload status
-
-## Why Serverless?
-
-Traditional MCP servers run locally and can't be used with Claude web or mobile. By deploying to AWS Lambda:
-
-- ✅ Access your Strava data from **any device**
-- ✅ Works with **Claude web and mobile**
-- ✅ **Zero infrastructure** to manage
-- ✅ **Free tier** means $0/month for personal use
-- ✅ **Auto-scales** from zero to thousands of requests
-
-## Cost
-
-**$0/month** under AWS Free Tier for typical use:
-- 1M Lambda requests/month (FREE forever)
-- 400,000 GB-seconds compute/month (FREE for 12 months)
-- Typical usage: < 10,000 requests/month
-
-## Documentation
-
-- [Deployment Guide](deployment) - Step-by-step AWS deployment
-- [Free Tier Guide](freetier) - Stay within AWS free tier limits
-- [API Reference](api) - All 11 MCP tools documented
-- [Examples](examples) - Common use cases
+See the [README](https://github.com/Stealinglight/StravaMCP#tool-reference) for the complete tool reference with all 11 tools.
 
 ## Links
 
 - [GitHub Repository](https://github.com/Stealinglight/StravaMCP)
 - [Strava API Documentation](https://developers.strava.com)
 - [Model Context Protocol](https://modelcontextprotocol.io)
-- [AWS Lambda Free Tier](https://aws.amazon.com/lambda/pricing/)
+- [GitHub Releases](https://github.com/Stealinglight/StravaMCP/releases)
 
 ---
 
-Made with ❤️ by [Stealinglight](https://github.com/Stealinglight)
+Built with Go by [Stealinglight](https://github.com/Stealinglight)

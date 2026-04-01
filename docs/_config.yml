@@ -1,5 +1,5 @@
-title: Strava MCP Server
-description: Remote MCP Server for Strava API running on AWS Lambda (Free Tier)
+title: StravaMCP
+description: MCP server for Strava API - a fast Go binary with zero cloud infrastructure
 
 url: https://stealinglight.github.io
 baseurl: /StravaMCP
@@ -8,7 +8,7 @@ baseurl: /StravaMCP
 remote_theme: just-the-docs/just-the-docs
 
 # Footer content
-footer_content: "Made with ❤️ for athletes and AI | <a href=\"https://github.com/Stealinglight/StravaMCP\">View on GitHub</a>"
+footer_content: "Built with Go | <a href=\"https://github.com/Stealinglight/StravaMCP\">View on GitHub</a>"
 
 # Back to top link
 back_to_top: true
@@ -54,9 +54,3 @@ enable_copy_code_button: true
 
 # Navigation
 nav_sort: case_insensitive
-
-# Collections
-collections:
-  docs:
-    permalink: "/:collection/:path/"
-    output: true
