@@ -62,7 +62,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md -- Module path migration, legacy cleanup, LICENSE, .gitignore
+- [x] 03-01-PLAN.md -- Module path migration, legacy cleanup, LICENSE, .gitignore
 - [ ] 03-02-PLAN.md -- goreleaser config, release workflow, CONTRIBUTING.md, repo metadata
 - [ ] 03-03-PLAN.md -- Portfolio-quality README and docs site rewrite
 
@@ -75,4 +75,4 @@ Phases execute in numeric order: 1 -> 2 -> 3
 |-------|----------------|--------|-----------|
 | 1. Foundation and Auth | 2/2 | Complete   | 2026-03-27 |
 | 2. Tool Suite | 3/3 | Complete | 2026-03-27 |
-| 3. Polish and Distribution | 0/3 | Not started | - |
+| 3. Polish and Distribution | 1/3 | In progress | - |
