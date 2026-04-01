@@ -9,7 +9,7 @@ import (
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
 
-	"strava-mcp/internal/strava"
+	"github.com/Stealinglight/StravaMCP/internal/strava"
 )
 
 // streamTypes lists all available Strava activity stream types.

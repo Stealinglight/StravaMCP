@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	"strava-mcp/internal/tools"
+	"github.com/Stealinglight/StravaMCP/internal/tools"
 )
 
 // --- get_activity_streams tests ---

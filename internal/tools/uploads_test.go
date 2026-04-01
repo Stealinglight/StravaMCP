@@ -13,7 +13,7 @@ import (
 	"strings"
 	"testing"
 
-	"strava-mcp/internal/tools"
+	"github.com/Stealinglight/StravaMCP/internal/tools"
 )
 
 // --- create_upload tests ---

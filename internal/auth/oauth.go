@@ -15,7 +15,7 @@ import (
 
 	"github.com/pkg/browser"
 
-	"strava-mcp/internal/config"
+	"github.com/Stealinglight/StravaMCP/internal/config"
 )
 
 const (

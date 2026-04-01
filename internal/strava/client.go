@@ -17,8 +17,8 @@ import (
 
 	"golang.org/x/sync/singleflight"
 
-	"strava-mcp/internal/auth"
-	"strava-mcp/internal/config"
+	"github.com/Stealinglight/StravaMCP/internal/auth"
+	"github.com/Stealinglight/StravaMCP/internal/config"
 )
 
 const (

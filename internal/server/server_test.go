@@ -3,7 +3,7 @@ package server_test
 import (
 	"testing"
 
-	"strava-mcp/internal/server"
+	"github.com/Stealinglight/StravaMCP/internal/server"
 )
 
 func TestNewCreatesServer(t *testing.T) {

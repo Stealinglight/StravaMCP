@@ -9,10 +9,10 @@ import (
 	"github.com/pkg/browser"
 
 	mcpserver "github.com/mark3labs/mcp-go/server"
-	"strava-mcp/internal/auth"
-	"strava-mcp/internal/config"
-	"strava-mcp/internal/server"
-	"strava-mcp/internal/strava"
+	"github.com/Stealinglight/StravaMCP/internal/auth"
+	"github.com/Stealinglight/StravaMCP/internal/config"
+	"github.com/Stealinglight/StravaMCP/internal/server"
+	"github.com/Stealinglight/StravaMCP/internal/strava"
 )
 
 var (
