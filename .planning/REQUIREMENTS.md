@@ -41,8 +41,8 @@
 
 ### Presentation
 
-- [ ] **DOCS-01**: Portfolio-quality README with badges, architecture diagram, feature list, quick start, visual polish
-- [ ] **DOCS-02**: Single-binary distribution via go install and goreleaser (multi-platform builds)
+- [x] **DOCS-01**: Portfolio-quality README with badges, architecture diagram, feature list, quick start, visual polish
+- [x] **DOCS-02**: Single-binary distribution via go install and goreleaser (multi-platform builds)
 
 ## v2 Requirements (Milestone 2 — Expanded Strava Coverage)
 
@@ -124,8 +124,8 @@
 | CLB-01 | Phase 2 | Complete |
 | UPL-01 | Phase 2 | Complete |
 | UPL-02 | Phase 2 | Complete |
-| DOCS-01 | Phase 3 | Pending |
-| DOCS-02 | Phase 3 | Pending |
+| DOCS-01 | Phase 3 | Complete |
+| DOCS-02 | Phase 3 | Complete |
 
 **Coverage:**
 - v1 requirements: 18 total
