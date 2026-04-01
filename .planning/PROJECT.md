@@ -30,18 +30,22 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 
 ### Active
 
-<!-- New scope for Go rewrite -->
+<!-- Remaining scope for future milestones -->
 
-- [ ] Full rewrite in Go with stdio MCP transport
-- [ ] Go MCP SDK integration (research best library)
-- [ ] Built-in OAuth browser flow for initial token acquisition
-- [ ] File-based token store with automatic refresh persistence
 - [ ] Segment tools: starred segments, segment efforts, leaderboards
 - [ ] Route tools: route details, export GPX, athlete routes
 - [ ] Gear tools: gear details, manage equipment
 - [ ] Laps & efforts tools: activity laps, segment efforts, best efforts
-- [ ] Portfolio-quality README with badges, architecture diagram, feature highlights, and visual polish
-- [ ] Single-binary distribution (go build, no runtime dependencies)
+
+### Validated in v1.0 Milestone
+
+- ✓ Full rewrite in Go with stdio MCP transport — Phase 1
+- ✓ Go MCP SDK integration (mcp-go v0.46.0) — Phase 1
+- ✓ Built-in OAuth browser flow for initial token acquisition — Phase 1
+- ✓ File-based token store with automatic refresh persistence — Phase 1
+- ✓ Portfolio-quality README with badges, architecture diagram, feature highlights, and visual polish — Phase 3
+- ✓ Single-binary distribution (go build, no runtime dependencies) — Phase 3
+- ✓ goreleaser cross-platform release pipeline with Homebrew distribution — Phase 3
 
 ### Out of Scope
 
@@ -88,7 +92,7 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 
 ## Current State
 
-Phase 2 complete — Full tool suite implemented. All 11 MCP tools (5 activity, 2 athlete, 1 streams, 1 clubs, 2 uploads) with shared helpers (FormatResponse, HandleToolError), RegisterAll wiring, and comprehensive tests. PostMultipart client method supports file uploads. update_activity uses map-based partial updates to avoid zero-value overwrite. 80+ tests passing across all packages. Ready for Phase 3 (polish and distribution).
+v1.0 milestone complete — All three phases delivered. Phase 1 built the Go project scaffold, OAuth browser flow, token store, and MCP server wiring. Phase 2 ported all 11 Strava tools with full feature parity. Phase 3 migrated the module path to `github.com/Stealinglight/StravaMCP`, cleaned up all TypeScript/Lambda legacy artifacts, created the goreleaser release pipeline with Homebrew cask distribution, and delivered a portfolio-quality README with badges, Mermaid diagrams, and comprehensive documentation. 80+ tests passing. Ready for first release tag.
 
 ---
-*Last updated: 2026-03-27 after Phase 2 completion*
+*Last updated: 2026-04-01 after Phase 3 completion*
