@@ -19,7 +19,7 @@ import (
 
 // --- Tool Definitions ---
 
-var createUploadTool = mcp.NewTool("create_upload",
+var createUploadTool = mcp.NewTool("strava_create_upload",
 	mcp.WithDescription(`Uploads a new activity file to Strava.
 
 **OAuth Scope**: Requires activity:write permission.
@@ -72,7 +72,7 @@ Supports uploading activity files in these formats:
 	mcp.WithString("external_id", mcp.Description("External identifier for the upload")),
 )
 
-var getUploadTool = mcp.NewTool("get_upload",
+var getUploadTool = mcp.NewTool("strava_get_upload",
 	mcp.WithDescription(`Retrieves the status of a file upload.
 
 **OAuth Scope**: Requires activity:read permission.

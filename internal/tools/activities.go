@@ -13,7 +13,7 @@ import (
 
 // --- Tool Definitions ---
 
-var getActivitiesTool = mcp.NewTool("get_activities",
+var getActivitiesTool = mcp.NewTool("strava_get_activities",
 	mcp.WithDescription(`Retrieves the authenticated athlete's activities.
 
 **Key for Enrichment Workflow**: Use this to find activities from specific time periods, especially "today's run" or recent activities that need updating.
@@ -39,7 +39,7 @@ Example: To find today's runs, calculate today's start epoch timestamp and use i
 	mcp.WithNumber("per_page", mcp.Description("Number of items per page (1-200, default 30)")),
 )
 
-var getActivityByIdTool = mcp.NewTool("get_activity_by_id",
+var getActivityByIdTool = mcp.NewTool("strava_get_activity_by_id",
 	mcp.WithDescription(`Retrieves detailed information about a specific activity by its ID.
 
 Returns comprehensive activity data including:
@@ -55,7 +55,7 @@ Use this after 'get_activities' to get full details about a specific activity be
 	mcp.WithBoolean("include_all_efforts", mcp.Description("Include all segment efforts (default: false)")),
 )
 
-var createActivityTool = mcp.NewTool("create_activity",
+var createActivityTool = mcp.NewTool("strava_create_activity",
 	mcp.WithDescription(`Creates a new manual activity on Strava.
 
 **OAuth Scope**: Requires activity:write permission.
@@ -92,7 +92,7 @@ Use this when:
 	mcp.WithBoolean("commute", mcp.Description("Whether this was a commute")),
 )
 
-var updateActivityTool = mcp.NewTool("update_activity",
+var updateActivityTool = mcp.NewTool("strava_update_activity",
 	mcp.WithDescription(`**[CRITICAL - PRIMARY ENRICHMENT TOOL]** Updates an existing Strava activity.
 
 **OAuth Scope**: Requires activity:write permission.
@@ -135,7 +135,7 @@ var updateActivityTool = mcp.NewTool("update_activity",
 	mcp.WithString("gear_id", mcp.Description("ID of the gear (shoes, bike) used")),
 )
 
-var getActivityZonesTool = mcp.NewTool("get_activity_zones",
+var getActivityZonesTool = mcp.NewTool("strava_get_activity_zones",
 	mcp.WithDescription(`Retrieves the zones of a given activity.
 
 **Note**: This is a **Strava Summit feature**. Requires appropriate activity:read scope based on privacy settings.

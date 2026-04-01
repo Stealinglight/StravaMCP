@@ -108,17 +108,17 @@ Restart your MCP client and the Strava tools will be available.
 
 | Tool | Category | Description |
 |------|----------|-------------|
-| `get_activities` | Activities | List recent activities with date filtering and pagination |
-| `get_activity_by_id` | Activities | Get detailed activity info including laps, splits, and segment efforts |
-| `create_activity` | Activities | Create a new manual activity |
-| `update_activity` | Activities | Update an existing activity (name, description, sport type, gear) |
-| `get_activity_zones` | Activities | Get heart rate and power zone distribution |
-| `get_athlete` | Athlete | Get authenticated athlete profile |
-| `get_athlete_stats` | Athlete | Get aggregate statistics (recent/YTD/all-time totals) |
-| `get_activity_streams` | Streams | Get time-series telemetry data (HR, GPS, power, cadence, altitude) |
-| `get_club_activities` | Clubs | List recent activities from club members |
-| `create_upload` | Uploads | Upload activity files (GPX, TCX, FIT) |
-| `get_upload` | Uploads | Check upload processing status |
+| `strava_get_activities` | Activities | List recent activities with date filtering and pagination |
+| `strava_get_activity_by_id` | Activities | Get detailed activity info including laps, splits, and segment efforts |
+| `strava_create_activity` | Activities | Create a new manual activity |
+| `strava_update_activity` | Activities | Update an existing activity (name, description, sport type, gear) |
+| `strava_get_activity_zones` | Activities | Get heart rate and power zone distribution |
+| `strava_get_athlete` | Athlete | Get authenticated athlete profile |
+| `strava_get_athlete_stats` | Athlete | Get aggregate statistics (recent/YTD/all-time totals) |
+| `strava_get_activity_streams` | Streams | Get time-series telemetry data (HR, GPS, power, cadence, altitude) |
+| `strava_get_club_activities` | Clubs | List recent activities from club members |
+| `strava_create_upload` | Uploads | Upload activity files (GPX, TCX, FIT) |
+| `strava_get_upload` | Uploads | Check upload processing status |
 
 </details>
 

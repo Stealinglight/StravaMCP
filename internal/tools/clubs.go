@@ -13,7 +13,7 @@ import (
 
 // --- Tool Definition ---
 
-var getClubActivitiesTool = mcp.NewTool("get_club_activities",
+var getClubActivitiesTool = mcp.NewTool("strava_get_club_activities",
 	mcp.WithDescription(`Retrieves recent activities from members of a specific club.
 
 **OAuth Scope**: Requires read scope. Only shows activities visible based on member privacy settings.

@@ -20,7 +20,7 @@ var streamTypes = []string{
 
 // --- Tool Definition ---
 
-var getActivityStreamsTool = mcp.NewTool("get_activity_streams",
+var getActivityStreamsTool = mcp.NewTool("strava_get_activity_streams",
 	mcp.WithDescription(`**[TELEMETRY & DEEP ANALYSIS]** Retrieves time-series sensor data (streams) from an activity.
 
 **Performance Coach's Secret Weapon**: While activity summaries give you averages, streams give you the complete story - every data point recorded during the activity. Essential for understanding pacing strategy, heart rate response, power distribution, and elevation profiles.

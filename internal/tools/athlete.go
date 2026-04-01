@@ -13,7 +13,7 @@ import (
 
 // --- Tool Definitions ---
 
-var getAthleteTool = mcp.NewTool("get_athlete",
+var getAthleteTool = mcp.NewTool("strava_get_athlete",
 	mcp.WithDescription(`Retrieves the authenticated athlete's profile information.
 
 **OAuth Scope**: Requires profile:read_all for detailed representation.
@@ -36,7 +36,7 @@ Use this to:
 This is useful when you need to reference the athlete by name or understand their account status.`),
 )
 
-var getAthleteStatsTool = mcp.NewTool("get_athlete_stats",
+var getAthleteStatsTool = mcp.NewTool("strava_get_athlete_stats",
 	mcp.WithDescription(`Retrieves comprehensive statistics about an athlete's activities.
 
 **OAuth Scope**: Requires profile:read_all. Can only retrieve stats for the authenticated athlete.
