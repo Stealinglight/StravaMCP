@@ -12,21 +12,14 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 
 ### Validated
 
-<!-- Inferred from existing TypeScript codebase -->
-
-- ✓ List athlete activities with date filtering and pagination — existing
-- ✓ Get detailed activity by ID — existing
-- ✓ Create manual activities — existing
-- ✓ Update existing activities (name, description, gear, metadata) — existing
-- ✓ Get activity heart rate and power zones — existing
-- ✓ Get authenticated athlete profile — existing
-- ✓ Get athlete aggregate statistics — existing
-- ✓ Get activity time-series streams (HR, GPS, power, cadence, etc.) — existing
-- ✓ Get club activities — existing
-- ✓ Upload activity files (GPX, TCX, FIT) — existing
-- ✓ Check upload status — existing
-- ✓ Automatic OAuth token refresh with expiry buffer — existing
-- ✓ File-based token storage (Rusty Claw pattern) — existing in RustyClaw
+- ✓ Full rewrite in Go with stdio MCP transport — v1.0
+- ✓ Go MCP SDK integration (mcp-go v0.46.0) — v1.0
+- ✓ Built-in OAuth browser flow for initial token acquisition — v1.0
+- ✓ File-based token store with automatic refresh persistence — v1.0
+- ✓ 11 MCP tools with full TypeScript feature parity — v1.0
+- ✓ Portfolio-quality README with badges, diagrams, tool reference — v1.0
+- ✓ Single-binary distribution via goreleaser with Homebrew — v1.0
+- ✓ Cross-platform builds (darwin/linux, amd64/arm64) — v1.0
 
 ### Active
 
@@ -37,15 +30,6 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 - [ ] Gear tools: gear details, manage equipment
 - [ ] Laps & efforts tools: activity laps, segment efforts, best efforts
 
-### Validated in v1.0 Milestone
-
-- ✓ Full rewrite in Go with stdio MCP transport — Phase 1
-- ✓ Go MCP SDK integration (mcp-go v0.46.0) — Phase 1
-- ✓ Built-in OAuth browser flow for initial token acquisition — Phase 1
-- ✓ File-based token store with automatic refresh persistence — Phase 1
-- ✓ Portfolio-quality README with badges, architecture diagram, feature highlights, and visual polish — Phase 3
-- ✓ Single-binary distribution (go build, no runtime dependencies) — Phase 3
-- ✓ goreleaser cross-platform release pipeline with Homebrew distribution — Phase 3
 
 ### Out of Scope
 
@@ -59,12 +43,13 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 
 ## Context
 
-- This MCP is part of the RustyClaw/ZeroClaw ecosystem, which runs multiple local MCP servers (Strava, Slack, video, web-research) as stdio-based tools
-- The existing TypeScript version at `src/` has 11 Strava tools and a full AWS Lambda deployment stack
-- The RustyClaw version at `mcp-servers/strava-mcp/` is already a simplified local-only TypeScript version — the Go rewrite follows this pattern
-- The Go rewrite adds expanded Strava API coverage (segments, routes, gear, laps) beyond the current 11 tools
-- Chris wants this as a portfolio piece — clean code, excellent README, architecture documentation
-- The muscle group heat map renderer is being built separately and will integrate with this MCP in a future milestone
+- v1.0 shipped: 4,791 LOC Go across 5 packages (auth, config, server, strava, tools)
+- 80+ tests passing, all packages covered
+- Tech stack: Go 1.25, mcp-go v0.46.0, goreleaser v2, GitHub Actions
+- Part of the RustyClaw/ZeroClaw ecosystem (local MCP servers for Strava, Slack, video, web-research)
+- All TypeScript/Lambda code removed — clean Go-only repository
+- Portfolio piece with polished README, badges, Mermaid diagrams
+- The muscle group heat map renderer is being built separately and will integrate in a future milestone
 
 ## Constraints
 
@@ -87,12 +72,15 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 | Raw JSON responses (no Go structs for Strava data) | D-01: pass through Strava JSON with pretty-printing, avoid schema coupling | ✓ Phase 2 |
 | Map-based PUT body for update_activity | Avoids Go zero-value trap — only sends user-provided fields | ✓ Phase 2 |
 | Auto-detect upload data_type from file extension | D-04: .gpx/.fit/.tcx/.tcx.gz mapped automatically, explicit override available | ✓ Phase 2 |
-| Add segments/routes/gear/laps | Expand beyond current 11 tools to comprehensive Strava coverage | — Pending |
-| Heat map as future milestone | Separate project, don't couple it to the core rewrite | — Pending |
+| Module path github.com/Stealinglight/StravaMCP | Enables `go install` and proper Go module ecosystem integration | ✓ Phase 3 |
+| goreleaser v2 with homebrew_casks | Cross-platform binary distribution + Homebrew tap | ✓ Phase 3 |
+| ISC License | Simple permissive license for open source distribution | ✓ Phase 3 |
+| Add segments/routes/gear/laps | Expand beyond current 11 tools to comprehensive Strava coverage | — v2.0 |
+| Heat map as future milestone | Separate project, don't couple it to the core rewrite | — v2.0+ |
 
 ## Current State
 
-v1.0 milestone complete — All three phases delivered. Phase 1 built the Go project scaffold, OAuth browser flow, token store, and MCP server wiring. Phase 2 ported all 11 Strava tools with full feature parity. Phase 3 migrated the module path to `github.com/Stealinglight/StravaMCP`, cleaned up all TypeScript/Lambda legacy artifacts, created the goreleaser release pipeline with Homebrew cask distribution, and delivered a portfolio-quality README with badges, Mermaid diagrams, and comprehensive documentation. 80+ tests passing. Ready for first release tag.
+v1.0 milestone shipped (2026-04-01). Complete Go rewrite with 11 MCP tools, OAuth browser flow, singleflight token refresh, goreleaser cross-platform release pipeline with Homebrew distribution, and portfolio-quality README. 4,791 LOC Go, 80+ tests, all TypeScript/Lambda artifacts removed. Ready for first `v1.0.0` release tag and v2.0 planning (expanded Strava API coverage: segments, routes, gear, laps).
 
 ---
-*Last updated: 2026-04-01 after Phase 3 completion*
+*Last updated: 2026-04-01 after v1.0 milestone completion*
