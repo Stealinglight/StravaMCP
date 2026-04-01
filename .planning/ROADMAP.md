@@ -13,7 +13,7 @@ This roadmap delivers a complete Go rewrite of the Strava MCP server in three ph
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation and Auth** - Go project scaffold, file-based token store, OAuth browser flow, Strava HTTP client, and MCP server wiring (completed 2026-03-27)
-- [ ] **Phase 2: Tool Suite** - Port all 11 existing Strava tools with full feature parity (activities, athlete, streams, clubs, uploads)
+- [x] **Phase 2: Tool Suite** - Port all 11 existing Strava tools with full feature parity (activities, athlete, streams, clubs, uploads)
 - [ ] **Phase 3: Polish and Distribution** - Portfolio-quality README and single-binary cross-platform release pipeline
 
 ## Phase Details
@@ -57,12 +57,14 @@ Plans:
 **Requirements**: DOCS-01, DOCS-02
 **Success Criteria** (what must be TRUE):
   1. README includes badges, architecture diagram, complete tool reference, quick-start guide, and visual polish worthy of a portfolio piece
-  2. `goreleaser` produces cross-platform binaries (macOS, Linux, Windows) from a single GitHub Actions workflow
+  2. `goreleaser` produces cross-platform binaries (macOS, Linux) from a single GitHub Actions workflow
   3. A new user can go from zero to working MCP server by following only the README instructions
-**Plans**: TBD
+**Plans**: 3 plans
 
 Plans:
-- [ ] 03-01: README and release pipeline
+- [ ] 03-01-PLAN.md -- Module path migration, legacy cleanup, LICENSE, .gitignore
+- [ ] 03-02-PLAN.md -- goreleaser config, release workflow, CONTRIBUTING.md, repo metadata
+- [ ] 03-03-PLAN.md -- Portfolio-quality README and docs site rewrite
 
 ## Progress
 
@@ -72,5 +74,5 @@ Phases execute in numeric order: 1 -> 2 -> 3
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation and Auth | 2/2 | Complete   | 2026-03-27 |
-| 2. Tool Suite | 1/3 | In Progress | - |
-| 3. Polish and Distribution | 0/1 | Not started | - |
+| 2. Tool Suite | 3/3 | Complete | 2026-03-27 |
+| 3. Polish and Distribution | 0/3 | Not started | - |
