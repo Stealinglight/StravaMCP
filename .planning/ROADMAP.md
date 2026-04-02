@@ -87,7 +87,10 @@ Plans:
   1. Pushing to main triggers a GitHub Actions workflow that deploys docs/ to GitHub Pages
   2. stealinglight.github.io/StravaMCP loads and renders the docs site with just-the-docs theme and dark mode
   3. All existing docs site pages (tool reference, quick start, architecture) render without broken links or missing assets
-**Plans**: TBD
+**Plans**: 1 plan
+
+Plans:
+- [ ] 04-01-PLAN.md -- Restore deploy-docs.yml workflow and verify live site rendering
 **UI hint**: yes
 
 ### Phase 5: OpenClaw Positioning & Performance Messaging
@@ -111,5 +114,5 @@ Phases execute in numeric order: 4 -> 5
 | 1. Foundation and Auth | v1.0 | 2/2 | Complete | 2026-03-27 |
 | 2. Tool Suite | v1.0 | 3/3 | Complete | 2026-03-27 |
 | 3. Polish and Distribution | v1.0 | 3/3 | Complete | 2026-04-01 |
-| 4. GitHub Pages Restoration | v1.1 | 0/? | Not started | - |
+| 4. GitHub Pages Restoration | v1.1 | 0/1 | Planning complete | - |
 | 5. OpenClaw Positioning | v1.1 | 0/? | Not started | - |
