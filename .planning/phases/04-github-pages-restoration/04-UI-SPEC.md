@@ -37,7 +37,6 @@ Declared values (inherited from just-the-docs `$spacing-unit: 1rem = 16px`):
 |-------|-------|-------|
 | sp-1 | 4px (0.25rem) | Inline icon gaps, tight padding |
 | sp-2 | 8px (0.5rem) | Compact element spacing |
-| sp-3 | 12px (0.75rem) | Button padding, list item spacing |
 | sp-4 | 16px (1rem) | Default content spacing, paragraph margins |
 | sp-5 | 24px (1.5rem) | Section padding |
 | sp-6 | 32px (2rem) | Layout gaps, heading top margins |
