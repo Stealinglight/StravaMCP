@@ -1,9 +1,9 @@
 ---
 gsd_state_version: 1.0
-milestone: v1.0
-milestone_name: milestone
-status: executing
-stopped_at: Phase 3 context gathered
+milestone: v1.1
+milestone_name: docs-pages-openclaw
+status: defining-requirements
+stopped_at: Milestone v1.1 started
 last_updated: "2026-04-01T21:19:26.541Z"
 last_activity: 2026-04-01
 progress:
@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-03-26)
 
 ## Current Position
 
-Phase: 03
-Plan: Not started
-Status: Ready to execute
-Last activity: 2026-04-01
+Phase: Not started (defining requirements)
+Plan: —
+Status: Defining requirements
+Last activity: 2026-04-01 — Milestone v1.1 started
 
 Progress: [████░░░░░░] 40%
 

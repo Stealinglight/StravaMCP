@@ -78,9 +78,36 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 | Add segments/routes/gear/laps | Expand beyond current 11 tools to comprehensive Strava coverage | — v2.0 |
 | Heat map as future milestone | Separate project, don't couple it to the core rewrite | — v2.0+ |
 
+## Current Milestone: v1.1 Docs, Pages & OpenClaw Positioning
+
+**Goal:** Fix GitHub Pages deployment, position StravaMCP as a high-performance Go MCP server for OpenClaw/ZeroClaw agent frameworks, and highlight Go speed advantages over Python/JavaScript MCPs.
+
+**Target features:**
+- Fix GitHub Pages deployment workflow (deleted during v1.0 cleanup)
+- Update README with OpenClaw/ZeroClaw ecosystem positioning and Go performance messaging
+- Update docs/ site with OpenClaw compatibility and performance claims
+- Position as production-grade MCP server for agent frameworks, not just a portfolio piece
+
 ## Current State
 
-v1.0 milestone shipped (2026-04-01). Complete Go rewrite with 11 MCP tools, OAuth browser flow, singleflight token refresh, goreleaser cross-platform release pipeline with Homebrew distribution, and portfolio-quality README. 4,791 LOC Go, 80+ tests, all TypeScript/Lambda artifacts removed. Ready for first `v1.0.0` release tag and v2.0 planning (expanded Strava API coverage: segments, routes, gear, laps).
+v1.0 milestone shipped (2026-04-01). Complete Go rewrite with 11 MCP tools, OAuth browser flow, singleflight token refresh, goreleaser cross-platform release pipeline with Homebrew distribution, and portfolio-quality README. 4,791 LOC Go, 80+ tests, all TypeScript/Lambda artifacts removed. Deployed to RustyClaw bot-delta (v1.0.1). GitHub Pages docs site is broken (deployment workflow missing).
+
+## Evolution
+
+This document evolves at phase transitions and milestone boundaries.
+
+**After each phase transition** (via `/gsd:transition`):
+1. Requirements invalidated? → Move to Out of Scope with reason
+2. Requirements validated? → Move to Validated with phase reference
+3. New requirements emerged? → Add to Active
+4. Decisions to log? → Add to Key Decisions
+5. "What This Is" still accurate? → Update if drifted
+
+**After each milestone** (via `/gsd:complete-milestone`):
+1. Full review of all sections
+2. Core Value check — still the right priority?
+3. Audit Out of Scope — reasons still valid?
+4. Update Context with current state
 
 ---
-*Last updated: 2026-04-01 after v1.0 milestone completion*
+*Last updated: 2026-04-01 after v1.1 milestone start*
