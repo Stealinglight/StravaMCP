@@ -1,8 +1,9 @@
-# Roadmap: StravaMCP Go Rewrite
+# Roadmap: StravaMCP
 
-## Overview
+## Milestones
 
-This roadmap delivers a complete Go rewrite of the Strava MCP server in three phases: first, build all infrastructure (project scaffold, token management, OAuth browser flow, Strava HTTP client, MCP server wiring); second, port all 11 existing tools to Go with full feature parity; third, polish the README and set up single-binary distribution for portfolio presentation. The dependency chain is strict -- no tool can work without the infrastructure layer, and the README cannot be finalized until all tools are implemented.
+- v1.0 **Go Rewrite** - Phases 1-3 (shipped 2026-04-01)
+- v1.1 **Docs, Pages & OpenClaw Positioning** - Phases 4-5 (in progress)
 
 ## Phases
 
@@ -12,11 +13,12 @@ This roadmap delivers a complete Go rewrite of the Strava MCP server in three ph
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [x] **Phase 1: Foundation and Auth** - Go project scaffold, file-based token store, OAuth browser flow, Strava HTTP client, and MCP server wiring (completed 2026-03-27)
-- [x] **Phase 2: Tool Suite** - Port all 11 existing Strava tools with full feature parity (activities, athlete, streams, clubs, uploads)
-- [ ] **Phase 3: Polish and Distribution** - Portfolio-quality README and single-binary cross-platform release pipeline
+<details>
+<summary>v1.0 Go Rewrite (Phases 1-3) - SHIPPED 2026-04-01</summary>
 
-## Phase Details
+- [x] **Phase 1: Foundation and Auth** - Go project scaffold, file-based token store, OAuth browser flow, Strava HTTP client, and MCP server wiring
+- [x] **Phase 2: Tool Suite** - Port all 11 existing Strava tools with full feature parity (activities, athlete, streams, clubs, uploads)
+- [x] **Phase 3: Polish and Distribution** - Portfolio-quality README and single-binary cross-platform release pipeline
 
 ### Phase 1: Foundation and Auth
 **Goal**: A running MCP server binary that authenticates with Strava and can make API calls, with all infrastructure ready for tool registration
@@ -66,13 +68,48 @@ Plans:
 - [x] 03-02-PLAN.md -- goreleaser config, release workflow, CONTRIBUTING.md, repo metadata
 - [x] 03-03-PLAN.md -- Portfolio-quality README and docs site rewrite
 
+</details>
+
+### v1.1 Docs, Pages & OpenClaw Positioning (In Progress)
+
+**Milestone Goal:** Fix GitHub Pages deployment, position StravaMCP as a high-performance Go MCP server for OpenClaw/ZeroClaw agent frameworks, and highlight Go speed advantages over Python/JavaScript MCPs.
+
+- [ ] **Phase 4: GitHub Pages Restoration** - Fix broken deployment workflow and verify docs site renders correctly
+- [ ] **Phase 5: OpenClaw Positioning & Performance Messaging** - Update README and docs with agent framework positioning and Go performance advantages
+
+## Phase Details
+
+### Phase 4: GitHub Pages Restoration
+**Goal**: The docs site is live and rendering correctly at stealinglight.github.io/StravaMCP
+**Depends on**: Phase 3 (docs site content created in v1.0)
+**Requirements**: PAGES-01, PAGES-02
+**Success Criteria** (what must be TRUE):
+  1. Pushing to main triggers a GitHub Actions workflow that deploys docs/ to GitHub Pages
+  2. stealinglight.github.io/StravaMCP loads and renders the docs site with just-the-docs theme and dark mode
+  3. All existing docs site pages (tool reference, quick start, architecture) render without broken links or missing assets
+**Plans**: TBD
+**UI hint**: yes
+
+### Phase 5: OpenClaw Positioning & Performance Messaging
+**Goal**: StravaMCP is positioned as a production-grade, high-performance MCP server for agent frameworks, not just a portfolio piece
+**Depends on**: Phase 4 (docs site must be live before updating its content)
+**Requirements**: MSG-01, MSG-02, MSG-03, MSG-04
+**Success Criteria** (what must be TRUE):
+  1. README contains an OpenClaw/ZeroClaw ecosystem section that explains how StravaMCP fits as a stdio MCP server within agent framework architectures
+  2. README includes concrete Go performance claims (sub-second startup, low memory footprint, small binary size) contrasted against typical Python/JavaScript MCP servers
+  3. Docs site has a dedicated OpenClaw/ZeroClaw compatibility page or section with integration instructions (how to wire StravaMCP into an agent)
+  4. The overall project tone across README and docs reads as "production-grade MCP server" rather than "portfolio project" -- language emphasizes reliability, performance, and agent framework integration
+**Plans**: TBD
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 -> 2 -> 3
+Phases execute in numeric order: 4 -> 5
 
-| Phase | Plans Complete | Status | Completed |
-|-------|----------------|--------|-----------|
-| 1. Foundation and Auth | 2/2 | Complete   | 2026-03-27 |
-| 2. Tool Suite | 3/3 | Complete | 2026-03-27 |
-| 3. Polish and Distribution | 1/3 | In progress | - |
+| Phase | Milestone | Plans Complete | Status | Completed |
+|-------|-----------|----------------|--------|-----------|
+| 1. Foundation and Auth | v1.0 | 2/2 | Complete | 2026-03-27 |
+| 2. Tool Suite | v1.0 | 3/3 | Complete | 2026-03-27 |
+| 3. Polish and Distribution | v1.0 | 3/3 | Complete | 2026-04-01 |
+| 4. GitHub Pages Restoration | v1.1 | 0/? | Not started | - |
+| 5. OpenClaw Positioning | v1.1 | 0/? | Not started | - |

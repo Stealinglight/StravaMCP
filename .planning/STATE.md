@@ -2,12 +2,12 @@
 gsd_state_version: 1.0
 milestone: v1.1
 milestone_name: docs-pages-openclaw
-status: defining-requirements
-stopped_at: Milestone v1.1 started
-last_updated: "2026-04-01T21:19:26.541Z"
+status: ready-to-plan
+stopped_at: Roadmap created for v1.1
+last_updated: "2026-04-01"
 last_activity: 2026-04-01
 progress:
-  total_phases: 3
+  total_phases: 5
   completed_phases: 3
   total_plans: 8
   completed_plans: 8
@@ -18,17 +18,17 @@ progress:
 
 ## Project Reference
 
-See: .planning/PROJECT.md (updated 2026-03-26)
+See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A fast, self-contained Go binary that gives any MCP client full access to the Strava API with zero cloud infrastructure required.
-**Current focus:** Phase 03 — polish-and-distribution
+**Current focus:** Phase 04 — GitHub Pages Restoration
 
 ## Current Position
 
-Phase: Not started (defining requirements)
-Plan: —
-Status: Defining requirements
-Last activity: 2026-04-01 — Milestone v1.1 started
+Phase: 4 of 5 (GitHub Pages Restoration)
+Plan: 0 of ? in current phase
+Status: Ready to plan
+Last activity: 2026-04-01 — v1.1 roadmap created
 
 Progress: [████░░░░░░] 40%
 
@@ -36,27 +36,24 @@ Progress: [████░░░░░░] 40%
 
 **Velocity:**
 
-- Total plans completed: 0
-- Average duration: -
-- Total execution time: 0 hours
+- Total plans completed: 8 (v1.0)
+- Average duration: ~5.6 min/plan
+- Total execution time: ~45 min
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| Phase 01 | 2 | 13min | 6.5min |
+| Phase 02 | 3 | 15min | 5min |
+| Phase 03 | 3 | 17min | 5.7min |
 
 **Recent Trend:**
 
-- Last 5 plans: -
-- Trend: -
+- Last 5 plans: 7min, 4min, 4min, ~6min, ~6min
+- Trend: Stable
 
 *Updated after each plan completion*
-| Phase 01 P01 | 5min | 2 tasks | 11 files |
-| Phase 01 P02 | 8min | 2 tasks | 10 files |
-| Phase 02 P01 | 7min | 2 tasks | 5 files |
-| Phase 02 P02 | 4min | 2 tasks | 7 files |
-| Phase 02 P03 | 4min | 2 tasks | 5 files |
 
 ## Accumulated Context
 
@@ -65,32 +62,19 @@ Progress: [████░░░░░░] 40%
 Decisions are logged in PROJECT.md Key Decisions table.
 Recent decisions affecting current work:
 
-- [Roadmap]: Coarse 3-phase structure -- infrastructure, tools, polish. Research suggested 6 phases but compressed per granularity setting.
-- [Roadmap]: Token store + OAuth + Strava client bundled into Phase 1 (research had these as separate phases 2-3) because no tool works without the full auth chain.
-- [Phase 01]: mcp-go v0.46.0 pinned as MCP SDK (latest stable at execution time)
-- [Phase 01]: All logging to stderr via slog; stdout reserved for MCP JSON-RPC only
-- [Phase 01]: Token file stores only access_token, refresh_token, expires_at; client credentials from env vars only
-- [Phase 01]: Test isolation via URL setter methods (SetBaseURL/SetTokenURL) keeps production constructor clean
-- [Phase 01]: OAuth functions accept endpoint URLs as parameters for testability without global state
-- [Phase 01]: singleflight.Group coalesces concurrent token refreshes into single Strava API call
-- [Phase 02]: Used mcp-go v0.46.0 method-style API (request.GetInt, request.GetBool) instead of deprecated ParseInt64 helpers
-- [Phase 02]: Exported FormatResponse/HandleToolError for cross-package test access; handler closure pattern HandleXxx(client) returns ToolHandlerFunc
-- [Phase 02]: Used request.GetInt/GetBool/GetArguments API (established in Plan 01) instead of mcp.ParseInt64 from plan spec
-- [Phase 02]: PostMultipart delegates to doRequest (thin wrapper) rather than duplicating auth/refresh logic
-- [Phase 02]: Extension auto-detection with explicit override; validDataTypes whitelist for file security
+- [v1.1 Roadmap]: Two-phase structure -- fix Pages deployment first (Phase 4), then update messaging content (Phase 5). Pages must be live before docs content updates make sense.
+- [v1.0]: GitHub Pages deployment workflow was deleted during v1.0 cleanup and needs restoration.
 
 ### Pending Todos
 
-- Update GitHub repo description and metadata (area: docs)
-- Set up GitHub Actions release workflow for binary releases (area: tooling)
-- Add contributing guide and open source community setup (area: docs)
+None for v1.1.
 
 ### Blockers/Concerns
 
-- OAuth redirect URI (http://localhost:PORT/callback) must be registered in Strava developer console before Phase 1 OAuth testing can work.
+- GitHub Pages workflow was deleted during v1.0 TypeScript cleanup -- need to recreate from scratch or restore.
 
 ## Session Continuity
 
-Last session: 2026-04-01T15:28:10.689Z
-Stopped at: Phase 3 context gathered
-Resume file: .planning/phases/03-polish-and-distribution/03-CONTEXT.md
+Last session: 2026-04-01
+Stopped at: v1.1 roadmap created, ready to plan Phase 4
+Resume file: None

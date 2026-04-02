@@ -36,17 +36,17 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PAGES-01 | — | Pending |
-| PAGES-02 | — | Pending |
-| MSG-01 | — | Pending |
-| MSG-02 | — | Pending |
-| MSG-03 | — | Pending |
-| MSG-04 | — | Pending |
+| PAGES-01 | Phase 4 | Pending |
+| PAGES-02 | Phase 4 | Pending |
+| MSG-01 | Phase 5 | Pending |
+| MSG-02 | Phase 5 | Pending |
+| MSG-03 | Phase 5 | Pending |
+| MSG-04 | Phase 5 | Pending |
 
 **Coverage:**
 - v1.1 requirements: 6 total
-- Mapped to phases: 0/6
-- Unmapped: 6
+- Mapped to phases: 6/6
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-04-01*
