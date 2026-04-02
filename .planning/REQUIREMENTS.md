@@ -1,137 +1,52 @@
-# Requirements: StravaMCP Go Rewrite
+# Requirements: StravaMCP v1.1 — Docs, Pages & OpenClaw Positioning
 
-**Defined:** 2026-03-26
+**Defined:** 2026-04-01
 **Core Value:** A fast, self-contained Go binary that gives any MCP client full access to the Strava API with zero cloud infrastructure required.
 
-## v1 Requirements (Milestone 1 — Core Go Rewrite)
+## v1.1 Requirements
 
-### Infrastructure
+### GitHub Pages
 
-- [x] **INFRA-01**: Go project scaffolded with mcp-go SDK, stderr-only logging, go.mod initialized
-- [x] **INFRA-02**: File-based token store with atomic write-then-rename at configurable path (~/.strava/tokens.json)
-- [x] **INFRA-03**: Built-in OAuth browser flow that opens system browser, runs ephemeral localhost callback, exchanges code, persists tokens
-- [x] **INFRA-04**: Strava HTTP client with automatic token refresh (5-min buffer), concurrent refresh protection (singleflight), and rate limit header tracking
-- [x] **INFRA-05**: MCP server wired with mcp-go ServeStdio, all tools registered declaratively
+- [ ] **PAGES-01**: GitHub Pages deployment workflow exists and docs/ site is live at stealinglight.github.io/StravaMCP
+- [ ] **PAGES-02**: Docs site renders correctly with just-the-docs theme, dark mode, Go-focused content
 
-### Activity Tools (Port)
+### Messaging
 
-- [x] **ACT-01**: User can list recent activities with date filtering (before/after) and pagination
-- [x] **ACT-02**: User can get detailed activity by ID including laps, splits, segment efforts
-- [x] **ACT-03**: User can create manual activities with name, sport type, start time, elapsed time
-- [x] **ACT-04**: User can update existing activities (name, description, sport type, gear, trainer, commute, hide)
-- [x] **ACT-05**: User can get heart rate and power zone distribution for an activity
+- [ ] **MSG-01**: README has OpenClaw/ZeroClaw ecosystem section explaining agent framework compatibility
+- [ ] **MSG-02**: README highlights Go performance advantages over Python/JavaScript MCPs (startup time, memory footprint, binary size)
+- [ ] **MSG-03**: Docs site has OpenClaw/ZeroClaw compatibility page or section with integration instructions
+- [ ] **MSG-04**: Project positioned as production-grade MCP server for agent frameworks, not just portfolio piece
 
-### Athlete Tools (Port)
+## Future Requirements (v2.0 — Expanded Strava Coverage)
 
-- [x] **ATH-01**: User can get authenticated athlete profile (name, gear, preferences)
-- [x] **ATH-02**: User can get athlete aggregate statistics (recent/YTD/all-time run/ride/swim totals)
-
-### Stream Tools (Port)
-
-- [x] **STR-01**: User can get activity time-series streams (HR, GPS, power, cadence, altitude, etc.)
-
-### Club Tools (Port)
-
-- [x] **CLB-01**: User can list recent activities from a club's members with pagination
-
-### Upload Tools (Port)
-
-- [x] **UPL-01**: User can upload activity files (GPX, TCX, FIT) via proper multipart form data
-- [x] **UPL-02**: User can check upload processing status and get resulting activity ID
-
-### Presentation
-
-- [x] **DOCS-01**: Portfolio-quality README with badges, architecture diagram, feature list, quick start, visual polish
-- [x] **DOCS-02**: Single-binary distribution via go install and goreleaser (multi-platform builds)
-
-## v2 Requirements (Milestone 2 — Expanded Strava Coverage)
-
-### Segment Tools
-
-- [ ] **SEG-01**: User can list their starred segments with pagination
-- [ ] **SEG-02**: User can get detailed segment info (distance, elevation, grade, climb category)
-- [ ] **SEG-03**: User can explore segments near a GPS coordinate with filters
-- [ ] **SEG-04**: User can star/unstar a segment
-- [ ] **SEG-05**: User can list all efforts on a segment (filtered by athlete, date range)
-- [ ] **SEG-06**: User can get detailed segment effort (elapsed time, moving time, PR rank)
-- [ ] **SEG-07**: User can get segment streams (altitude, distance, latlng)
-- [ ] **SEG-08**: User can get segment effort streams (time-series for a specific effort)
-
-### Route Tools
-
-- [ ] **RTE-01**: User can list their routes with pagination
-- [ ] **RTE-02**: User can get route details (distance, elevation, estimated time, map)
-- [ ] **RTE-03**: User can export a route as GPX
-- [ ] **RTE-04**: User can export a route as TCX
-- [ ] **RTE-05**: User can get route streams (elevation, distance, latlng)
-
-### Gear Tools
-
-- [ ] **GEAR-01**: User can get gear details by ID (distance tracked, name, brand, model)
-- [ ] **GEAR-02**: User can list all their shoes with mileage (extracted from athlete profile)
-- [ ] **GEAR-03**: User can list all their bikes (extracted from athlete profile)
-
-### Laps & Zones
-
-- [ ] **LAP-01**: User can get activity laps (pace, HR, cadence per lap)
-- [ ] **ZONE-01**: User can get their configured HR/power zone boundaries
-
-### Extended Club Tools
-
-- [ ] **CLB-02**: User can list clubs they belong to
-- [ ] **CLB-03**: User can get club details (member count, sport type, location)
-
-### Social Tools
-
-- [ ] **SOC-01**: User can get activity comments with pagination
-- [ ] **SOC-02**: User can get activity kudos with pagination
-- [ ] **SOC-03**: User can get activity photos (note: uses undocumented endpoint, verify stability)
+- [ ] Segment tools: starred segments, segment efforts, leaderboards
+- [ ] Route tools: route details, export GPX, athlete routes
+- [ ] Gear tools: gear details, manage equipment
+- [ ] Laps & efforts tools: activity laps, segment efforts, best efforts
 
 ## Out of Scope
 
 | Feature | Reason |
 |---------|--------|
-| AWS Lambda deployment | Simplifying to local binary only — drop all cloud infrastructure |
-| DynamoDB / any database | File-based token store is sufficient for local MCP |
-| SSE / HTTP transport | Stdio only — MCP standard for local tool servers |
-| Segment leaderboard | Undocumented endpoint, requires Strava Summit subscription, may break |
-| Activity deletion | Destructive operation with no undo — too risky for LLM tool |
-| Webhook subscriptions | Requires public HTTP endpoint — contradicts zero-infrastructure design |
-| Bulk operations | Rate limit risk and amplifies AI mistake potential |
-| Data caching / local DB | Adds staleness complexity; API rate limits are generous for interactive use |
-| Multi-athlete support | One MCP instance per athlete; coaching multiple athletes = separate instances |
-| Training plan generation | LLM/agent layer concern, not a tool concern |
-| Muscle group heat map | Separate project, future milestone integration |
-| OpenAI-compatible tool defs | Go version is MCP-native only |
+| Actual performance benchmarks (measured) | Would require building Python/JS equivalents for apples-to-apples comparison; use known Go vs Python/JS characteristics instead |
+| New Strava API tools | Deferred to v2.0 milestone |
+| OpenClaw plugin packaging | StravaMCP is a standalone binary; OpenClaw integration is via MCP stdio transport, not a plugin format |
 
 ## Traceability
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | Phase 1 | Complete |
-| INFRA-02 | Phase 1 | Complete |
-| INFRA-03 | Phase 1 | Complete |
-| INFRA-04 | Phase 1 | Complete |
-| INFRA-05 | Phase 1 | Complete |
-| ACT-01 | Phase 2 | Complete |
-| ACT-02 | Phase 2 | Complete |
-| ACT-03 | Phase 2 | Complete |
-| ACT-04 | Phase 2 | Complete |
-| ACT-05 | Phase 2 | Complete |
-| ATH-01 | Phase 2 | Complete |
-| ATH-02 | Phase 2 | Complete |
-| STR-01 | Phase 2 | Complete |
-| CLB-01 | Phase 2 | Complete |
-| UPL-01 | Phase 2 | Complete |
-| UPL-02 | Phase 2 | Complete |
-| DOCS-01 | Phase 3 | Complete |
-| DOCS-02 | Phase 3 | Complete |
+| PAGES-01 | — | Pending |
+| PAGES-02 | — | Pending |
+| MSG-01 | — | Pending |
+| MSG-02 | — | Pending |
+| MSG-03 | — | Pending |
+| MSG-04 | — | Pending |
 
 **Coverage:**
-- v1 requirements: 18 total
-- Mapped to phases: 18/18
-- Unmapped: 0
+- v1.1 requirements: 6 total
+- Mapped to phases: 0/6
+- Unmapped: 6
 
 ---
-*Requirements defined: 2026-03-26*
-*Last updated: 2026-03-26 after roadmap creation*
+*Requirements defined: 2026-04-01*
