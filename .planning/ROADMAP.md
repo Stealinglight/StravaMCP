@@ -90,7 +90,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 04-01-PLAN.md -- Restore deploy-docs.yml workflow and verify live site rendering
+- [x] 04-01-PLAN.md -- Restore deploy-docs.yml workflow and verify live site rendering
 **UI hint**: yes
 
 ### Phase 5: OpenClaw Positioning & Performance Messaging

@@ -1,16 +1,16 @@
 ---
 gsd_state_version: 1.0
 milestone: v1.1
-milestone_name: docs-pages-openclaw
-status: ready-to-plan
-stopped_at: Roadmap created for v1.1
-last_updated: "2026-04-01"
-last_activity: 2026-04-01
+milestone_name: Docs, Pages & OpenClaw Positioning
+status: verifying
+stopped_at: Completed 04-01-PLAN.md
+last_updated: "2026-04-03T23:59:11.908Z"
+last_activity: 2026-04-03
 progress:
-  total_phases: 5
-  completed_phases: 3
-  total_plans: 8
-  completed_plans: 8
+  total_phases: 2
+  completed_phases: 1
+  total_plans: 1
+  completed_plans: 1
   percent: 40
 ---
 
@@ -21,14 +21,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-04-01)
 
 **Core value:** A fast, self-contained Go binary that gives any MCP client full access to the Strava API with zero cloud infrastructure required.
-**Current focus:** Phase 04 — GitHub Pages Restoration
+**Current focus:** Phase 04 — github-pages-restoration
 
 ## Current Position
 
-Phase: 4 of 5 (GitHub Pages Restoration)
-Plan: 0 of ? in current phase
-Status: Ready to plan
-Last activity: 2026-04-01 — v1.1 roadmap created
+Phase: 04 (github-pages-restoration) — EXECUTING
+Plan: 1 of 1
+Status: Phase complete — ready for verification
+Last activity: 2026-04-03
 
 Progress: [████░░░░░░] 40%
 
@@ -54,6 +54,7 @@ Progress: [████░░░░░░] 40%
 - Trend: Stable
 
 *Updated after each plan completion*
+| Phase 04 P01 | 61s | 2 tasks | 1 files |
 
 ## Accumulated Context
 
@@ -64,6 +65,7 @@ Recent decisions affecting current work:
 
 - [v1.1 Roadmap]: Two-phase structure -- fix Pages deployment first (Phase 4), then update messaging content (Phase 5). Pages must be live before docs content updates make sense.
 - [v1.0]: GitHub Pages deployment workflow was deleted during v1.0 cleanup and needs restoration.
+- [Phase 04]: Restored exact deploy-docs.yml workflow from deleted commit e2026848 with verified-current GitHub Actions versions
 
 ### Pending Todos
 
@@ -75,6 +77,6 @@ None for v1.1.
 
 ## Session Continuity
 
-Last session: 2026-04-01
-Stopped at: v1.1 roadmap created, ready to plan Phase 4
+Last session: 2026-04-03T23:59:11.907Z
+Stopped at: Completed 04-01-PLAN.md
 Resume file: None

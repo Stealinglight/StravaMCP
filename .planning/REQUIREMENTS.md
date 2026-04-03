@@ -7,8 +7,8 @@
 
 ### GitHub Pages
 
-- [ ] **PAGES-01**: GitHub Pages deployment workflow exists and docs/ site is live at stealinglight.github.io/StravaMCP
-- [ ] **PAGES-02**: Docs site renders correctly with just-the-docs theme, dark mode, Go-focused content
+- [x] **PAGES-01**: GitHub Pages deployment workflow exists and docs/ site is live at stealinglight.github.io/StravaMCP
+- [x] **PAGES-02**: Docs site renders correctly with just-the-docs theme, dark mode, Go-focused content
 
 ### Messaging
 
@@ -36,8 +36,8 @@
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| PAGES-01 | Phase 4 | Pending |
-| PAGES-02 | Phase 4 | Pending |
+| PAGES-01 | Phase 4 | Complete |
+| PAGES-02 | Phase 4 | Complete |
 | MSG-01 | Phase 5 | Pending |
 | MSG-02 | Phase 5 | Pending |
 | MSG-03 | Phase 5 | Pending |
