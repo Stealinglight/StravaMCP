@@ -9,13 +9,13 @@
 
 # StravaMCP
 
-**A fast, self-contained Go binary that gives any MCP client full access to the Strava API -- zero cloud infrastructure required.**
+**A production-grade MCP server that gives agent frameworks full access to the Strava API -- single Go binary, zero infrastructure.**
 
-StravaMCP is a [Model Context Protocol](https://modelcontextprotocol.io) server that connects AI assistants to the Strava API through a single binary running on your machine. It communicates over stdio, works with Claude Desktop, Cursor, and any MCP-compatible client, handles OAuth authentication through an automatic browser flow, and stores tokens locally in a JSON file. No AWS, no Docker, no database -- just download and run.
+StravaMCP is a [Model Context Protocol](https://modelcontextprotocol.io) server built in Go for the [OpenClaw/ZeroClaw](https://github.com/Stealinglight) agent framework ecosystem. It connects AI agents to the Strava API through a single static binary running on your machine. Communicates over stdio, works with any MCP-compatible client, handles OAuth authentication through an automatic browser flow, and stores tokens locally. No cloud services, no containers, no runtime dependencies -- just download and run.
 
-<!-- Terminal recording: run `vhs demo.tape` to generate demo.gif, then uncomment the line below -->
-<!-- ![Demo](demo.gif) -->
-<!-- *Authentication and tool usage with Claude Desktop* -->
+<!-- Terminal recording: run `vhs record.tape` to generate usage.gif, then uncomment the line below -->
+<!-- ![Usage](usage.gif) -->
+<!-- *Authentication and tool usage with an MCP client* -->
 
 ## How It Works
 
@@ -28,12 +28,27 @@ graph LR
 
 ## Features
 
-- **Single binary, no runtime dependencies** -- no Docker, no cloud, no database
+- **Single binary, zero runtime dependencies** -- no Docker, no cloud, no database
 - **11 MCP tools** covering activities, athlete stats, streams, clubs, and uploads
 - **Automatic OAuth browser flow** -- one command to authenticate
-- **Transparent token refresh** with concurrent request coalescing via singleflight
+- **Concurrent token refresh via singleflight** -- no thundering herd on expired tokens
+- **Atomic write-then-rename token store** -- crash-safe credential persistence
+- **Zero-CGO static binary** -- no C library dependencies, runs anywhere
 - **Cross-platform** -- macOS (Intel + Apple Silicon) and Linux (amd64 + arm64)
-- **Install via go install, Homebrew, or direct binary download**
+
+## Why Go?
+
+StravaMCP is written in Go for the same reason the RustyClaw ecosystem exists: **performance and simplicity matter for tool servers that agents call hundreds of times per session.**
+
+| | Go (StravaMCP) | Python | Node.js |
+|---|---|---|---|
+| **Startup time** | ~10ms | ~500ms | ~200ms |
+| **Memory footprint** | ~8MB | ~30MB | ~40MB |
+| **Binary size** | 7MB (single file) | ~50MB+ (runtime + deps) | ~60MB+ (runtime + node_modules) |
+| **Dependencies** | 3 direct | Varies (pip) | Varies (npm) |
+| **Runtime required** | None | Python interpreter | Node.js runtime |
+
+*Estimates based on known Go/Python/Node.js runtime characteristics for comparable MCP servers. Not formal benchmarks.*
 
 ## Quick Start
 
@@ -102,6 +117,41 @@ Add StravaMCP to your client's configuration. For **Claude Desktop**, edit `~/Li
 ```
 
 Restart your MCP client and the Strava tools will be available.
+
+## Agent Framework Integration
+
+StravaMCP is part of the [OpenClaw/ZeroClaw](https://github.com/Stealinglight) agent framework ecosystem -- a collection of high-performance MCP servers that give AI agents access to external services via stdio transport.
+
+```mermaid
+graph TD
+    AF["Agent Framework<br/>(OpenClaw / ZeroClaw)"]
+    AF -- stdio --> SM["StravaMCP<br/>Go &middot; 7MB"]
+    AF -- stdio --> SK["SlackMCP<br/>Rust"]
+    AF -- stdio --> WR["WebResearchMCP<br/>Rust"]
+    AF -- stdio --> VM["VideoMCP<br/>Rust"]
+    SM -- HTTPS --> SA["Strava API v3"]
+    SK -- HTTPS --> SKA["Slack API"]
+    WR -- HTTPS --> WRA["Web Search APIs"]
+    VM -- HTTPS --> VMA["Video APIs"]
+```
+
+To wire StravaMCP into an agent framework as a tool provider, add it to your MCP server configuration:
+
+```json
+{
+  "mcpServers": {
+    "strava": {
+      "command": "strava-mcp",
+      "env": {
+        "STRAVA_CLIENT_ID": "your_client_id",
+        "STRAVA_CLIENT_SECRET": "your_client_secret"
+      }
+    }
+  }
+}
+```
+
+The agent framework launches StravaMCP as a subprocess, communicates over stdio using the MCP protocol, and routes tool calls to Strava. No HTTP server, no port configuration -- stdio transport handles everything.
 
 <details>
 <summary><strong>Tool Reference (11 tools)</strong></summary>
