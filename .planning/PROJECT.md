@@ -2,7 +2,7 @@
 
 ## What This Is
 
-A Go-based MCP (Model Context Protocol) server for the Strava API, designed to run as a local stdio-based tool server within the ZeroClaw/RustyClaw ecosystem. This is a full rewrite of the existing TypeScript implementation, simplified from a Lambda+DynamoDB deployment to a standalone Go binary with file-based token storage and built-in OAuth for initial setup. It's also a portfolio piece — the README and project presentation need to be polished and visually rich.
+A production-grade MCP (Model Context Protocol) server for the Strava API, built in Go for the OpenClaw/ZeroClaw agent framework ecosystem. This is a full rewrite of the existing TypeScript implementation, simplified from a Lambda+DynamoDB deployment to a standalone Go binary with file-based token storage and built-in OAuth for initial setup. Positioned as a high-performance tool server for agent frameworks with sub-second startup and minimal memory footprint.
 
 ## Core Value
 
@@ -18,6 +18,7 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 - ✓ File-based token store with automatic refresh persistence — v1.0
 - ✓ 11 MCP tools with full TypeScript feature parity — v1.0
 - ✓ Portfolio-quality README with badges, diagrams, tool reference — v1.0
+- ✓ Production-grade positioning with Why Go? table, ecosystem diagram, integration guide — v1.1 Phase 5
 - ✓ Single-binary distribution via goreleaser with Homebrew — v1.0
 - ✓ Cross-platform builds (darwin/linux, amd64/arm64) — v1.0
 
@@ -90,7 +91,7 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 
 ## Current State
 
-v1.0 milestone shipped (2026-04-01). Complete Go rewrite with 11 MCP tools, OAuth browser flow, singleflight token refresh, goreleaser cross-platform release pipeline with Homebrew distribution, and portfolio-quality README. 4,791 LOC Go, 80+ tests, all TypeScript/Lambda artifacts removed. Deployed to RustyClaw bot-delta (v1.0.1). Phase 4 complete — GitHub Pages docs site restored and live at stealinglight.github.io/StravaMCP with just-the-docs dark theme.
+v1.1 milestone complete (2026-04-04). All documentation repositioned from portfolio piece to production-grade MCP server for OpenClaw/ZeroClaw agent frameworks. README rewritten with Why Go? performance comparison, Agent Framework Integration ecosystem diagram, and reliability-focused feature bullets. Docs site mirrored with matching positioning plus new integration guide page. GitHub Pages live at stealinglight.github.io/StravaMCP with just-the-docs dark theme. 4,791 LOC Go, 80+ tests, deployed to RustyClaw bot-delta (v1.0.1).
 
 ## Evolution
 
@@ -110,4 +111,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-03 after Phase 4 completion*
+*Last updated: 2026-04-04 after Phase 5 completion (v1.1 milestone)*
