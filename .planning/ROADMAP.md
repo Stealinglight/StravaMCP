@@ -102,7 +102,11 @@ Plans:
   2. README includes concrete Go performance claims (sub-second startup, low memory footprint, small binary size) contrasted against typical Python/JavaScript MCP servers
   3. Docs site has a dedicated OpenClaw/ZeroClaw compatibility page or section with integration instructions (how to wire StravaMCP into an agent)
   4. The overall project tone across README and docs reads as "production-grade MCP server" rather than "portfolio project" -- language emphasizes reliability, performance, and agent framework integration
-**Plans**: TBD
+**Plans**: 2 plans
+
+Plans:
+- [ ] 05-01-PLAN.md -- README overhaul: hero tagline, features, Why Go? table, Agent Framework Integration section
+- [ ] 05-02-PLAN.md -- Docs site: index.md update, new integration.md page, _config.yml description
 
 ## Progress
 
@@ -115,4 +119,4 @@ Phases execute in numeric order: 4 -> 5
 | 2. Tool Suite | v1.0 | 3/3 | Complete | 2026-03-27 |
 | 3. Polish and Distribution | v1.0 | 3/3 | Complete | 2026-04-01 |
 | 4. GitHub Pages Restoration | v1.1 | 0/1 | Planning complete | - |
-| 5. OpenClaw Positioning | v1.1 | 0/? | Not started | - |
+| 5. OpenClaw Positioning | v1.1 | 0/2 | Planning complete | - |
