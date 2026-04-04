@@ -7,7 +7,7 @@ nav_order: 1
 # StravaMCP
 {: .fs-9 }
 
-A fast Go binary that gives any MCP client full access to the Strava API -- zero cloud infrastructure required.
+A production-grade MCP server that gives agent frameworks full access to the Strava API -- single Go binary, zero infrastructure.
 {: .fs-6 .fw-300 }
 
 [Get Started](#quick-start){: .btn .btn-primary .fs-5 .mb-4 .mb-md-0 .mr-2 }
@@ -17,16 +17,31 @@ A fast Go binary that gives any MCP client full access to the Strava API -- zero
 
 ## What is this?
 
-**StravaMCP** is a [Model Context Protocol](https://modelcontextprotocol.io) server that connects AI assistants like Claude to the Strava API. It runs as a single Go binary on your machine, communicates over stdio, and requires no cloud services, no Docker, and no database. Just download, authenticate, and go.
+**StravaMCP** is a [Model Context Protocol](https://modelcontextprotocol.io) server built in Go for the [OpenClaw/ZeroClaw](https://github.com/Stealinglight) agent framework ecosystem. It connects AI agents to the Strava API through a single static binary on your machine. Communicates over stdio, works with any MCP-compatible client, handles OAuth authentication through an automatic browser flow, and stores tokens locally. No cloud services, no containers, no runtime dependencies.
 
 ### Key Features
 
-- **Single binary, no runtime dependencies** -- no Docker, no cloud, no database
+- **Single binary, zero runtime dependencies** -- no Docker, no cloud, no database
 - **11 MCP tools** covering activities, athlete stats, streams, clubs, and uploads
 - **Automatic OAuth browser flow** -- one command to authenticate
-- **Transparent token refresh** with concurrent request coalescing via singleflight
+- **Concurrent token refresh via singleflight** -- no thundering herd on expired tokens
+- **Atomic write-then-rename token store** -- crash-safe credential persistence
+- **Zero-CGO static binary** -- no C library dependencies, runs anywhere
 - **Cross-platform** -- macOS (Intel + Apple Silicon) and Linux (amd64 + arm64)
-- **Install via go install, Homebrew, or direct binary download**
+
+## Why Go?
+
+StravaMCP is written in Go for the same reason the RustyClaw ecosystem exists: **performance and simplicity matter for tool servers that agents call hundreds of times per session.**
+
+| | Go (StravaMCP) | Python | Node.js |
+|---|---|---|---|
+| **Startup time** | ~10ms | ~500ms | ~200ms |
+| **Memory footprint** | ~8MB | ~30MB | ~40MB |
+| **Binary size** | 7MB (single file) | ~50MB+ (runtime + deps) | ~60MB+ (runtime + node_modules) |
+| **Dependencies** | 3 direct | Varies (pip) | Varies (npm) |
+| **Runtime required** | None | Python interpreter | Node.js runtime |
+
+*Estimates based on known Go/Python/Node.js runtime characteristics for comparable MCP servers. Not formal benchmarks.*
 
 ## Quick Start
 
@@ -109,6 +124,7 @@ See the [README](https://github.com/Stealinglight/StravaMCP#tool-reference) for 
 
 ## Links
 
+- [Agent Framework Integration](integration) -- wire StravaMCP into OpenClaw/ZeroClaw
 - [GitHub Repository](https://github.com/Stealinglight/StravaMCP)
 - [Strava API Documentation](https://developers.strava.com)
 - [Model Context Protocol](https://modelcontextprotocol.io)
