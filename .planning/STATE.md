@@ -4,7 +4,7 @@ milestone: v1.1
 milestone_name: Docs, Pages & OpenClaw Positioning
 status: executing
 stopped_at: Phase 5 UI-SPEC approved
-last_updated: "2026-04-04T20:49:42.364Z"
+last_updated: "2026-04-04T21:00:48.643Z"
 last_activity: 2026-04-04
 progress:
   total_phases: 2

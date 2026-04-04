@@ -18,6 +18,7 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 - ✓ File-based token store with automatic refresh persistence — v1.0
 - ✓ 11 MCP tools with full TypeScript feature parity — v1.0
 - ✓ Portfolio-quality README with badges, diagrams, tool reference — v1.0
+- ✓ GitHub Pages docs site with just-the-docs dark theme — v1.1 Phase 4
 - ✓ Production-grade positioning with Why Go? table, ecosystem diagram, integration guide — v1.1 Phase 5
 - ✓ Single-binary distribution via goreleaser with Homebrew — v1.0
 - ✓ Cross-platform builds (darwin/linux, amd64/arm64) — v1.0
@@ -44,12 +45,13 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 
 ## Context
 
-- v1.0 shipped: 4,791 LOC Go across 5 packages (auth, config, server, strava, tools)
+- v1.1 shipped: 4,791 LOC Go across 5 packages (auth, config, server, strava, tools)
 - 80+ tests passing, all packages covered
 - Tech stack: Go 1.25, mcp-go v0.46.0, goreleaser v2, GitHub Actions
-- Part of the RustyClaw/ZeroClaw ecosystem (local MCP servers for Strava, Slack, video, web-research)
+- Part of the OpenClaw/ZeroClaw ecosystem (local MCP servers for Strava, Slack, video, web-research)
 - All TypeScript/Lambda code removed — clean Go-only repository
-- Portfolio piece with polished README, badges, Mermaid diagrams
+- Production-grade README with Why Go? performance table, ecosystem Mermaid diagram, agent framework integration guide
+- GitHub Pages docs site live at stealinglight.github.io/StravaMCP with just-the-docs dark theme
 - The muscle group heat map renderer is being built separately and will integrate in a future milestone
 
 ## Constraints
@@ -76,18 +78,16 @@ A fast, self-contained Go binary that gives any MCP client full access to the St
 | Module path github.com/Stealinglight/StravaMCP | Enables `go install` and proper Go module ecosystem integration | ✓ Phase 3 |
 | goreleaser v2 with homebrew_casks | Cross-platform binary distribution + Homebrew tap | ✓ Phase 3 |
 | ISC License | Simple permissive license for open source distribution | ✓ Phase 3 |
+| Restore GitHub Pages from deleted commit | Exact workflow restoration safer than recreation from scratch | ✓ Phase 4 |
+| Production-grade positioning over portfolio framing | Agent framework users need credibility signals, not portfolio language | ✓ Phase 5 |
+| Estimated performance numbers with disclaimer | Avoids building Python/JS equivalents for benchmarks while still showing Go advantages | ✓ Phase 5 |
 | Add segments/routes/gear/laps | Expand beyond current 11 tools to comprehensive Strava coverage | — v2.0 |
 | Heat map as future milestone | Separate project, don't couple it to the core rewrite | — v2.0+ |
 
-## Current Milestone: v1.1 Docs, Pages & OpenClaw Positioning
+## Completed Milestones
 
-**Goal:** Fix GitHub Pages deployment, position StravaMCP as a high-performance Go MCP server for OpenClaw/ZeroClaw agent frameworks, and highlight Go speed advantages over Python/JavaScript MCPs.
-
-**Target features:**
-- Fix GitHub Pages deployment workflow (deleted during v1.0 cleanup)
-- Update README with OpenClaw/ZeroClaw ecosystem positioning and Go performance messaging
-- Update docs/ site with OpenClaw compatibility and performance claims
-- Position as production-grade MCP server for agent frameworks, not just a portfolio piece
+- **v1.0 Go Rewrite** (2026-04-01) — Full Go rewrite with 11 MCP tools, OAuth, goreleaser
+- **v1.1 Docs, Pages & OpenClaw Positioning** (2026-04-04) — GitHub Pages restoration, production-grade positioning, integration guide
 
 ## Current State
 
@@ -111,4 +111,4 @@ This document evolves at phase transitions and milestone boundaries.
 4. Update Context with current state
 
 ---
-*Last updated: 2026-04-04 after Phase 5 completion (v1.1 milestone)*
+*Last updated: 2026-04-04 after v1.1 milestone completion*

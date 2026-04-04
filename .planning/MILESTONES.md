@@ -1,5 +1,17 @@
 # Milestones
 
+## v1.1 Docs, Pages & OpenClaw Positioning (Shipped: 2026-04-04)
+
+**Phases completed:** 2 phases, 3 plans, 5 tasks
+
+**Key accomplishments:**
+
+- Restored deploy-docs.yml workflow from deleted commit, deploying Jekyll docs site with just-the-docs dark theme to stealinglight.github.io/StravaMCP
+- README rewritten with production-grade agent framework positioning, Why Go? comparison table, and OpenClaw/ZeroClaw ecosystem Mermaid diagram
+- Docs site updated with production-grade positioning, Why Go? table, and new OpenClaw/ZeroClaw integration guide page with ecosystem diagram and wiring config
+
+---
+
 ## v1.0 StravaMCP Go Rewrite (Shipped: 2026-04-01)
 
 **Phases completed:** 3 phases, 8 plans, 18 tasks

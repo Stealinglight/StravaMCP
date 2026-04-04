@@ -44,6 +44,45 @@
 
 ---
 
+## Milestone: v1.1 — Docs, Pages & OpenClaw Positioning
+
+**Shipped:** 2026-04-04
+**Phases:** 2 | **Plans:** 3
+
+### What Was Built
+- Restored GitHub Pages deployment workflow from deleted commit, docs site live at stealinglight.github.io/StravaMCP
+- README rewritten with production-grade hero tagline, reliability-focused feature bullets, Why Go? performance comparison table
+- Agent Framework Integration section with OpenClaw/ZeroClaw ecosystem Mermaid diagram and JSON config snippet
+- New docs/integration.md page with ecosystem explainer, wiring configuration, 3 example workflows
+- docs/index.md mirrored with matching tagline, features, and performance table
+
+### What Worked
+- Wave dependency (README first → docs second) ensured docs could mirror canonical README content accurately
+- Human-verify checkpoint at Task 3 of Plan 02 gated deployment verification — right pattern for docs-only phases
+- Tone sweep with banned word list (portfolio, showcase, demo, etc.) systematically enforced positioning shift
+- UI-SPEC content contract defined exact copy for each section — executor had zero ambiguity
+
+### What Was Inefficient
+- REQUIREMENTS.md checkboxes for MSG-01 through MSG-04 weren't auto-updated during execution — required manual fix during milestone completion
+- 05-01-SUMMARY.md frontmatter didn't list requirements_completed for MSG-01/MSG-02 — caused "partial" status in 3-source cross-reference even though verification confirmed them
+
+### Patterns Established
+- Content Overlap Matrix in UI-SPEC for multi-file messaging consistency (README ↔ docs)
+- Banned word enforcement as a verification check (grep-based, zero tolerance)
+- Estimated performance numbers with explicit disclaimer footnote — avoids benchmark scope while showing Go advantages
+
+### Key Lessons
+1. For docs-only phases, the security gate passes trivially — SECURITY.md still gets created for audit trail consistency
+2. Wave structure for content phases should always have the canonical source (README) in Wave 1 and derived content (docs site) in Wave 2
+3. SUMMARY frontmatter `requirements_completed` should be enforced by the executor — the verifier shouldn't be the first to catch missing entries
+
+### Cost Observations
+- Model mix: opus for execution, sonnet for verification and integration check
+- 2 phases completed in single session
+- Notable: docs-only milestone completed in ~20 minutes of wall clock time
+
+---
+
 ## Cross-Milestone Trends
 
 ### Process Evolution
@@ -51,14 +90,17 @@
 | Milestone | Phases | Plans | Key Change |
 |-----------|--------|-------|------------|
 | v1.0 | 3 | 8 | Initial milestone — established GSD workflow with strict phase dependencies |
+| v1.1 | 2 | 3 | Docs-only milestone — UI-SPEC content contracts, banned word enforcement, wave-ordered content sourcing |
 
 ### Cumulative Quality
 
 | Milestone | Tests | Packages | Zero-Dep Additions |
 |-----------|-------|----------|-------------------|
 | v1.0 | 80+ | 5 | 3 (mcp-go, browser, sync) |
+| v1.1 | 80+ (unchanged) | 5 (unchanged) | 0 (docs-only) |
 
 ### Top Lessons (Verified Across Milestones)
 
 1. Set canonical identifiers (module paths, package names) in the first phase
 2. Raw JSON pass-through beats typed structs for API wrapper tools consumed by LLMs
+3. For multi-file messaging, update the canonical source first (Wave 1), then derive — prevents drift
