@@ -1,5 +1,5 @@
 title: StravaMCP
-description: MCP server for Strava API - a fast Go binary with zero cloud infrastructure
+description: Production-grade MCP server for Strava API -- built in Go for agent frameworks
 
 url: https://stealinglight.github.io
 baseurl: /StravaMCP
