@@ -12,10 +12,10 @@
 
 ### Messaging
 
-- [ ] **MSG-01**: README has OpenClaw/ZeroClaw ecosystem section explaining agent framework compatibility
-- [ ] **MSG-02**: README highlights Go performance advantages over Python/JavaScript MCPs (startup time, memory footprint, binary size)
-- [ ] **MSG-03**: Docs site has OpenClaw/ZeroClaw compatibility page or section with integration instructions
-- [ ] **MSG-04**: Project positioned as production-grade MCP server for agent frameworks, not just portfolio piece
+- [x] **MSG-01**: README has OpenClaw/ZeroClaw ecosystem section explaining agent framework compatibility
+- [x] **MSG-02**: README highlights Go performance advantages over Python/JavaScript MCPs (startup time, memory footprint, binary size)
+- [x] **MSG-03**: Docs site has OpenClaw/ZeroClaw compatibility page or section with integration instructions
+- [x] **MSG-04**: Project positioned as production-grade MCP server for agent frameworks, not just portfolio piece
 
 ## Future Requirements (v2.0 — Expanded Strava Coverage)
 
@@ -38,10 +38,10 @@
 |-------------|-------|--------|
 | PAGES-01 | Phase 4 | Complete |
 | PAGES-02 | Phase 4 | Complete |
-| MSG-01 | Phase 5 | Pending |
-| MSG-02 | Phase 5 | Pending |
-| MSG-03 | Phase 5 | Pending |
-| MSG-04 | Phase 5 | Pending |
+| MSG-01 | Phase 5 | Complete |
+| MSG-02 | Phase 5 | Complete |
+| MSG-03 | Phase 5 | Complete |
+| MSG-04 | Phase 5 | Complete |
 
 **Coverage:**
 - v1.1 requirements: 6 total
