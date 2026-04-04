@@ -105,8 +105,8 @@ Plans:
 **Plans**: 2 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- README overhaul: hero tagline, features, Why Go? table, Agent Framework Integration section
-- [ ] 05-02-PLAN.md -- Docs site: index.md update, new integration.md page, _config.yml description
+- [x] 05-01-PLAN.md -- README overhaul: hero tagline, features, Why Go? table, Agent Framework Integration section
+- [x] 05-02-PLAN.md -- Docs site: index.md update, new integration.md page, _config.yml description
 
 ## Progress
 
