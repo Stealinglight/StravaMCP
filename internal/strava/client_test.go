@@ -616,6 +616,70 @@ func TestPostMultipartReturnsStravaErrorOn4xx(t *testing.T) {
 	}
 }
 
+// Test 14: Post() replays full body on 401 retry (regression test for body-reuse bug)
+func TestPostReplaysBodyOn401Retry(t *testing.T) {
+	var requestCount atomic.Int32
+	var bodies []string
+	var mu sync.Mutex
+
+	apiSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, _ := io.ReadAll(r.Body)
+		mu.Lock()
+		bodies = append(bodies, string(body))
+		mu.Unlock()
+
+		count := requestCount.Add(1)
+		if count == 1 {
+			w.WriteHeader(http.StatusUnauthorized)
+			w.Write([]byte(`{"message":"Authorization Error"}`))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`{"id":123}`))
+	}))
+	defer apiSrv.Close()
+
+	tokenSrv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		json.NewEncoder(w).Encode(auth.Tokens{
+			AccessToken:  "refreshed-token",
+			RefreshToken: "new-refresh",
+			ExpiresAt:    time.Now().Add(6 * time.Hour).Unix(),
+		})
+	}))
+	defer tokenSrv.Close()
+
+	store := newMockTokenStore(&auth.Tokens{
+		AccessToken:  "stale-token",
+		RefreshToken: "refresh-token",
+		ExpiresAt:    time.Now().Add(1 * time.Hour).Unix(),
+	}, false)
+
+	cfg := &config.Config{ClientID: "id", ClientSecret: "secret"}
+	client := strava.NewClient(cfg, store, testLogger())
+	client.SetBaseURL(apiSrv.URL)
+	client.SetTokenURL(tokenSrv.URL)
+
+	payload := map[string]string{"name": "Morning Run", "description": "Easy 5K"}
+	_, err := client.Post(context.Background(), "/activities", payload)
+	if err != nil {
+		t.Fatalf("Post() error: %v", err)
+	}
+
+	if requestCount.Load() != 2 {
+		t.Fatalf("API requests = %d, want 2 (initial + retry)", requestCount.Load())
+	}
+
+	// Both requests must have received the full JSON body
+	for i, body := range bodies {
+		if !strings.Contains(body, "Morning Run") {
+			t.Errorf("request %d body = %q, want to contain 'Morning Run'", i+1, body)
+		}
+		if !strings.Contains(body, "Easy 5K") {
+			t.Errorf("request %d body = %q, want to contain 'Easy 5K'", i+1, body)
+		}
+	}
+}
+
 // TestNewClientReturnsNonNil verifies the constructor works
 func TestNewClientReturnsNonNil(t *testing.T) {
 	dir := t.TempDir()
