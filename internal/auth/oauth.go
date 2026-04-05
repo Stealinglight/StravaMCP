@@ -6,6 +6,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"html"
 	"io"
 	"log/slog"
 	"net/http"
@@ -109,7 +110,7 @@ func NewCallbackHandler(expectedState string, codeCh chan<- string, errCh chan<-
 		if stravaErr := query.Get("error"); stravaErr != "" {
 			errCh <- fmt.Errorf("Strava authorization error: %s", stravaErr)
 			w.WriteHeader(http.StatusBadRequest)
-			fmt.Fprintf(w, errorPageHTML, stravaErr)
+			fmt.Fprintf(w, errorPageHTML, html.EscapeString(stravaErr))
 			return
 		}
 

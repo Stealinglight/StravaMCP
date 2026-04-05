@@ -91,22 +91,20 @@ func (c *Client) Get(ctx context.Context, path string, params map[string]string)
 
 // Post makes an authenticated POST request to the Strava API.
 func (c *Client) Post(ctx context.Context, path string, body interface{}) ([]byte, error) {
-	fullURL := c.baseURL + path
-	jsonBody, err := json.Marshal(body)
-	if err != nil {
-		return nil, fmt.Errorf("marshal request body: %w", err)
-	}
-	return c.doRequest(ctx, http.MethodPost, fullURL, bytes.NewReader(jsonBody), "application/json")
+	return c.jsonRequest(ctx, http.MethodPost, path, body)
 }
 
 // Put makes an authenticated PUT request to the Strava API.
 func (c *Client) Put(ctx context.Context, path string, body interface{}) ([]byte, error) {
-	fullURL := c.baseURL + path
+	return c.jsonRequest(ctx, http.MethodPut, path, body)
+}
+
+func (c *Client) jsonRequest(ctx context.Context, method, path string, body interface{}) ([]byte, error) {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, fmt.Errorf("marshal request body: %w", err)
 	}
-	return c.doRequest(ctx, http.MethodPut, fullURL, bytes.NewReader(jsonBody), "application/json")
+	return c.doRequest(ctx, method, c.baseURL+path, bytes.NewReader(jsonBody), "application/json")
 }
 
 // PostMultipart makes an authenticated POST request with a pre-built multipart body.
@@ -146,7 +144,18 @@ func (c *Client) SetTokenURL(u string) {
 }
 
 // doRequest executes an authenticated HTTP request with automatic token refresh.
+// The body is buffered so it can be replayed on 401 retry.
 func (c *Client) doRequest(ctx context.Context, method, fullURL string, body io.Reader, contentType string) ([]byte, error) {
+	// Buffer the body so we can replay it on 401 retry.
+	var bodyBytes []byte
+	if body != nil {
+		var err error
+		bodyBytes, err = io.ReadAll(body)
+		if err != nil {
+			return nil, fmt.Errorf("buffer request body: %w", err)
+		}
+	}
+
 	tokens, err := c.tokenStore.Read()
 	if err != nil {
 		return nil, fmt.Errorf("read tokens: %w", err)
@@ -160,7 +169,7 @@ func (c *Client) doRequest(ctx context.Context, method, fullURL string, body io.
 		}
 	}
 
-	respBody, err := c.executeRequest(ctx, method, fullURL, body, contentType, tokens.AccessToken)
+	respBody, err := c.executeRequest(ctx, method, fullURL, newReader(bodyBytes), contentType, tokens.AccessToken)
 	if err != nil {
 		// Check for 401 — retry once after refresh
 		var stravaErr *StravaError
@@ -169,12 +178,20 @@ func (c *Client) doRequest(ctx context.Context, method, fullURL string, body io.
 			if refreshErr != nil {
 				return nil, fmt.Errorf("token refresh after 401: %w", refreshErr)
 			}
-			// Retry with new token — if this also fails, return the error directly
-			return c.executeRequest(ctx, method, fullURL, body, contentType, tokens.AccessToken)
+			// Retry with new token and a fresh reader
+			return c.executeRequest(ctx, method, fullURL, newReader(bodyBytes), contentType, tokens.AccessToken)
 		}
 		return nil, err
 	}
 	return respBody, nil
+}
+
+// newReader returns a reader for the given bytes, or nil if the slice is nil.
+func newReader(b []byte) io.Reader {
+	if b == nil {
+		return nil
+	}
+	return bytes.NewReader(b)
 }
 
 // executeRequest builds and executes a single HTTP request.

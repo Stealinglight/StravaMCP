@@ -18,8 +18,6 @@ var streamTypes = []string{
 	"heartrate", "cadence", "watts", "temp", "moving", "grade_smooth",
 }
 
-// --- Tool Definition ---
-
 var getActivityStreamsTool = mcp.NewTool("strava_get_activity_streams",
 	mcp.WithDescription(`**[TELEMETRY & DEEP ANALYSIS]** Retrieves time-series sensor data (streams) from an activity.
 
@@ -100,8 +98,6 @@ var getActivityStreamsTool = mcp.NewTool("strava_get_activity_streams",
 	mcp.WithBoolean("key_by_type", mcp.Description("Return streams as an object keyed by type (default: true)")),
 )
 
-// --- Handler Function ---
-
 // HandleGetActivityStreams returns a handler for the get_activity_streams tool.
 func HandleGetActivityStreams(client *strava.Client) server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -140,8 +136,6 @@ func HandleGetActivityStreams(client *strava.Client) server.ToolHandlerFunc {
 		return FormatResponse(data, client), nil
 	}
 }
-
-// --- Registration ---
 
 // registerStreams registers all streams tools with the MCP server.
 func registerStreams(s *server.MCPServer, client *strava.Client) {

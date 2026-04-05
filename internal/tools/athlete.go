@@ -11,8 +11,6 @@ import (
 	"github.com/Stealinglight/StravaMCP/internal/strava"
 )
 
-// --- Tool Definitions ---
-
 var getAthleteTool = mcp.NewTool("strava_get_athlete",
 	mcp.WithDescription(`Retrieves the authenticated athlete's profile information.
 
@@ -75,8 +73,6 @@ Statistics include:
 	mcp.WithNumber("id", mcp.Description("Athlete ID (optional - defaults to authenticated athlete)")),
 )
 
-// --- Handler Functions ---
-
 // HandleGetAthlete returns a handler for the get_athlete tool.
 func HandleGetAthlete(client *strava.Client) server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -117,8 +113,6 @@ func HandleGetAthleteStats(client *strava.Client) server.ToolHandlerFunc {
 		return FormatResponse(data, client), nil
 	}
 }
-
-// --- Registration ---
 
 // registerAthlete registers all athlete tools with the MCP server.
 func registerAthlete(s *server.MCPServer, client *strava.Client) {

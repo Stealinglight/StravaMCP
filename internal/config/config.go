@@ -11,7 +11,6 @@ type Config struct {
 	ClientID     string
 	ClientSecret string
 	TokenPath    string
-	Debug        bool
 }
 
 // Load reads configuration from environment variables and returns a Config.

@@ -11,8 +11,6 @@ import (
 	"github.com/Stealinglight/StravaMCP/internal/strava"
 )
 
-// --- Tool Definitions ---
-
 var getActivitiesTool = mcp.NewTool("strava_get_activities",
 	mcp.WithDescription(`Retrieves the authenticated athlete's activities.
 
@@ -161,8 +159,6 @@ Useful for:
 	mcp.WithNumber("id", mcp.Description("The ID of the activity"), mcp.Required()),
 )
 
-// --- Handler Functions ---
-
 // HandleGetActivities returns a handler for the get_activities tool.
 func HandleGetActivities(client *strava.Client) server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -241,21 +237,10 @@ func HandleCreateActivity(client *strava.Client) server.ToolHandlerFunc {
 			"elapsed_time":     elapsedTime,
 		}
 
-		// Optional fields
-		if v, ok := args["type"]; ok {
-			body["type"] = v
-		}
-		if v, ok := args["description"]; ok {
-			body["description"] = v
-		}
-		if v, ok := args["distance"]; ok {
-			body["distance"] = v
-		}
-		if v, ok := args["trainer"]; ok {
-			body["trainer"] = v
-		}
-		if v, ok := args["commute"]; ok {
-			body["commute"] = v
+		for _, field := range []string{"type", "description", "distance", "trainer", "commute"} {
+			if v, ok := args[field]; ok {
+				body[field] = v
+			}
 		}
 
 		data, err := client.Post(ctx, "/activities", body)
@@ -317,8 +302,6 @@ func HandleGetActivityZones(client *strava.Client) server.ToolHandlerFunc {
 		return FormatResponse(data, client), nil
 	}
 }
-
-// --- Registration ---
 
 // registerActivities registers all activity tools with the MCP server.
 func registerActivities(s *server.MCPServer, client *strava.Client) {

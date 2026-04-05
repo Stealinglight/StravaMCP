@@ -21,7 +21,7 @@ func FormatResponse(data []byte, client *strava.Client) *mcp.CallToolResult {
 
 	result := pretty.String()
 
-	// Append rate limit warning if usage is high (D-02)
+	// Append rate limit warning if usage is high
 	if warning := client.RateLimitWarning(); warning != "" {
 		result += "\n\n" + warning
 	}
