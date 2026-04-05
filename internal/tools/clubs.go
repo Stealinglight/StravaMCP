@@ -11,8 +11,6 @@ import (
 	"github.com/Stealinglight/StravaMCP/internal/strava"
 )
 
-// --- Tool Definition ---
-
 var getClubActivitiesTool = mcp.NewTool("strava_get_club_activities",
 	mcp.WithDescription(`Retrieves recent activities from members of a specific club.
 
@@ -44,8 +42,6 @@ Note: Only shows activities from club members who have their privacy settings se
 	mcp.WithNumber("per_page", mcp.Description("Number of items per page (1-200, default 30)")),
 )
 
-// --- Handler Function ---
-
 // HandleGetClubActivities returns a handler for the get_club_activities tool.
 func HandleGetClubActivities(client *strava.Client) server.ToolHandlerFunc {
 	return func(ctx context.Context, request mcp.CallToolRequest) (*mcp.CallToolResult, error) {
@@ -70,8 +66,6 @@ func HandleGetClubActivities(client *strava.Client) server.ToolHandlerFunc {
 		return FormatResponse(data, client), nil
 	}
 }
-
-// --- Registration ---
 
 // registerClubs registers all club tools with the MCP server.
 func registerClubs(s *server.MCPServer, client *strava.Client) {

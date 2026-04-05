@@ -17,8 +17,6 @@ import (
 	"github.com/Stealinglight/StravaMCP/internal/strava"
 )
 
-// --- Tool Definitions ---
-
 var createUploadTool = mcp.NewTool("strava_create_upload",
 	mcp.WithDescription(`Uploads a new activity file to Strava.
 
@@ -105,8 +103,6 @@ After an athlete uploads a workout file:
 4. Enrich with descriptions and coaching notes`),
 	mcp.WithNumber("id", mcp.Description("The ID of the upload"), mcp.Required()),
 )
-
-// --- Handler Functions ---
 
 // validDataTypes lists all valid upload data types.
 var validDataTypes = map[string]bool{
@@ -219,8 +215,6 @@ func HandleGetUpload(client *strava.Client) server.ToolHandlerFunc {
 		return FormatResponse(data, client), nil
 	}
 }
-
-// --- Registration ---
 
 // registerUploads registers all upload tools with the MCP server.
 func registerUploads(s *server.MCPServer, client *strava.Client) {

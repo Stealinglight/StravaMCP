@@ -91,29 +91,30 @@ func (c *Client) Get(ctx context.Context, path string, params map[string]string)
 
 // Post makes an authenticated POST request to the Strava API.
 func (c *Client) Post(ctx context.Context, path string, body interface{}) ([]byte, error) {
-	fullURL := c.baseURL + path
-	jsonBody, err := json.Marshal(body)
-	if err != nil {
-		return nil, fmt.Errorf("marshal request body: %w", err)
-	}
-	return c.doRequest(ctx, http.MethodPost, fullURL, bytes.NewReader(jsonBody), "application/json")
+	return c.jsonRequest(ctx, http.MethodPost, path, body)
 }
 
 // Put makes an authenticated PUT request to the Strava API.
 func (c *Client) Put(ctx context.Context, path string, body interface{}) ([]byte, error) {
-	fullURL := c.baseURL + path
+	return c.jsonRequest(ctx, http.MethodPut, path, body)
+}
+
+func (c *Client) jsonRequest(ctx context.Context, method, path string, body interface{}) ([]byte, error) {
 	jsonBody, err := json.Marshal(body)
 	if err != nil {
 		return nil, fmt.Errorf("marshal request body: %w", err)
 	}
-	return c.doRequest(ctx, http.MethodPut, fullURL, bytes.NewReader(jsonBody), "application/json")
+	return c.doRequest(ctx, method, c.baseURL+path, jsonBody, "application/json")
 }
 
 // PostMultipart makes an authenticated POST request with a pre-built multipart body.
 // The contentType must include the multipart boundary (use writer.FormDataContentType()).
 func (c *Client) PostMultipart(ctx context.Context, path string, body io.Reader, contentType string) ([]byte, error) {
-	fullURL := c.baseURL + path
-	return c.doRequest(ctx, http.MethodPost, fullURL, body, contentType)
+	bodyBytes, err := io.ReadAll(body)
+	if err != nil {
+		return nil, fmt.Errorf("buffer multipart body: %w", err)
+	}
+	return c.doRequest(ctx, http.MethodPost, c.baseURL+path, bodyBytes, contentType)
 }
 
 // GetRateLimits returns the current rate limit state.
@@ -146,7 +147,8 @@ func (c *Client) SetTokenURL(u string) {
 }
 
 // doRequest executes an authenticated HTTP request with automatic token refresh.
-func (c *Client) doRequest(ctx context.Context, method, fullURL string, body io.Reader, contentType string) ([]byte, error) {
+// The body is accepted as []byte so it can be replayed on 401 retry without re-reading.
+func (c *Client) doRequest(ctx context.Context, method, fullURL string, body []byte, contentType string) ([]byte, error) {
 	tokens, err := c.tokenStore.Read()
 	if err != nil {
 		return nil, fmt.Errorf("read tokens: %w", err)
@@ -160,7 +162,14 @@ func (c *Client) doRequest(ctx context.Context, method, fullURL string, body io.
 		}
 	}
 
-	respBody, err := c.executeRequest(ctx, method, fullURL, body, contentType, tokens.AccessToken)
+	bodyReader := func() io.Reader {
+		if body == nil {
+			return nil
+		}
+		return bytes.NewReader(body)
+	}
+
+	respBody, err := c.executeRequest(ctx, method, fullURL, bodyReader(), contentType, tokens.AccessToken)
 	if err != nil {
 		// Check for 401 — retry once after refresh
 		var stravaErr *StravaError
@@ -169,8 +178,8 @@ func (c *Client) doRequest(ctx context.Context, method, fullURL string, body io.
 			if refreshErr != nil {
 				return nil, fmt.Errorf("token refresh after 401: %w", refreshErr)
 			}
-			// Retry with new token — if this also fails, return the error directly
-			return c.executeRequest(ctx, method, fullURL, body, contentType, tokens.AccessToken)
+			// Retry with new token and a fresh reader
+			return c.executeRequest(ctx, method, fullURL, bodyReader(), contentType, tokens.AccessToken)
 		}
 		return nil, err
 	}
