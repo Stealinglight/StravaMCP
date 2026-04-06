@@ -32,10 +32,12 @@ func main() {
 	browser.Stdout = os.Stderr
 	browser.Stderr = os.Stderr
 
-	// Parse args manually -- no CLI framework needed for 2 modes + 3 flags.
+	// Parse args manually -- no CLI framework needed for 2 modes + 5 flags.
 	debug := false
 	showVersion := false
 	checkUpdate := false
+	doUpdate := false
+	forceUpdate := false
 
 	args := os.Args[1:]
 	var positional []string
@@ -47,6 +49,10 @@ func main() {
 			showVersion = true
 		case "--check-update":
 			checkUpdate = true
+		case "--update":
+			doUpdate = true
+		case "--force":
+			forceUpdate = true
 		default:
 			positional = append(positional, arg)
 		}
@@ -79,6 +85,62 @@ func main() {
 		}
 		fmt.Fprint(os.Stderr, checker.FormatCheckOutput(result))
 		fmt.Fprintln(os.Stderr)
+		os.Exit(0)
+	}
+
+	if doUpdate {
+		dir := cacheDir()
+		if dir == "" {
+			fmt.Fprintf(os.Stderr, "error: cannot determine home directory\n")
+			os.Exit(1)
+		}
+
+		cache := update.NewCache(dir)
+		logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelWarn}))
+		checker := update.NewChecker(Version, cache, logger)
+
+		if checker.IsDev() {
+			fmt.Fprintf(os.Stderr, "strava-mcp dev build — update not available\n")
+			os.Exit(0)
+		}
+
+		// Resolve the actual binary path (follows symlinks).
+		exe, err := os.Executable()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error: cannot determine binary path: %v\n", err)
+			os.Exit(1)
+		}
+		binaryPath, err := filepath.EvalSymlinks(exe)
+		if err != nil {
+			binaryPath = exe
+		}
+
+		// Homebrew detection — warn but allow, --force skips warning.
+		if update.IsHomebrew(binaryPath) && !forceUpdate {
+			fmt.Fprintf(os.Stderr, "Installed via Homebrew. Recommended: brew upgrade strava-mcp\n")
+			fmt.Fprintf(os.Stderr, "To update anyway, run: strava-mcp --update --force\n")
+			os.Exit(1)
+		}
+
+		// Permission pre-check before downloading anything.
+		if err := update.CheckWritePermission(binaryPath); err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
+
+		// Run the update.
+		updater := update.NewUpdater(checker, logger)
+		progress := func(msg string) {
+			fmt.Fprintf(os.Stderr, "%s\n", msg)
+		}
+
+		ctx, cancel := context.WithTimeout(context.Background(), 120*time.Second)
+		defer cancel()
+
+		if err := updater.Update(ctx, binaryPath, progress); err != nil {
+			fmt.Fprintf(os.Stderr, "error: %v\n", err)
+			os.Exit(1)
+		}
 		os.Exit(0)
 	}
 
