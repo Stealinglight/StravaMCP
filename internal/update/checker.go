@@ -12,12 +12,19 @@ import (
 	"github.com/Masterminds/semver/v3"
 )
 
+// ReleaseAsset represents a downloadable file attached to a GitHub release.
+type ReleaseAsset struct {
+	Name               string `json:"name"`
+	BrowserDownloadURL string `json:"browser_download_url"`
+}
+
 // Result holds the outcome of a version check.
 type Result struct {
-	UpdateAvailable bool   `json:"update_available"`
-	CurrentVersion  string `json:"current_version"`
-	LatestVersion   string `json:"latest_version"`
-	ReleaseURL      string `json:"release_url"`
+	UpdateAvailable bool           `json:"update_available"`
+	CurrentVersion  string         `json:"current_version"`
+	LatestVersion   string         `json:"latest_version"`
+	ReleaseURL      string         `json:"release_url"`
+	Assets          []ReleaseAsset `json:"assets,omitempty"`
 }
 
 // Checker queries GitHub Releases for the latest version.
@@ -32,8 +39,9 @@ type Checker struct {
 
 // githubRelease is the subset of GitHub's release JSON we parse.
 type githubRelease struct {
-	TagName string `json:"tag_name"`
-	HTMLURL string `json:"html_url"`
+	TagName string         `json:"tag_name"`
+	HTMLURL string         `json:"html_url"`
+	Assets  []ReleaseAsset `json:"assets"`
 }
 
 // NewChecker creates a Checker for the given current version.
@@ -101,6 +109,7 @@ func (c *Checker) Check(ctx context.Context) (*Result, error) {
 		CurrentVersion: c.currentVer.Original(),
 		LatestVersion:  release.TagName,
 		ReleaseURL:     release.HTMLURL,
+		Assets:         release.Assets,
 	}
 
 	if latestVer.GreaterThan(c.currentVer) {
