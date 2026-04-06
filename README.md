@@ -235,8 +235,13 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines.
 
 [ISC](LICENSE)
 
+## Contributing
+
+Found a bug or have an idea? See [CONTRIBUTING.md](CONTRIBUTING.md) for development setup and guidelines. Security issues should be reported privately via [SECURITY.md](SECURITY.md).
+
 ## Links
 
 - [Strava API Documentation](https://developers.strava.com)
 - [Model Context Protocol Specification](https://modelcontextprotocol.io)
 - [GitHub Releases](https://github.com/Stealinglight/StravaMCP/releases)
+- [Security Policy](SECURITY.md)

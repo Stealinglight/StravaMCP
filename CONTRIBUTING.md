@@ -2,6 +2,19 @@
 
 Thank you for your interest in contributing to StravaMCP! This guide covers everything you need to get started.
 
+## Reporting Issues
+
+Found a bug or have an idea? Open an issue using one of our templates:
+
+- **[Bug Report](https://github.com/Stealinglight/StravaMCP/issues/new?template=bug_report.yml)** -- something broken or unexpected
+- **[Feature Request](https://github.com/Stealinglight/StravaMCP/issues/new?template=feature_request.yml)** -- new tool, enhancement, or improvement
+
+Before opening an issue:
+
+1. Search [existing issues](https://github.com/Stealinglight/StravaMCP/issues) to avoid duplicates
+2. For bugs, include your version (`strava-mcp --version`), OS, and MCP client
+3. For security vulnerabilities, **do not open a public issue** -- see [SECURITY.md](SECURITY.md)
+
 ## Prerequisites
 
 - **Go 1.25+** (match [go.mod](go.mod))
@@ -71,12 +84,16 @@ main.go       - Entry point (auth subcommand + MCP server mode)
 3. Register in `internal/tools/register.go` via a `registerXxx` function
 4. Add tests in the corresponding `_test.go` file
 
-## Pull Request Guidelines
+## Submitting a Pull Request
 
-- Branch from `main`
-- Run `go test ./...` before submitting
-- Follow conventional commits: `feat:`, `fix:`, `docs:`, `refactor:`
-- Keep PRs focused on a single concern
+1. Fork the repo and create a branch from `main`
+2. Make your changes
+3. Run `go test ./...` and `go vet ./...` before submitting
+4. Open a PR -- the [PR template](https://github.com/Stealinglight/StravaMCP/blob/main/.github/PULL_REQUEST_TEMPLATE.md) will guide you through the checklist
+5. Follow conventional commits: `feat:`, `fix:`, `docs:`, `refactor:`
+6. Keep PRs focused on a single concern
+
+We review PRs within a few days. If your PR adds a new MCP tool, make sure you've followed the steps in [Adding a New Tool](#adding-a-new-tool) above.
 
 ## Code Style
 
