@@ -179,7 +179,21 @@ func runServer(debug bool) {
 	}
 	store := auth.NewFileTokenStore(cfg.TokenPath)
 	client := strava.NewClient(cfg, store, slog.Default())
-	s := server.New(Version, client)
+
+	// Build update dependencies for MCP tools (nil-safe if cacheDir fails).
+	var opts *server.Options
+	dir := cacheDir()
+	if dir != "" && Version != "dev" {
+		cache := update.NewCache(dir)
+		checker := update.NewChecker(Version, cache, slog.Default())
+		updater := update.NewUpdater(checker, slog.Default())
+		opts = &server.Options{
+			Checker: checker,
+			Updater: updater,
+		}
+	}
+
+	s := server.New(Version, client, opts)
 	slog.Info("starting MCP server", "name", "strava-mcp", "version", Version)
 
 	// Launch background version check (non-blocking, silent fail).
