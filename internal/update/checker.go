@@ -67,6 +67,11 @@ func NewChecker(currentVersion string, cache *Cache, logger *slog.Logger) *Check
 	return c
 }
 
+// SetAPIURL overrides the GitHub API URL. Intended for testing.
+func (c *Checker) SetAPIURL(url string) {
+	c.apiURL = url
+}
+
 // IsDev returns true if the binary is a local development build.
 // Dev builds never trigger version checks or network calls.
 func (c *Checker) IsDev() bool {
