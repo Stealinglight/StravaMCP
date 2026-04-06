@@ -3,6 +3,7 @@ module github.com/Stealinglight/StravaMCP
 go 1.25.7
 
 require (
+	github.com/Masterminds/semver/v3 v3.4.0
 	github.com/mark3labs/mcp-go v0.46.0
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c
 	golang.org/x/sync v0.20.0
