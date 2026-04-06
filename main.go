@@ -1,10 +1,13 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"log/slog"
 	"os"
+	"path/filepath"
+	"time"
 
 	"github.com/pkg/browser"
 
@@ -13,6 +16,7 @@ import (
 	"github.com/Stealinglight/StravaMCP/internal/config"
 	"github.com/Stealinglight/StravaMCP/internal/server"
 	"github.com/Stealinglight/StravaMCP/internal/strava"
+	"github.com/Stealinglight/StravaMCP/internal/update"
 )
 
 var (
@@ -28,9 +32,10 @@ func main() {
 	browser.Stdout = os.Stderr
 	browser.Stderr = os.Stderr
 
-	// Parse args manually -- no CLI framework needed for 2 modes + 2 flags.
+	// Parse args manually -- no CLI framework needed for 2 modes + 3 flags.
 	debug := false
 	showVersion := false
+	checkUpdate := false
 
 	args := os.Args[1:]
 	var positional []string
@@ -40,6 +45,8 @@ func main() {
 			debug = true
 		case "--version":
 			showVersion = true
+		case "--check-update":
+			checkUpdate = true
 		default:
 			positional = append(positional, arg)
 		}
@@ -47,6 +54,31 @@ func main() {
 
 	if showVersion {
 		fmt.Fprintf(os.Stderr, "strava-mcp %s (%s) built %s\n", Version, Commit, Date)
+		os.Exit(0)
+	}
+
+	if checkUpdate {
+		dir := cacheDir()
+		if dir == "" {
+			fmt.Fprintf(os.Stderr, "error: cannot determine home directory\n")
+			os.Exit(1)
+		}
+		cache := update.NewCache(dir)
+		logger := slog.New(slog.NewTextHandler(os.Stderr, &slog.HandlerOptions{Level: slog.LevelWarn}))
+		checker := update.NewChecker(Version, cache, logger)
+		if checker.IsDev() {
+			fmt.Fprintf(os.Stderr, "strava-mcp dev build — version check not available\n")
+			os.Exit(0)
+		}
+		ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
+		defer cancel()
+		result, err := checker.Check(ctx)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "error checking for updates: %v\n", err)
+			os.Exit(1)
+		}
+		fmt.Fprint(os.Stderr, checker.FormatCheckOutput(result))
+		fmt.Fprintln(os.Stderr)
 		os.Exit(0)
 	}
 
@@ -68,6 +100,15 @@ func main() {
 	runServer(debug)
 }
 
+// cacheDir returns the ~/.strava/ directory path for the update cache.
+func cacheDir() string {
+	home, err := os.UserHomeDir()
+	if err != nil {
+		return ""
+	}
+	return filepath.Join(home, ".strava")
+}
+
 func runServer(debug bool) {
 	cfg, err := config.Load()
 	if err != nil {
@@ -78,6 +119,37 @@ func runServer(debug bool) {
 	client := strava.NewClient(cfg, store, slog.Default())
 	s := server.New(Version, client)
 	slog.Info("starting MCP server", "name", "strava-mcp", "version", Version)
+
+	// Launch background version check (non-blocking, silent fail).
+	if os.Getenv("STRAVA_MCP_NO_UPDATE_CHECK") == "" && Version != "dev" {
+		dir := cacheDir()
+		if dir != "" {
+			go func() {
+				defer func() {
+					if r := recover(); r != nil {
+						slog.Debug("update check panicked", "err", r)
+					}
+				}()
+				ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+				defer cancel()
+				cache := update.NewCache(dir)
+				checker := update.NewChecker(Version, cache, slog.Default())
+				result, err := checker.CheckWithCooldown(ctx, 24*time.Hour)
+				if err != nil {
+					slog.Debug("update check failed", "err", err)
+					return
+				}
+				if result != nil && result.UpdateAvailable {
+					msg := checker.FormatNotification(result)
+					if msg != "" {
+						fmt.Fprint(os.Stderr, msg)
+						fmt.Fprintln(os.Stderr)
+					}
+				}
+			}()
+		}
+	}
+
 	if err := mcpserver.ServeStdio(s); err != nil {
 		slog.Error("server error", "err", err)
 		os.Exit(1)
