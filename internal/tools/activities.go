@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strconv"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 	"github.com/mark3labs/mcp-go/server"
@@ -30,7 +31,11 @@ Common use cases:
 
 **Privacy Note**: Only returns activities the authenticated athlete has permission to view based on privacy settings and OAuth scope.
 
-Example: To find today's runs, calculate today's start epoch timestamp and use it as the 'after' parameter.`),
+**Computing 'after' — DO NOT GUESS THE DATE.** You do not have a reliable clock and will
+default to the wrong year. Every response from this tool ends with the authoritative server
+time and epoch; derive 'after'/'before' from THAT value (or from a fresh ` + "`date +%s`" + ` shell
+call), never from memory or training data. If a response warns that your 'after' resolves to a
+prior/stale date, recompute it from the server time shown and call again.`),
 	mcp.WithNumber("before", mcp.Description("Epoch timestamp to retrieve activities before (exclusive)")),
 	mcp.WithNumber("after", mcp.Description("Epoch timestamp to retrieve activities after (inclusive). Use this to find recent activities.")),
 	mcp.WithNumber("page", mcp.Description("Page number (default: 1)")),
@@ -167,8 +172,9 @@ func HandleGetActivities(client *strava.Client) server.ToolHandlerFunc {
 		if v := request.GetInt("before", 0); v != 0 {
 			params["before"] = strconv.Itoa(v)
 		}
-		if v := request.GetInt("after", 0); v != 0 {
-			params["after"] = strconv.Itoa(v)
+		after := request.GetInt("after", 0)
+		if after != 0 {
+			params["after"] = strconv.Itoa(after)
 		}
 		if v := request.GetInt("page", 0); v != 0 {
 			params["page"] = strconv.Itoa(v)
@@ -181,7 +187,11 @@ func HandleGetActivities(client *strava.Client) server.ToolHandlerFunc {
 		if err != nil {
 			return HandleToolError("get_activities", err), nil
 		}
-		return FormatResponse(data, client), nil
+		// Append the server-time grounding footer so the caller is anchored to
+		// the real current date on every call (it has no reliable clock and will
+		// otherwise reason in the wrong year). buildGroundingFooter also flags a
+		// stale 'after' without rejecting the query. See helpers.go.
+		return FormatResponseWithFooter(data, client, buildGroundingFooter(time.Now(), after)), nil
 	}
 }
 

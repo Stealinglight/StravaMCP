@@ -8,6 +8,7 @@ import (
 	"net/http/httptest"
 	"strings"
 	"testing"
+	"time"
 
 	"github.com/mark3labs/mcp-go/mcp"
 
@@ -93,6 +94,80 @@ func TestGetActivitiesBeforeAfterParams(t *testing.T) {
 	}
 	if !strings.Contains(gotQuery, "after=1690000000") {
 		t.Errorf("query should contain after=1690000000, got: %s", gotQuery)
+	}
+}
+
+// TestGetActivitiesInjectsServerTimeFooter verifies that every get_activities
+// response carries the server-time grounding footer — the deterministic anchor
+// that stops the calling LLM from reasoning in the wrong year.
+func TestGetActivitiesInjectsServerTimeFooter(t *testing.T) {
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte(`[{"id":1,"name":"Morning Run"}]`))
+	}))
+	defer srv.Close()
+
+	client := newTestClient(srv.URL)
+	handler := tools.HandleGetActivities(client)
+
+	// No 'after' at all — footer must still appear (grounding is unconditional).
+	req := makeRequest(map[string]any{"per_page": float64(10)})
+	result, err := handler(context.Background(), req)
+	if err != nil {
+		t.Fatalf("handler error: %v", err)
+	}
+
+	text := extractResultText(t, result)
+	if !strings.Contains(text, "server time:") {
+		t.Errorf("response should contain the server-time footer, got:\n%s", text)
+	}
+	if !strings.Contains(text, "Morning Run") {
+		t.Errorf("response should still contain the activity data, got:\n%s", text)
+	}
+	// A current request (no stale after) must NOT carry the warning.
+	if strings.Contains(text, "PRIOR/STALE") {
+		t.Errorf("response without stale 'after' should not warn, got:\n%s", text)
+	}
+}
+
+// TestBuildGroundingFooter exercises the pure footer logic with a fixed clock so
+// the wrong-year detection is tested deterministically (no real time involved).
+func TestBuildGroundingFooter(t *testing.T) {
+	// Fixed "now": 2026-06-15 12:00:00 -07:00 (Pacific), matching the Pi.
+	loc := time.FixedZone("PDT", -7*3600)
+	now := time.Date(2026, 6, 15, 12, 0, 0, 0, loc)
+
+	staleAfter := int(time.Date(2025, 6, 15, 10, 0, 0, 0, loc).Unix()) // the real incident value class
+	freshAfter := int(time.Date(2026, 6, 15, 0, 0, 0, 0, loc).Unix())  // today's start
+
+	tests := []struct {
+		name      string
+		after     int
+		wantTime  bool // expect "server time:"
+		wantWarn  bool // expect the PRIOR/STALE warning
+		wantEpoch string
+	}{
+		{name: "no after still grounds", after: 0, wantTime: true, wantWarn: false},
+		{name: "prior-year after warns", after: staleAfter, wantTime: true, wantWarn: true},
+		{name: "current-year after does not warn", after: freshAfter, wantTime: true, wantWarn: false},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			got := tools.BuildGroundingFooterForTest(now, tc.after)
+			if tc.wantTime && !strings.Contains(got, "server time:") {
+				t.Errorf("expected server-time line, got: %s", got)
+			}
+			if !strings.Contains(got, "epoch 1781550000") { // now.Unix() for the fixed clock (2026-06-15 12:00:00 -07:00)
+				t.Errorf("expected the server epoch in footer, got: %s", got)
+			}
+			if tc.wantWarn && !strings.Contains(got, "PRIOR/STALE") {
+				t.Errorf("expected stale warning for after=%d, got: %s", tc.after, got)
+			}
+			if !tc.wantWarn && strings.Contains(got, "PRIOR/STALE") {
+				t.Errorf("did not expect stale warning for after=%d, got: %s", tc.after, got)
+			}
+		})
 	}
 }
 
